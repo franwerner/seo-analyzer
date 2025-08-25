@@ -1,0 +1,26 @@
+{
+  "name": "seo-analyzer",
+  "version": "1.0.0",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "dev": "node ./dist/index.js",
+    "dev:watch": "node --watch ./dist/index.js",
+    "build": "rollup -c",
+    "build:watch": "rollup -c --watch"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "express": "^5.1.0",
+    "openai": "^5.15.0"
+  },
+  "devDependencies": {
+    "@types/node": "^24.3.0",
+    "rollup": "^4.48.1",
+    "rollup-plugin-delete": "^3.0.1",
+    "rollup-plugin-typescript2": "^0.36.0"
+  }
+}
