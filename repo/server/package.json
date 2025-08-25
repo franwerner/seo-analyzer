@@ -14,10 +14,14 @@
   "license": "ISC",
   "description": "",
   "dependencies": {
+    "dotenv": "^17.2.1",
     "express": "^5.1.0",
-    "openai": "^5.15.0"
+    "jsdom": "^26.1.0",
+    "openai": "^5.15.0",
+    "puppeteer": "^24.17.0"
   },
   "devDependencies": {
+    "@types/jsdom": "^21.1.7",
     "@types/node": "^24.3.0",
     "rollup": "^4.48.1",
     "rollup-plugin-delete": "^3.0.1",

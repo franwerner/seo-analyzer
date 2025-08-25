@@ -1,4 +1,3 @@
-import terser from "@rollup/plugin-terser"
 import typescript from 'rollup-plugin-typescript2'
 import del from 'rollup-plugin-delete'
 
@@ -17,8 +16,7 @@ export default {
     exclude: 'node_modules/**'
   },
   plugins: [
-    terser(),
     typescript({ tsconfig: './tsconfig.json', useTsconfigDeclarationDir: true }),
-    del({ targets: "dist" })
+    // del({ targets: "dist",})
   ]
 }

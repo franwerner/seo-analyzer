@@ -2,21 +2,20 @@
   "compilerOptions": {
     "outDir": "dist",
     "rootDir": "src",
-    "module": "NodeNext",
-    "moduleResolution": "NodeNext",
     "target": "ESNext",
+    "module": "ESNext",
+    "moduleResolution": "Node",
     "lib": [
-      "ESNext"
+      "ESNext",
+      "DOM"
     ],
     "strict": true,
     "noUncheckedIndexedAccess": true,
-    "exactOptionalPropertyTypes": true,
     "skipLibCheck": true,
     "verbatimModuleSyntax": true,
     "isolatedModules": true,
     "noUncheckedSideEffectImports": true,
     "moduleDetection": "force",
-    "sourceMap": true
   },
   "include": [
     "src"
