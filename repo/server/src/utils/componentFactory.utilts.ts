@@ -1,10 +1,10 @@
-import AnchorComponent from "../services/components/anchor.component";
-import BaseComponent from "../services/components/base.component";
-import HTMLComponent from "../services/components/html.component";
-import ImgComponent from "../services/components/img.component";
-import LinkComponent from "../services/components/link.component";
-import MetaComponent from "../services/components/meta.component";
-import type TextComponent from "../services/components/text.component";
+import AnchorComponent from "../components/anchor.component";
+import BaseComponent from "../components/base.component";
+import HTMLComponent from "../components/html.component";
+import ImgComponent from "../components/img.component";
+import LinkComponent from "../components/link.component";
+import MetaComponent from "../components/meta.component";
+import type TextComponent from "../components/text.component";
 
 const components = {
     HTML: HTMLComponent,
@@ -15,7 +15,7 @@ const components = {
 }
 
 
-class HtmlComponentFactory {
+class ComponentFactory {
 
     static getComponent(tag: string) {
         if (tag in components) {
@@ -37,4 +37,4 @@ class HtmlComponentFactory {
     }
 }
 
-export default HtmlComponentFactory
+export default ComponentFactory

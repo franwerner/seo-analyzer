@@ -1,4 +1,4 @@
-import isValidHttpUrl from "../../utils/isValidHttpUrl.util";
+import isValidHttpUrl from "../utils/isValidHttpUrl.util";
 import type { BaseComponentProps, Issues } from "./base.component";
 import BaseComponent from "./base.component";
 
@@ -13,24 +13,27 @@ class AnchorComponent extends BaseComponent {
     private async validateHref() {
         if (!isValidHttpUrl(this.attributes.href)) return true
         try {
-            const res = await fetch(this.attributes.href)
-            return !(res.status === 404 || res.status >= 500);
+            const res = await fetch(this.attributes.href, {
+                method: "HEAD"
+            })
+            const notFound = res.status === 404
+            const notResponseServer = res.status >= 500
+            return !(notFound || notResponseServer);
         } catch (error) {
             return false
         }
     }
 
-    async validate() {
+    async validate(): Promise<Issues> {
         const isValid = await this.validateHref()
-        let issues: Issues = await super.validate()
         if (!isValid) {
-            issues.push({
+            this.issues.push({
                 message: `${this.attributes.href} NO RESPONDE`,
-                type: "error",
+                type: "warning",
                 hash: this.hash
             })
         }
-        return [...issues, ...this.issues]
+        return this.issues
     }
 
 }

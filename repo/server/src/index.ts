@@ -7,5 +7,5 @@ import VirtualDom from "./services/virtualDom.service";
     })
     await dom.start()
     await dom.validateDom()
-    console.log(dom.component?.issues)
+    console.log(dom.globalIssues)
 })()

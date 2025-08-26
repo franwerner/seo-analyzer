@@ -1,32 +1,48 @@
-import HtmlComponentFactory from "../utils/htmlComponentFactory.utilts";
-import type BaseComponent from "./components/base.component"
-import type HTMLComponent from "./components/html.component"
+import ComponentFactory from "../utils/componentFactory.utilts";
+import BaseComponent from "../components/base.component"
+import type HTMLComponent from "../components/html.component"
 import { JSDOM, VirtualConsole } from "jsdom";
-import TextComponent from "./components/text.component";
-import type { Issues } from "./components/base.component";
+import TextComponent from "../components/text.component";
+import type { Issues } from "../components/base.component";
+
+
+
 class VirtualDom {
     path: string
-    component: HTMLComponent | null
-    issues: Issues
+    root: HTMLComponent | null
+    globalIssues: Issues
     constructor({ path }: { path: string }) {
         this.path = path
-        this.component = null
-        this.issues = []
+        this.root = null
+        this.globalIssues = []
     }
 
     generateDomJSON() {
-        if (!this.component) return
-        return this.component.generateJson()
+        console.time("generateDomJSON")
+        if (!this.root) return
+        console.timeEnd("generateDomJSON")
+        return this.root.generateJson()
     }
 
     async validateDom() {
-        if (!this.component) return
-        const issues = await this.component.validate()
-        this.issues.push(...issues)
+        console.time("validateDom")
+        if (!this.root) return
+        const tree = async (component: BaseComponent): Promise<Issues> => {
+            let issues: Issues = []
+            const validate = component.validate()
+            const filterComponents = component.children.filter(child => child instanceof BaseComponent)
+            const promises = filterComponents.map(child => tree(child))
+            issues.push(...await validate)
+            const results = await Promise.all(promises)
+            issues.push(...results.flat())
+            return issues
+        }
+        this.globalIssues = await tree(this.root)
+        console.timeEnd("validateDom")
     }
 
     async generateVirtualDom() {
-
+        console.time("generateVirtualDom")
         const virtualConsole = new VirtualConsole()
         const res = await fetch(this.path)
         const htmlString = await res.text()
@@ -51,18 +67,19 @@ class VirtualDom {
                     }
                 }
             }
-            return HtmlComponentFactory.createComponent(elem.nodeName, children, elem as HTMLBaseElement)
+            return ComponentFactory.createComponent(elem.nodeName, children, elem as HTMLBaseElement)
         }
 
+        console.timeEnd("generateVirtualDom")
         return recursive(html)
     }
 
     async start() {
         try {
             const html = await this.generateVirtualDom()
-            this.component = html
+            this.root = html
         } catch (error) {
-            this.issues.push({
+            this.globalIssues.push({
                 message: String(error),
                 type: "error",
                 hash: "NO-HASH"

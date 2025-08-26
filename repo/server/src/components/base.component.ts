@@ -8,7 +8,7 @@ interface BaseComponentProps {
     attributes: Record<string, string>
 }
 
-export type Issues = Array<{ message: string, type: string, hash: string }>
+export type Issues = Array<{ message: string, type: "error" | "warning" | "critical", hash: string }>
 
 class BaseComponent {
     uuid: string
@@ -63,10 +63,10 @@ class BaseComponent {
     }
 
     async validate(): Promise<Issues> {
-        let issues: Issues = []
-        const childrenIssues = await Promise.all(this.children.map(child => child instanceof TextComponent ? [] : child.validate()))
-        issues.push(...childrenIssues.flat())
-        return issues
+        /**
+         * cada subclase implementa sus propias validaciones.
+         */
+        return []
     }
 
 }
