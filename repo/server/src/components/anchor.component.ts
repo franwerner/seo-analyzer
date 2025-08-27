@@ -1,10 +1,9 @@
+import type { Issues } from "../schemas/issues.schema";
 import isValidHttpUrl from "../utils/isValidHttpUrl.util";
-import type { BaseComponentProps, Issues } from "./base.component";
+import type { BaseComponentProps } from "./base.component";
 import BaseComponent from "./base.component";
 
 class AnchorComponent extends BaseComponent {
-
-    static pickableAttributes = ["href"];
 
     constructor(props: BaseComponentProps) {
         super(props)
@@ -29,8 +28,8 @@ class AnchorComponent extends BaseComponent {
         if (!isValid) {
             this.issues.push({
                 message: `${this.attributes.href} NO RESPONDE`,
-                type: "warning",
-                hash: this.hash
+                traceIds: [this.traceId],
+                tag: this.nodeName
             })
         }
         return this.issues

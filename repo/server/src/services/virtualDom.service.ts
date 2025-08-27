@@ -3,8 +3,8 @@ import BaseComponent from "../components/base.component"
 import type HTMLComponent from "../components/html.component"
 import { JSDOM, VirtualConsole } from "jsdom";
 import TextComponent from "../components/text.component";
-import type { Issues } from "../components/base.component";
-
+import puppeteer from "puppeteer";
+import type { Issues } from "../schemas/issues.schema";
 
 
 class VirtualDom {
@@ -17,11 +17,11 @@ class VirtualDom {
         this.globalIssues = []
     }
 
-    generateDomJSON() {
-        console.time("generateDomJSON")
+    generateDomHTML() {
+        console.time("generateDomHTML")
         if (!this.root) return
-        console.timeEnd("generateDomJSON")
-        return this.root.generateJson()
+        console.timeEnd("generateDomHTML")
+        return this.root.generateHTML()
     }
 
     async validateDom() {
@@ -44,8 +44,10 @@ class VirtualDom {
     async generateVirtualDom() {
         console.time("generateVirtualDom")
         const virtualConsole = new VirtualConsole()
-        const res = await fetch(this.path)
-        const htmlString = await res.text()
+        const browser = await puppeteer.launch()
+        const page = await browser.newPage()
+        await page.goto(this.path)
+        const htmlString = await page.content()
         const dom = new JSDOM(htmlString, { url: this.path, virtualConsole })
         const html = dom.window.document.children[0]
 
@@ -67,7 +69,7 @@ class VirtualDom {
                     }
                 }
             }
-            return ComponentFactory.createComponent(elem.nodeName, children, elem as HTMLBaseElement)
+            return ComponentFactory.createComponent(elem as HTMLBaseElement, children)
         }
 
         console.timeEnd("generateVirtualDom")
@@ -81,8 +83,8 @@ class VirtualDom {
         } catch (error) {
             this.globalIssues.push({
                 message: String(error),
-                type: "error",
-                hash: "NO-HASH"
+                traceIds: [],
+                tag: "html"
             })
         }
     }

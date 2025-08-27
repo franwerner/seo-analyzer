@@ -1,19 +1,14 @@
 import AnchorComponent from "../components/anchor.component";
 import BaseComponent from "../components/base.component";
 import HTMLComponent from "../components/html.component";
-import ImgComponent from "../components/img.component";
 import LinkComponent from "../components/link.component";
-import MetaComponent from "../components/meta.component";
 import type TextComponent from "../components/text.component";
 
 const components = {
     HTML: HTMLComponent,
     A: AnchorComponent,
     LINK: LinkComponent,
-    META: MetaComponent,
-    IMG: ImgComponent
 }
-
 
 class ComponentFactory {
 
@@ -25,14 +20,14 @@ class ComponentFactory {
         return BaseComponent
     }
 
-    static createComponent(tag: string, children: Array<BaseComponent | TextComponent>, properties: HTMLBaseElement) {
-        const Component = this.getComponent(tag)
+    static createComponent(properties: HTMLBaseElement, children: Array<BaseComponent | TextComponent>,) {
+        const Component = this.getComponent(properties.nodeName)
 
         return new Component({
-            tag,
+            nodeName: properties.nodeName,
+            outerHTML: properties.outerHTML,
+            attributes: properties.attributes,
             children,
-            hash: Component.generateHash(properties.outerHTML),
-            attributes: Component.extractAttributes(properties.attributes),
         })
     }
 }

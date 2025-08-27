@@ -16,6 +16,8 @@
     "isolatedModules": true,
     "noUncheckedSideEffectImports": true,
     "moduleDetection": "force",
+    "allowSyntheticDefaultImports": true,
+    "allowJs": true
   },
   "include": [
     "src"

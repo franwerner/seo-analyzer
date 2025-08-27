@@ -1,65 +1,103 @@
-import { randomUUID, createHash } from "crypto";
+import { createHash } from "crypto";
 import TextComponent from "./text.component";
+import type { Issues } from "../schemas/issues.schema";
 
 interface BaseComponentProps {
-    tag: string;
-    hash: string;
+    nodeName: string;
     children?: Array<BaseComponent | TextComponent>
-    attributes: Record<string, string>
+    attributes: NamedNodeMap
+    outerHTML: string
 }
 
-export type Issues = Array<{ message: string, type: "error" | "warning" | "critical", hash: string }>
+type Children = Array<BaseComponent | TextComponent>
+type Attributes = Record<string, string>
+
+const seoAttributes = [
+    "title",
+    "name",
+    "content",
+    "charset",
+    "http-equiv",
+    "property",
+    "rel",
+    "href",
+    "alt",
+    "src",
+    "lang",
+    "hreflang",
+    "itemprop"
+]
+
+const selfClosingTags = [
+    "AREA", "BASE", "BR", "COL", "EMBED", "HR", "IMG",
+    "INPUT", "LINK", "META", "PARAM", "SOURCE", "TRACK", "WBR"
+]
+
 
 class BaseComponent {
-    uuid: string
-    tag: BaseComponentProps['tag'];
-    children: Required<BaseComponentProps>['children']
-    hash: BaseComponentProps['hash']
-    attributes: Required<BaseComponentProps>['attributes']
+
+    nodeName: string;
+    children: Children
+    traceId: string
+    attributes: Attributes
     issues: Issues
+    needsClosingTag: boolean
+    startPosition: number
 
-    static pickableAttributes: Array<string> | "*" = []
-
-    /**HACER PICK MAS COMPLEJOS, COMO PICKEAR TODOS PERO EXCLUIR LOS ID's, CLASES, DATA-SET */
-
-    constructor({ tag, children, hash, attributes }: BaseComponentProps) {
-        this.tag = tag
+    static pickableAttributes: Array<string> = []
+    constructor({ nodeName, children, attributes, outerHTML }: BaseComponentProps) {
+        this.nodeName = nodeName
         this.children = children || []
-        this.attributes = attributes || {}
-        this.uuid = randomUUID()
-        this.hash = hash
+        this.attributes = (this.constructor as typeof BaseComponent).extractAttributes(attributes) /** el this.constructor hace referencia a la clase/subclase, */
+        this.traceId = BaseComponent.generateHash(outerHTML)
         this.issues = []
+        this.startPosition = 0
+        this.needsClosingTag = BaseComponent.needsClosingTag(nodeName)
     }
 
-    static generateHash(value: Element["outerHTML"]) {
+    private static generateHash(outerHTML: Element["outerHTML"]) {
         /**
-         * Este hash nos ayuda a rastrear posteriormente el Element en el DOM.
+         * Este id nos ayuda a rastrear posteriormente el Element en el DOM.
          */
-        return createHash('sha256').update(value).digest('hex')
+        return createHash('md5').update(outerHTML).digest('hex')
     }
 
+
+    private static needsClosingTag(nodeName: string) {
+        /**Verifica si necesita un cierre  */
+        return !selfClosingTags.includes(nodeName)
+    }
     static extractAttributes(inputAttributes: NamedNodeMap) {
-        const result: Record<string, string> = {}
-        Array.from(inputAttributes).forEach(attr => {
-            if (this.pickableAttributes === "*" || this.pickableAttributes.includes(attr.name)) {
-                result[attr.name] = attr.value
+        return Array.from(inputAttributes).reduce((acc, attr) => {
+            const currentName = attr.name
+            if (
+                this.pickableAttributes.includes(currentName) ||
+                seoAttributes.includes(currentName)
+            ) {
+                acc[currentName] = attr.value
             }
-        })
-        return result
+            return acc;
+        }, {} as Attributes)
     }
 
-    generateJson(): {
-        uuid: string,
-        tag: string,
-        attributes: Record<string, string>,
-        children: Array<ReturnType<BaseComponent['generateJson']> | string>,
-    } {
-        return {
-            uuid: this.uuid,
-            tag: this.tag,
-            attributes: this.attributes,
-            children: this.children.map((child) => child instanceof TextComponent ? child.text : child.generateJson())
-        }
+    generateHTML(): string {
+        const attrs = Object.entries(this.attributes)
+            .filter(([_, value]) => value)
+            .map(([key, value]) => `${key}=${value}`)
+            .join(" ")
+
+        const tag = this.nodeName.toLowerCase()
+
+        const childrenStr = this.children
+            .map(child => child instanceof TextComponent ? child.text : child.generateHTML())
+            .join("")
+
+        /**
+         * Deberia obtener la posicion del inicio del HTML para que la IA tenga una guia de que elemento html es el erroneo y poder darme un feedback correcto.
+         */
+
+        return this.needsClosingTag ?
+            `<${tag} t-id=${this.traceId} ${attrs}>${childrenStr}</${tag}>` : `<${tag} t-id=${this.traceId} ${attrs} />`
     }
 
     async validate(): Promise<Issues> {
@@ -71,5 +109,5 @@ class BaseComponent {
 
 }
 
-export type { BaseComponentProps }
+export type { BaseComponentProps };
 export default BaseComponent

@@ -1,13 +1,10 @@
+import AnchorComponent from "./anchor.component";
 import type { BaseComponentProps } from "./base.component";
-import BaseComponent from "./base.component";
 
-class LinkComponent extends BaseComponent {
-    static pickableAttributes = ["hreflang", "rel", "media", "href"];
-
+class LinkComponent extends AnchorComponent {
     constructor(props: BaseComponentProps) {
         super(props)
     }
-
 }
 
 export default LinkComponent
