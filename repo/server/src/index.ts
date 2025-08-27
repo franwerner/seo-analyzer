@@ -1,31 +1,39 @@
-import "./config/dotenv.config"
-import OpenAiService from "./services/openAi.service";
-import VirtualDom from "./services/virtualDom.service";
 import express from "express";
+import "./config/dotenv.config";
+import corsConfig from "./config/cors.config";
+import VirtualDomStore from "./services/VirtualDomStore.service";
+import ErrorHandler from "./utils/errorHandler.utils";
+import errorGlobal from "./middleware/errorGlobal.middleware";
 
 const app = express()
 
-let virtualDom: VirtualDom;
+const virtualDomStore = new VirtualDomStore()
 
-const openAiService = new OpenAiService();
+app.use(corsConfig)
+app.use(express.json())
 
-(async () => {
-    const dom = new VirtualDom({
-        path: "http://127.0.0.1:5500/html.html"
+app.get("/analyze", ErrorHandler.routeHandler(async (req, res) => {
+    const url = req.query.url as string
+    const virtualDom = virtualDomStore.getIfExist(url)
+    const response = await virtualDom.validateAll()
+    res.json(response)
+}))
+
+app.get("/calculate-token", ErrorHandler.routeHandler(async (req, res) => {
+    const url = req.query.url as string
+    const virtualDom = virtualDomStore.getIfExist(url)
+    res.json({
+        tokens: virtualDom.calculateTokens()
     })
-    await dom.start()
-    await dom.validateDom()
-    console.log(dom.globalIssues)
-    const html = dom.generateDomHTML()
-    if (html) {
-        await openAiService.generateIssues(html)
-    }
-    virtualDom = dom
-})()
+}))
 
+app.post("/create", ErrorHandler.routeHandler(
+    async (req, res) => {
+        const url = req.body.url as string
+        const virtualDom = virtualDomStore.createOrGet(url)
+        await virtualDom.start()
+        res.status(201).json({ message: "VirtualDom created" })
+    }))
 
-app.get("/", (req, res) => {
-    res.json(virtualDom?.generateDomHTML())
-})
-
+app.use(errorGlobal)
 app.listen(3000, () => console.log("ON"))

@@ -3,7 +3,6 @@ import BaseComponent from "../components/base.component";
 import HTMLComponent from "../components/html.component";
 import LinkComponent from "../components/link.component";
 import type TextComponent from "../components/text.component";
-
 const components = {
     HTML: HTMLComponent,
     A: AnchorComponent,
@@ -20,12 +19,17 @@ class ComponentFactory {
         return BaseComponent
     }
 
-    static createComponent(properties: HTMLBaseElement, children: Array<BaseComponent | TextComponent>,) {
+    static pickPropertiesForHash(properties: HTMLElement | null) {
+        if (!properties) return ""
+        return Array.from(properties.attributes).map(attr => `${attr.name}=${attr.value}`).join(" ") + properties.nodeName
+    }
+
+    static createComponent(properties: HTMLElement, children: Array<BaseComponent | TextComponent>,) {
         const Component = this.getComponent(properties.nodeName)
 
         return new Component({
             nodeName: properties.nodeName,
-            outerHTML: properties.outerHTML,
+            traceId: Component.generateHash(this.pickPropertiesForHash(properties) + this.pickPropertiesForHash(properties.parentElement)),
             attributes: properties.attributes,
             children,
         })

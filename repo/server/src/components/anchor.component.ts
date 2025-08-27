@@ -26,13 +26,13 @@ class AnchorComponent extends BaseComponent {
     async validate(): Promise<Issues> {
         const isValid = await this.validateHref()
         if (!isValid) {
-            this.issues.push({
+            return [{
                 message: `${this.attributes.href} NO RESPONDE`,
                 traceIds: [this.traceId],
                 tag: this.nodeName
-            })
+            }]
         }
-        return this.issues
+        return []
     }
 
 }

@@ -5,28 +5,80 @@ import { JSDOM, VirtualConsole } from "jsdom";
 import TextComponent from "../components/text.component";
 import puppeteer from "puppeteer";
 import type { Issues } from "../schemas/issues.schema";
+import OpenAi from "./openAi.service";
+import ErrorHandler from "../utils/errorHandler.utils";
 
+interface VirtualDomProps {
+    path: string
+}
 
 class VirtualDom {
     path: string
     root: HTMLComponent | null
-    globalIssues: Issues
-    constructor({ path }: { path: string }) {
+    private html: string
+    constructor(private openAi: OpenAi, { path }: VirtualDomProps) {
         this.path = path
         this.root = null
-        this.globalIssues = []
+        this.html = ""
     }
 
-    generateDomHTML() {
-        console.time("generateDomHTML")
-        if (!this.root) return
-        console.timeEnd("generateDomHTML")
-        return this.root.generateHTML()
+    calculateTokens() {
+        return OpenAi.calculateTokens(this.getOrGenerateHTML())
     }
 
-    async validateDom() {
-        console.time("validateDom")
-        if (!this.root) return
+    throwIfNotInitialized(): asserts this is { root: HTMLComponent } {
+        if (!this.root) throw new ErrorHandler({
+            message: "VirtualDom not initialized",
+            status_code: 500
+        })
+    }
+
+    getOrGenerateHTML() {
+        this.throwIfNotInitialized()
+        if (this.html) return this.html
+        this.html = this.root.generateHTML()
+        return this.html
+    }
+
+    async generateVirtualDom() {
+        const virtualConsole = new VirtualConsole()
+        const browser = await puppeteer.launch()
+        const page = await browser.newPage()
+        await page.goto(this.path)
+        const htmlString = await page.content()
+        page.close()
+        const dom = new JSDOM(htmlString, { url: this.path, virtualConsole })
+        const html = dom.window.document.children[0]
+
+        if (!html || html.nodeName != "HTML") {
+            throw new Error("No se encontro el elemento HTML")
+        }
+        const recursive = (elem: Node) => {
+            /**
+             * REFACTORIZAR ESTO Y SEPARAR EN MAS FUNCIONES.
+             */
+            let children: Array<BaseComponent | TextComponent> = []
+            if (elem.hasChildNodes()) {
+                for (const e of Array.from(elem.childNodes)) {
+                    if (e.nodeName == "#text") {
+                        const text = e.nodeValue || ""
+                        if (text.trim().length > 0) {
+                            children.push(new TextComponent(text))
+                        }
+                    }
+                    else if (!["SCRIPT", "STYLE", "#comment", "svg"].includes(e.nodeName)) {
+                        children.push(recursive(e))
+                    }
+                }
+            }
+            return ComponentFactory.createComponent(elem as HTMLBaseElement, children)
+        }
+
+        return recursive(html)
+    }
+
+    private async validateDom() {
+        this.throwIfNotInitialized()
         const tree = async (component: BaseComponent): Promise<Issues> => {
             let issues: Issues = []
             const validate = component.validate()
@@ -37,54 +89,36 @@ class VirtualDom {
             issues.push(...results.flat())
             return issues
         }
-        this.globalIssues = await tree(this.root)
-        console.timeEnd("validateDom")
+        return await tree(this.root)
     }
 
-    async generateVirtualDom() {
-        console.time("generateVirtualDom")
-        const virtualConsole = new VirtualConsole()
-        const browser = await puppeteer.launch()
-        const page = await browser.newPage()
-        await page.goto(this.path)
-        const htmlString = await page.content()
-        const dom = new JSDOM(htmlString, { url: this.path, virtualConsole })
-        const html = dom.window.document.children[0]
+    private async validateWithOpenAI() {
+        const html = this.getOrGenerateHTML()
+        return await this.openAi.generateIssues(html)
+    }
 
-        if (!html || html.nodeName != "HTML") {
-            throw new Error("No se encontro el elemento HTML")
+    async validateAll() {
+        const {
+            feedback,
+            issues,
+            tokens
+        } = await this.validateWithOpenAI()
+        const validateIssues = await this.validateDom()
+        return {
+            issues: [...validateIssues, ...issues],
+            feedback,
+            tokens
         }
-        const recursive = (elem: Node) => {
-            let children: Array<BaseComponent | TextComponent> = []
-            if (elem.hasChildNodes()) {
-                for (const e of Array.from(elem.childNodes)) {
-                    if (e.nodeName == "#text") {
-                        const text = e.nodeValue || ""
-                        if (text.trim().length > 0) {
-                            children.push(new TextComponent(text))
-                        }
-                    }
-                    else if (!["SCRIPT", "STYLE", "#comment", "NOSCRIPT"].includes(e.nodeName)) {
-                        children.push(recursive(e))
-                    }
-                }
-            }
-            return ComponentFactory.createComponent(elem as HTMLBaseElement, children)
-        }
-
-        console.timeEnd("generateVirtualDom")
-        return recursive(html)
     }
 
     async start() {
         try {
-            const html = await this.generateVirtualDom()
-            this.root = html
+            /**Solo deberia iniciar una VEZ en el futuro.*/
+            this.root = await this.generateVirtualDom()
         } catch (error) {
-            this.globalIssues.push({
-                message: String(error),
-                traceIds: [],
-                tag: "html"
+            throw new ErrorHandler({
+                message: "Unknown error occurred while initializing the VirtualDom.",
+                status_code: 500
             })
         }
     }

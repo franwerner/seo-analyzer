@@ -1,12 +1,12 @@
-import { createHash } from "crypto";
 import TextComponent from "./text.component";
 import type { Issues } from "../schemas/issues.schema";
+import crc32 from "crc-32"
 
 interface BaseComponentProps {
     nodeName: string;
     children?: Array<BaseComponent | TextComponent>
     attributes: NamedNodeMap
-    outerHTML: string
+    traceId: string
 }
 
 type Children = Array<BaseComponent | TextComponent>
@@ -40,26 +40,24 @@ class BaseComponent {
     children: Children
     traceId: string
     attributes: Attributes
-    issues: Issues
     needsClosingTag: boolean
     startPosition: number
 
     static pickableAttributes: Array<string> = []
-    constructor({ nodeName, children, attributes, outerHTML }: BaseComponentProps) {
+    constructor({ nodeName, children, attributes, traceId }: BaseComponentProps) {
         this.nodeName = nodeName
         this.children = children || []
         this.attributes = (this.constructor as typeof BaseComponent).extractAttributes(attributes) /** el this.constructor hace referencia a la clase/subclase, */
-        this.traceId = BaseComponent.generateHash(outerHTML)
-        this.issues = []
+        this.traceId = traceId
         this.startPosition = 0
         this.needsClosingTag = BaseComponent.needsClosingTag(nodeName)
     }
 
-    private static generateHash(outerHTML: Element["outerHTML"]) {
+    static generateHash(forHash: string) {
         /**
-         * Este id nos ayuda a rastrear posteriormente el Element en el DOM.
+         * Este hash nos ayuda a rastrear posteriormente el elemento en el DOM.
          */
-        return createHash('md5').update(outerHTML).digest('hex')
+        return crc32.str(forHash).toString()
     }
 
 
