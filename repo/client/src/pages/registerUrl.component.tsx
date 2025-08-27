@@ -1,29 +1,40 @@
-import useFetch from "../hooks/useFetch.hook"
-import useForm from "../hooks/useForm.hook"
-import Loading from "./loading.component"
+import { useRouter } from "preact-router"
+import Loading from "@/components/loading.component"
+import useFetch from "@/hooks/useFetch.hook"
+import useForm from "@/hooks/useForm.hook"
 
 
-export default function Form() {
+export default function RegisterUrl() {
 
+  const [_, nav] = useRouter()
   const {
     fetchData,
     response
   } = useFetch()
 
   const {
+    onChange,
+    formData
+  } = useForm({
+    url: "",
+  })
+
+  const {
     status,
   } = response
 
-  const {
-    onChange,
-    formData
-  } = useForm()
-
-
   const handleSubmit = () => {
-    fetchData("/analysis", {
+    fetchData(`/create`, {
+      body: JSON.stringify({
+        url: formData.url,
+      }),
+      headers: {
+        "Content-Type": "application/json"
+      },
       method: "POST",
-      body: JSON.stringify(formData)
+      onSuccess() {
+        nav(`/analyze?url=${formData.url}`)
+      },
     })
   }
 
@@ -36,20 +47,11 @@ export default function Form() {
             <label className="block text-sky-700 font-semibold mb-1" htmlFor="url">URL</label>
             <input
               name="url"
+              value={formData.url}
               placeholder="https://example.com"
               className="w-full border border-sky-300 rounded-md px-4 py-2 focus:outline-none focus:ring-2 focus:ring-sky-400"
               onChange={onChange}
             />
-          </div>
-          <div>
-            <label className="block text-sky-700 font-semibold mb-1" htmlFor="description">Descripción (opcional)</label>
-            <textarea
-              name="description"
-              rows={4}
-              placeholder="Escribe una descripción relacionado a la pagina web..."
-              className="w-full border border-sky-300 rounded-md px-4 py-2 focus:outline-none focus:ring-2 focus:ring-sky-400"
-              onChange={onChange}
-            ></textarea>
           </div>
           <button
             onClick={handleSubmit}

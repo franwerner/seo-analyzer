@@ -11,6 +11,7 @@
   "dependencies": {
     "@tailwindcss/vite": "^4.1.12",
     "preact": "^10.27.0",
+    "preact-router": "^4.1.2",
     "tailwindcss": "^4.1.12"
   },
   "devDependencies": {

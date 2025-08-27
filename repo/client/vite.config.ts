@@ -7,4 +7,9 @@ export default defineConfig({
     preact(),
     tailwindcss(),
   ],
+  resolve: {
+    alias: {
+      "@": "/src",
+    },
+  },
 })

@@ -1,8 +1,8 @@
 import { useState } from "preact/hooks"
 
-export default function useForm() {
+export default function useForm<T extends object>(props: T) {
 
-    const [formData, setFormData] = useState({})
+    const [formData, setFormData] = useState(props)
 
     const onChange = (e: Event) => {
         const target = e.target as HTMLInputElement

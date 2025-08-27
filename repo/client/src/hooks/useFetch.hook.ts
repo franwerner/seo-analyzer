@@ -1,13 +1,16 @@
 import { useEffect, useRef, useState } from "preact/hooks";
 const BACKEND_URL = import.meta.env.VITE_BACKEND_URL
 
-export type ResponseData<T extends object> = T & { message?: string }
+export type ResponseData<T extends object> = T & { message: string }
 
 export type ResponseStatus = "idle" | "loading" | "success" | "failed"
+
 export interface ResponseProps<T extends object> {
     data?: ResponseData<T>
     status: ResponseStatus
 }
+
+export type UseFetchReturn<T extends object> = ReturnType<typeof useFetch<T>>
 
 type RequestInitExtends<T extends object> = {
     onSuccess?: (data: ResponseData<T>) => void
@@ -30,7 +33,6 @@ export default function useFetch<T extends object>() {
         ...rest
     }: RequestInitExtends<U> = {}) => {
         const completeUrl = `${BACKEND_URL}${url}`
-        console.log(completeUrl, url)
         try {
             setResponse(prev => ({
                 ...prev,
@@ -39,8 +41,6 @@ export default function useFetch<T extends object>() {
             const res = await fetch(completeUrl, { credentials: "include", ...rest })
             const contentType = res.headers.get("content-type")
             const isJson = contentType && contentType.includes("application/json")
-
-
 
             const data = isJson ? await res.json() : { message: "Algo salio mal" }
             if (!ref.current.isMounting) return
@@ -55,8 +55,7 @@ export default function useFetch<T extends object>() {
                 data
             })
         } catch (error) {
-
-
+            console.log(error)
             const data: ResponseData<any> = {
                 message: "Algo salio mal"
             }
