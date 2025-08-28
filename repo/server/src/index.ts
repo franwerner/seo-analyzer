@@ -26,10 +26,11 @@ app.post("/login", ErrorHandler.routeHandler((req, res) => {
         expires_in
     } = AuthService.login(password)
 
+    const NODE_ENV = getEnsureEnv("NODE_ENV")
     res.cookie("session", token, {
         httpOnly: true,
-        secure: getEnsureEnv("NODE_ENV") === "production",
-        sameSite: "none",
+        secure: NODE_ENV === "production",
+        sameSite: NODE_ENV === "production" ? "none" : "strict",
         maxAge: expires_in
     })
     res.json({ message: "Login successful" })

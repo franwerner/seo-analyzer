@@ -43,7 +43,10 @@ class VirtualDom {
 
     async generateVirtualDom() {
         const virtualConsole = new VirtualConsole()
-        const browser = await puppeteer.launch()
+        const browser = await puppeteer.launch({
+            headless: true,
+            args: ['--no-sandbox', '--disable-setuid-sandbox']
+        })
         const page = await browser.newPage()
         await page.goto(this.path)
         const htmlString = await page.content()
