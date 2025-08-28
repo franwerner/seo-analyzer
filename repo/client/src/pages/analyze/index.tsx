@@ -6,7 +6,6 @@ import type { SeoDetails } from "@/types/seoDetailsInterface.type";
 import TokenModal from "./components/tokenModal.component";
 import calcCostInputToken from "./services/calcCostInputToken.service";
 import calcCostOutputToken from "./services/calcCostOutputToken.service";
-import seoDetailsMock from "@/mocks/seoDetails.mock";
 
 const TokenConsumption = ({
     input,
