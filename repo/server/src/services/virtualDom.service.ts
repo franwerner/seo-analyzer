@@ -117,8 +117,12 @@ class VirtualDom {
             /**Solo deberia iniciar una VEZ en el futuro.*/
             this.root = await this.generateVirtualDom()
         } catch (error) {
+            console.log(error)
             throw new ErrorHandler({
-                message: "Unknown error occurred while initializing the VirtualDom.",
+                message: `
+                Unknown error occurred while initializing the VirtualDom -
+                ${error}
+                `,
                 status_code: 500
             })
         }
