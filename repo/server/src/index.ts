@@ -7,6 +7,7 @@ import errorGlobal from "./middleware/errorGlobal.middleware";
 import AuthService from "./services/auth.service";
 import authMiddleware from "./middleware/auth.middleware";
 import cookieParser from "cookie-parser";
+import getEnsureEnv from "./utils/getEnsureEnv.utils";
 
 const app = express()
 
@@ -27,7 +28,7 @@ app.post("/login", ErrorHandler.routeHandler((req, res) => {
 
     res.cookie("session", token, {
         httpOnly: true,
-        secure: false,
+        secure: getEnsureEnv("NODE_ENV") === "production",
         sameSite: "strict",
         maxAge: expires_in
     })

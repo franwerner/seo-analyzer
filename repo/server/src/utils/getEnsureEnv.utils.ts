@@ -5,6 +5,7 @@ interface Env {
     HASH_PASSWORD: string
     OPENAI_KEY: string
     CLIENT_URL: string
+    NODE_ENV: string
 }
 
 const getEnsureEnv = (key: keyof Env) => {
