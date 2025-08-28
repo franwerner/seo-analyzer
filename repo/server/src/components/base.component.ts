@@ -12,21 +12,14 @@ interface BaseComponentProps {
 type Children = Array<BaseComponent | TextComponent>
 type Attributes = Record<string, string>
 
-const seoAttributes = [
-    "title",
-    "name",
-    "content",
-    "charset",
-    "http-equiv",
-    "property",
-    "rel",
-    "href",
-    "alt",
-    "src",
-    "lang",
-    "hreflang",
-    "itemprop"
-]
+/*
+ * Solo se indican los atributos que **no se deben pickear**, porque la IA 
+ * tiende a generar falsos positivos si falta algún atributo que considera relevante.
+ * La estrategia consume un poco más de tokens, pero asegura mayor efectividad
+ * a la hora de analizar SEO y evita errores falsos.
+ */
+
+const notPickableAttributesExp = /^(class|id|style|data-.*|aria-.*)$/
 
 const selfClosingTags = [
     "AREA", "BASE", "BR", "COL", "EMBED", "HR", "IMG",
@@ -42,7 +35,6 @@ class BaseComponent {
     attributes: Attributes
     needsClosingTag: boolean
 
-    static pickableAttributes: Array<string> = []
     constructor({ nodeName, children, attributes, traceId }: BaseComponentProps) {
         this.nodeName = nodeName
         this.children = children || []
@@ -67,8 +59,7 @@ class BaseComponent {
         return Array.from(inputAttributes).reduce((acc, attr) => {
             const currentName = attr.name
             if (
-                this.pickableAttributes.includes(currentName) ||
-                seoAttributes.includes(currentName)
+                !notPickableAttributesExp.test(currentName)
             ) {
                 acc[currentName] = attr.value
             }
