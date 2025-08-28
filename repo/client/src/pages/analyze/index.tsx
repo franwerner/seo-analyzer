@@ -98,13 +98,12 @@ const AnalyzeComponent = () => {
         response
     } = useFetch<SeoDetails>()
 
-
     const {
         status,
         data
     } = response
 
-    const [{ matches }] = useRouter()
+    const [{ matches }, nav] = useRouter()
 
 
     const handleFetch = () => {
@@ -124,7 +123,17 @@ const AnalyzeComponent = () => {
                 :
                 <div className="mx-auto space-y-10">
                     <div className="flex items-center justify-between">
-                        <h1 className="text-2xl font-bold text-sky-700">Resultados del Análisis SEO</h1>
+                        <div>
+                            <h1 className="text-2xl font-bold text-sky-700">Resultados del Análisis SEO</h1>
+                            <span className="text-sm text-gray-600">
+                                Ten en cuenta que cualquier modificación en la web deberas registrarla nuevamente.{" "}
+                                <span
+                                    onClick={() => nav("/")}
+                                    className="text-sky-700 cursor-pointer font-medium hover:underline">
+                                    Registrar otra Web
+                                </span>
+                            </span>
+                        </div>
                         <button
                             type="button"
                             onClick={handleFetch}

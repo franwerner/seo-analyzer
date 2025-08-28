@@ -3,8 +3,9 @@ import useForm from "@/hooks/useForm.hook"
 
 export default function LoginPage() {
 
+    //Todavia falta implementar. SIN USO
+
     const {
-        fetchData,
         response
     } = useFetch()
 

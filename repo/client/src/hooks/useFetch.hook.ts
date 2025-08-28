@@ -55,7 +55,6 @@ export default function useFetch<T extends object>() {
                 data
             })
         } catch (error) {
-            console.log(error)
             const data: ResponseData<any> = {
                 message: "Algo salio mal"
             }
