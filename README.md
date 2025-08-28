@@ -1,20 +1,9 @@
 # SEO Analyzer
 
-# SERVER
-- Build server
-npm run build:server
 
-- Start server
-npm run start:server
-
-# ENV REQUIRED:
+# ENV REQUIRED SERVER:
 - OPENAI_KEY
 - CLIENT_URL
 
-
-# CLIENT
-- Build client
-npm run build:client
-
-# ENV REQUIRED:
+# ENV REQUIRED CLIENT:
 - VITE_BACKEND_URL
