@@ -45,7 +45,7 @@ export default function LoginPage() {
 
     return (
         <div className="min-h-screen bg-sky-50 flex items-center justify-center px-4">
-            <form className="bg-white p-6 rounded-lg shadow-md w-full max-w-sm space-y-4 border border-sky-200">
+            <form className="bg-white p-6 rounded-lg shadow-md w-full max-w-sm space-y-4 border border-sky-200" onSubmit={login}>
                 <h2 className="text-xl font-semibold text-sky-700 text-center">Acceso</h2>
                 <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">Contraseña</label>

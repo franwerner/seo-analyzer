@@ -23,7 +23,8 @@ export default function RegisterUrl() {
     status,
   } = response
 
-  const handleSubmit = () => {
+  const handleSubmit = (e: Event) => {
+    e.preventDefault()
     fetchData(`/create`, {
       body: JSON.stringify({
         url: formData.url,
@@ -42,7 +43,7 @@ export default function RegisterUrl() {
     <div className="min-h-screen bg-sky-50 flex items-center justify-center p-4">
       <div className="bg-white shadow-lg rounded-2xl p-8 w-full max-w-md border border-sky-100">
         <h1 className="text-2xl font-bold text-sky-600 mb-6 text-center">Enviar Información</h1>
-        <form className="space-y-5">
+        <form className="space-y-5" onSubmit={handleSubmit}>
           <div>
             <label className="block text-sky-700 font-semibold mb-1" htmlFor="url">URL</label>
             <input
