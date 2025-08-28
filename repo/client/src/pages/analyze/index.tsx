@@ -6,6 +6,7 @@ import type { SeoDetails } from "@/types/seoDetailsInterface.type";
 import TokenModal from "./components/tokenModal.component";
 import calcCostInputToken from "./services/calcCostInputToken.service";
 import calcCostOutputToken from "./services/calcCostOutputToken.service";
+import seoDetailsMock from "@/mocks/seoDetails.mock";
 
 const TokenConsumption = ({
     input,
@@ -72,7 +73,7 @@ const Issues = ({ issues }: { issues: SeoDetails['issues'] }) => {
 
 const Feedback = ({ feedback }: { feedback: SeoDetails['feedback'] }) => {
     return (
-        <div className="space-y-4">
+        <div className="space-y-4 p-1">
             <h2 className="text-xl font-semibold text-sky-600">Feedback General</h2>
             {feedback.length === 0 ?
                 <p className="text-gray-600">📌 No hay sugerencias adicionales.</p>
@@ -88,10 +89,92 @@ const Feedback = ({ feedback }: { feedback: SeoDetails['feedback'] }) => {
         </div>
     )
 }
+type HistoryPickerProps = {
+    selectedIndex: number | null
+    handleSelect: (index: number) => void
+    history: Array<SeoDetails>
+};
 
 
+const HistoryPicker = ({ selectedIndex, handleSelect, history }: HistoryPickerProps) => {
+
+    return (
+        <div className="border rounded-md p-4 space-y-2 bg-gray-50">
+            <h2 className="font-bold text-sky-700">Historial de Análisis</h2>
+            {history.length === 0 && <p className="text-gray-500">No hay análisis previos</p>}
+            <ul className="space-y-1 max-h-60 flex gap-x-4 gap-y-1 flex-wrap overflow-y-auto">
+                {history.map((item, index) => (
+                    <li
+                        key={index}
+                        onClick={() => handleSelect(index)}
+                        className={`cursor-pointer p-2 rounded-md hover:bg-sky-100 transition ${selectedIndex === index ? "bg-sky-200" : ""
+                            }`}
+                    >
+                        <span className="text-sm text-gray-700">
+                            Análisis #{index + 1} — Tokens: {item.tokens.input + item.tokens.output}
+                        </span>
+                    </li>
+                ))}
+            </ul>
+        </div>
+    )
+}
+
+type AnalyzeHeaderProps = {
+    onRetry: () => void
+    onRegisterAnother: () => void
+}
+
+const AnalyzeHeader = ({ onRetry, onRegisterAnother }: AnalyzeHeaderProps) => (
+    <div className="flex items-center justify-between">
+        <div>
+            <h1 className="text-2xl font-bold text-sky-700">Resultados del Análisis SEO</h1>
+            <span className="text-sm text-gray-600">
+                Ten en cuenta que cualquier modificación en la web deberas registrarla nuevamente.{" "}
+                <span
+                    onClick={onRegisterAnother}
+                    className="text-sky-700 cursor-pointer font-medium hover:underline"
+                >
+                    Registrar otra Web
+                </span>
+            </span>
+        </div>
+        <button
+            type="button"
+            onClick={onRetry}
+            className="px-4 py-2 rounded-md bg-sky-600 hover:bg-sky-700 text-white font-medium transition"
+        >
+            Reintentar
+        </button>
+    </div>
+)
+
+type AnalysisResultProps = {
+    data: SeoDetails
+}
+
+const AnalysisResult = ({ data }: AnalysisResultProps) => (
+    <div className="space-y-4">
+        <TokenConsumption input={data.tokens.input} output={data.tokens.output} />
+        <Issues issues={data.issues} />
+        <Feedback feedback={data.feedback} />
+    </div>
+)
+
+const AnalysisLoading = () => {
+    return (
+        <div className="flex justify-center items-center h-full">
+            <Loading text="Realizando análisis SEO..." />
+        </div>
+    )
+}
 
 const AnalyzeComponent = () => {
+
+    const [history, setHistory] = useState<Array<SeoDetails>>([])
+    const [selectedIndex, setSelectedIndex] = useState<number>(0)
+
+    const currentHistory = history[selectedIndex]
 
     const {
         fetchData,
@@ -107,7 +190,20 @@ const AnalyzeComponent = () => {
 
 
     const handleFetch = () => {
-        fetchData(`/analyze?url=${matches?.url}`)
+        fetchData(`/analyze?url=${matches?.url}`, {
+            onSuccess: ({
+                feedback,
+                issues,
+                tokens,
+            }) => {
+                setHistory(prev => [...prev, {
+                    feedback,
+                    issues,
+                    tokens,
+                }])
+                setSelectedIndex(history.length)
+            }
+        })
     }
 
     useEffect(() => {
@@ -115,47 +211,30 @@ const AnalyzeComponent = () => {
     }, [])
 
     return (
-        <div className="py-8 px-8">
+        <div className="py-8 px-8 flex flex-col gap-4 h-screen">
+            <HistoryPicker
+                selectedIndex={selectedIndex}
+                handleSelect={setSelectedIndex}
+                history={history}
+            />
             {status === "loading" ?
-                <div className="flex justify-center items-center h-screen">
-                    <Loading text="Realizando análisis SEO..." />
-                </div>
+                <AnalysisLoading />
                 :
                 <div className="mx-auto space-y-10">
-                    <div className="flex items-center justify-between">
-                        <div>
-                            <h1 className="text-2xl font-bold text-sky-700">Resultados del Análisis SEO</h1>
-                            <span className="text-sm text-gray-600">
-                                Ten en cuenta que cualquier modificación en la web deberas registrarla nuevamente.{" "}
-                                <span
-                                    onClick={() => nav("/")}
-                                    className="text-sky-700 cursor-pointer font-medium hover:underline">
-                                    Registrar otra Web
-                                </span>
-                            </span>
-                        </div>
-                        <button
-                            type="button"
-                            onClick={handleFetch}
-                            className="px-4 py-2 rounded-md bg-sky-600 hover:bg-sky-700 text-white font-medium transition"
-                        >
-                            Reintentar
-                        </button>
-                    </div>
-                    {status === "failed" &&
-                        <div className="flex justify-center items-center h-24">
-                            <p className="text-red-600 text-sm text-center font-medium">
+                    <AnalyzeHeader
+                        onRetry={handleFetch}
+                        onRegisterAnother={() => nav("/")}
+                    />
+
+                    {status === "failed" && (
+                        <div className="flex justify-center bg-red-500 text-white rounded-xl items-center h-24">
+                            <p className="text-sm text-center font-medium">
                                 {data?.message}
                             </p>
                         </div>
-                    }
-                    {status === "success" && data && (
-                        <>
-                            <TokenConsumption input={data.tokens.input} output={data.tokens.output} />
-                            <Issues issues={data.issues} />
-                            <Feedback feedback={data.feedback} />
-                        </>
                     )}
+
+                    {currentHistory && <AnalysisResult data={currentHistory} />}
                 </div>
             }
         </div>
