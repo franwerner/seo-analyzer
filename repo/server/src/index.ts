@@ -29,7 +29,7 @@ app.post("/login", ErrorHandler.routeHandler((req, res) => {
     res.cookie("session", token, {
         httpOnly: true,
         secure: getEnsureEnv("NODE_ENV") === "production",
-        sameSite: "strict",
+        sameSite: "none",
         maxAge: expires_in
     })
     res.json({ message: "Login successful" })

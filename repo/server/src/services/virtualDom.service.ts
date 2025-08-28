@@ -26,17 +26,18 @@ class VirtualDom {
         return OpenAi.calculateTokens(this.getOrGenerateHTML())
     }
 
-    throwIfNotInitialized(): asserts this is { root: HTMLComponent } {
+    assertRoot() {
         if (!this.root) throw new ErrorHandler({
             message: "VirtualDom not initialized",
             status_code: 500
         })
+        return this.root
     }
 
     getOrGenerateHTML() {
-        this.throwIfNotInitialized()
+        const root = this.assertRoot()
         if (this.html) return this.html
-        this.html = this.root.generateHTML()
+        this.html = root.generateHTML()
         return this.html
     }
 
@@ -78,7 +79,7 @@ class VirtualDom {
     }
 
     private async validateDom() {
-        this.throwIfNotInitialized()
+        const root = this.assertRoot()
         const tree = async (component: BaseComponent): Promise<Issues> => {
             let issues: Issues = []
             const validate = component.validate()
@@ -89,7 +90,7 @@ class VirtualDom {
             issues.push(...results.flat())
             return issues
         }
-        return await tree(this.root)
+        return await tree(root)
     }
 
     private async validateWithOpenAI() {
