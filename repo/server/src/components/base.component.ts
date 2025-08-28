@@ -90,10 +90,6 @@ class BaseComponent {
             .map(child => child instanceof TextComponent ? child.text : child.generateHTML())
             .join("")
 
-        /**
-         * Deberia obtener la posicion del inicio del HTML para que la IA tenga una guia de que elemento html es el erroneo y poder darme un feedback correcto.
-         */
-
         return this.needsClosingTag ?
             `<${tag} t-id=${this.traceId} ${attrs}>${childrenStr}</${tag}>` : `<${tag} t-id=${this.traceId} ${attrs} />`
     }

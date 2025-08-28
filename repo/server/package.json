@@ -14,6 +14,7 @@
   "license": "ISC",
   "description": "",
   "dependencies": {
+    "cookie-parser": "^1.4.7",
     "cors": "^2.8.5",
     "crc-32": "^1.2.2",
     "dotenv": "^17.2.1",
@@ -25,9 +26,11 @@
     "tiktoken": "^1.0.22"
   },
   "devDependencies": {
+    "@types/cookie-parser": "^1.4.9",
     "@types/cors": "^2.8.19",
     "@types/express": "^5.0.3",
     "@types/jsdom": "^21.1.7",
+    "@types/jsonwebtoken": "^9.0.10",
     "@types/node": "^24.3.0",
     "rollup": "^4.48.1",
     "rollup-plugin-delete": "^3.0.1",
