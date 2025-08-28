@@ -41,7 +41,6 @@ class BaseComponent {
     traceId: string
     attributes: Attributes
     needsClosingTag: boolean
-    startPosition: number
 
     static pickableAttributes: Array<string> = []
     constructor({ nodeName, children, attributes, traceId }: BaseComponentProps) {
@@ -49,7 +48,6 @@ class BaseComponent {
         this.children = children || []
         this.attributes = (this.constructor as typeof BaseComponent).extractAttributes(attributes) /** el this.constructor hace referencia a la clase/subclase, */
         this.traceId = traceId
-        this.startPosition = 0
         this.needsClosingTag = BaseComponent.needsClosingTag(nodeName)
     }
 
