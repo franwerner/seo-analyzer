@@ -66,7 +66,7 @@ class VirtualDom {
                             children.push(new TextComponent(text))
                         }
                     }
-                    else if (!["SCRIPT", "STYLE", "#comment", "svg"].includes(e.nodeName)) {
+                    else if (!["SCRIPT", "STYLE", "#comment", "svg", "LINK"].includes(e.nodeName)) {
                         children.push(recursive(e))
                     }
                 }

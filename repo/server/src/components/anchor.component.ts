@@ -10,7 +10,9 @@ class AnchorComponent extends BaseComponent {
     }
 
     private async validateHref() {
-        if (!isValidHttpUrl(this.attributes.href)) return true
+        const href = this.attributes.href
+        const isBlackHoleHref = href?.includes("blackhole")
+        if (!isValidHttpUrl(this.attributes.href) || isBlackHoleHref) return true
         try {
             const res = await fetch(this.attributes.href, {
                 method: "HEAD",

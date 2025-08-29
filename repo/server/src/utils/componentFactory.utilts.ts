@@ -1,12 +1,11 @@
 import AnchorComponent from "../components/anchor.component";
 import BaseComponent from "../components/base.component";
 import HTMLComponent from "../components/html.component";
-import LinkComponent from "../components/link.component";
 import type TextComponent from "../components/text.component";
+
 const components = {
     HTML: HTMLComponent,
     A: AnchorComponent,
-    LINK: LinkComponent,
 }
 
 class ComponentFactory {

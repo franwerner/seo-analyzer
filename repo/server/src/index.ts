@@ -19,13 +19,16 @@ app.use(cookieParser())
 
 
 app.post("/login", ErrorHandler.routeHandler((req, res) => {
+
     const password = req.body.password as string
+
     const {
         token,
         expires_in
     } = AuthService.login(password)
 
     const NODE_ENV = getEnsureEnv("NODE_ENV")
+
     res.cookie("session", token, {
         httpOnly: true,
         secure: NODE_ENV === "production",
@@ -57,6 +60,15 @@ app.post("/create", authMiddleware, ErrorHandler.routeHandler(
         await virtualDom.start()
         res.status(201).json({ message: "VirtualDom created" })
     }))
+
+app.get("/html", ErrorHandler.routeHandler(async (req, res) => {
+    const url = req.query.url as string
+    const virtualDom = virtualDomStore.createOrGet(url)
+    await virtualDom.start()
+    res.json({
+        html: virtualDom.getOrGenerateHTML()
+    })
+}))
 
 app.use(errorGlobal)
 app.listen(3000, () => console.log("ON"))

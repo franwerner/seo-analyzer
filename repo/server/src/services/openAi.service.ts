@@ -17,7 +17,8 @@ Incluye absolutamente todos los problemas detectados de SEO. **NO OMITAS NINGUNO
 - Pueden existir valores de "t-id" repetidos si el contenido de los elementos es idéntico. Esto es válido *NO LO VEAS COMO UN ERROR*.
 - No evalues textos REPETIDOS (algunas paginas lo colocan por diseño).
 - No evalúes aspectos relacionados con accesibilidad, diseño visual o usabilidad del sitio. Solo enfócate en SEO técnico para indexación y contenido.
-- No evalúes los LINKS, de eso se encarga otro servicio.
+- No evalues los HREF de la etiquetas **A** eso se encarga otro servicio.
+- No evalues las etiquetas **LINK**
 
 Reglas de salida:
 1. Detecta problemas técnicos de SEO (etiquetas faltantes, duplicadas o mal implementadas).
