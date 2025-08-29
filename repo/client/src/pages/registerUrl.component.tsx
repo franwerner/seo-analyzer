@@ -55,6 +55,7 @@ export default function RegisterUrl() {
             />
           </div>
           <button
+            disabled={status === "loading"}
             onClick={handleSubmit}
             type="button"
             className="w-full bg-sky-500 hover:bg-sky-600 text-white font-semibold py-2 px-4 rounded-md transition duration-200"
