@@ -72,12 +72,12 @@ const Issues = ({ issues }: { issues: SeoDetails['issues'] }) => {
 
 const Feedback = ({ feedback }: { feedback: SeoDetails['feedback'] }) => {
     return (
-        <div className="space-y-4 p-1">
+        <div className=" py-4 px-2">
             <h2 className="text-xl font-semibold text-sky-600">Feedback General</h2>
             {feedback.length === 0 ?
                 <p className="text-gray-600">📌 No hay sugerencias adicionales.</p>
                 :
-                <ul className="list-disc list-inside space-y-2">
+                <ul className="list-disc list-inside mt-2">
                     {feedback.map((item, idx) => (
                         <li key={idx} className="text-gray-800">
                             {item}
@@ -153,7 +153,7 @@ type AnalysisResultProps = {
 }
 
 const AnalysisResult = ({ data }: AnalysisResultProps) => (
-    <div className="space-y-4">
+    <div className="space-y-4 p-2">
         <TokenConsumption input={data.tokens.input} output={data.tokens.output} />
         <Issues issues={data.issues} />
         <Feedback feedback={data.feedback} />
@@ -219,7 +219,7 @@ const AnalyzeComponent = () => {
             {status === "loading" ?
                 <AnalysisLoading />
                 :
-                <div className="mx-auto space-y-10">
+                <div className="w-full space-y-10">
                     <AnalyzeHeader
                         onRetry={handleFetch}
                         onRegisterAnother={() => nav("/")}
