@@ -1,16 +1,19 @@
 import virtualDomInputSchema from "../schemas/virtualDomInput.schema"
 import ErrorHandler from "../utils/errorHandler.utils"
 import OpenAi from "./openAi.service"
+import PuppeterService from "./puppeter.service"
 import VirtualDom from "./virtualDom.service"
 
 class VirtualDomStore {
 
     private store: Map<string, VirtualDom>
     private openAi: OpenAi
+    private puppeteer: PuppeterService
 
     constructor() {
         this.store = new Map()
         this.openAi = new OpenAi()
+        this.puppeteer = new PuppeterService()
     }
 
     createOrGet(input: string) {
@@ -19,7 +22,7 @@ class VirtualDomStore {
         if (getVDOM) {
             return getVDOM
         }
-        const vdom = new VirtualDom(this.openAi, { path: url })
+        const vdom = new VirtualDom(this.openAi, this.puppeteer, { path: url })
         this.store.set(url, vdom)
         return vdom
     }

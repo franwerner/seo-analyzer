@@ -1,47 +1,88 @@
-import puppeteer, { Browser, Page } from "puppeteer";
+import puppeteer, { Browser } from "puppeteer";
 import ErrorHandler from "../utils/errorHandler.utils";
 
+const MAX_ACTIVE_PAGES = 5
+
 class PuppeterService {
-    private browser: Browser | null = null
-    private page: Page | null = null
-    private queue: Array<string> = []
+
+    private browser: null | Promise<Browser> = null
+    private pages_count = 0
+
     constructor() { }
 
-    async launch() {
-        this.browser = await puppeteer.launch({
+    private async launch() {
+        return await puppeteer.launch({
             headless: true,
             args: ['--no-sandbox', '--disable-setuid-sandbox']
         })
-        return this.browser
     }
 
-    assertBrowser() {
+    private async getOrCreateBrowser() {
+        /**
+         * Se almacena la promesa del browser para evitar condicion de carrera, 
+         * entonces siempre asegura una unica instacia del browser.
+         */
         if (!this.browser) {
-            throw new ErrorHandler({
-                message: "Browser not initialized",
-                status_code: 500
-            })
+            const launch = this.launch()
+            this.browser = launch
+            return await launch
         }
         return this.browser
     }
 
-    async close() {
+    private async removeBrowser() {
         if (this.browser) {
-            await this.browser.close()
+            (await this.browser).close()
             this.browser = null
         }
     }
 
-    async getOrCreatePage() {
-        if (!this.page) {
-            this.page = await this.newPage()
+    private setIncrementPageIfAvailable() {
+        if (this.pages_count >= MAX_ACTIVE_PAGES) {
+            throw new ErrorHandler({
+                message: `Max active pages reached. ${this.pages_count}/${MAX_ACTIVE_PAGES}`,
+                status_code: 503
+            })
         }
-        return this.page
+        this.pages_count++
     }
 
-    async newPage() {
-        const browser = this.assertBrowser()
-        return browser.newPage()
+    private setDecrementPage() {
+        if (this.pages_count > 0) this.pages_count--
+    }
+
+    async newPageIfAvailable() {
+        const browser = await this.getOrCreateBrowser()
+        /**
+         * El conteo se hace inclusive antes de crear la pagina
+         * para evitar condicion de carrera.
+         * y que las proximas ejecucciones ya tenga en cuenta
+         * el conteo.
+         */
+        this.setIncrementPageIfAvailable()
+
+        try {
+            const page = await browser.newPage()
+            page.once("close", () => {
+                this.setDecrementPage()
+                if (this.pages_count == 0) this.removeBrowser()
+            })
+            return async (path: string) => {
+                try {
+                    await page.goto(path)
+                    const content = await page.content()
+                    await page.close()
+                    return content
+                } catch (error) {
+                    await page.close()
+                    throw error
+                }
+            }
+        } catch (error) {
+            /**Por si la creacion del pagina falla, se tiene que decrementar el conteo que se hizo antes. */
+            this.setDecrementPage()
+            throw error
+        }
     }
 }
 export default PuppeterService

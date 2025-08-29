@@ -3,10 +3,12 @@ import BaseComponent from "../components/base.component"
 import type HTMLComponent from "../components/html.component"
 import { JSDOM, VirtualConsole } from "jsdom";
 import TextComponent from "../components/text.component";
-import puppeteer from "puppeteer";
 import type { Issues } from "../schemas/issues.schema";
 import OpenAi from "./openAi.service";
 import ErrorHandler from "../utils/errorHandler.utils";
+import PuppeterService from "./puppeter.service";
+
+const virtualConsole = new VirtualConsole()
 
 interface VirtualDomProps {
     path: string
@@ -16,7 +18,11 @@ class VirtualDom {
     path: string
     root: HTMLComponent | null
     private html: string
-    constructor(private openAi: OpenAi, { path }: VirtualDomProps) {
+    constructor(
+        private openAi: OpenAi,
+        private puppeteer: PuppeterService,
+        { path }: VirtualDomProps
+    ) {
         this.path = path
         this.root = null
         this.html = ""
@@ -42,15 +48,8 @@ class VirtualDom {
     }
 
     async generateVirtualDom() {
-        const virtualConsole = new VirtualConsole()
-        const browser = await puppeteer.launch({
-            headless: true,
-            args: ['--no-sandbox', '--disable-setuid-sandbox']
-        })
-        const page = await browser.newPage()
-        await page.goto(this.path)
-        const htmlString = await page.content()
-        page.close()
+        const to = await this.puppeteer.newPageIfAvailable()
+        const htmlString = await to(this.path)
         const dom = new JSDOM(htmlString, { url: this.path, virtualConsole })
         const html = dom.window.document.children[0]
 
@@ -58,9 +57,6 @@ class VirtualDom {
             throw new Error("No se encontro el elemento HTML")
         }
         const recursive = (elem: Node) => {
-            /**
-             * REFACTORIZAR ESTO Y SEPARAR EN MAS FUNCIONES.
-             */
             let children: Array<BaseComponent | TextComponent> = []
             if (elem.hasChildNodes()) {
                 for (const e of Array.from(elem.childNodes)) {
@@ -77,8 +73,8 @@ class VirtualDom {
             }
             return ComponentFactory.createComponent(elem as HTMLBaseElement, children)
         }
-
         return recursive(html)
+
     }
 
     private async validateDom() {
@@ -117,7 +113,6 @@ class VirtualDom {
 
     async start() {
         try {
-            /**Solo deberia iniciar una VEZ en el futuro.*/
             this.root = await this.generateVirtualDom()
         } catch (error) {
             console.log(error)

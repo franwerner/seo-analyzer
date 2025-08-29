@@ -20,7 +20,6 @@ app.use(cookieParser())
 
 app.post("/login", ErrorHandler.routeHandler((req, res) => {
     const password = req.body.password as string
-
     const {
         token,
         expires_in
