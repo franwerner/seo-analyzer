@@ -57,6 +57,7 @@ class OpenAi {
     }
 
     async generateIssues(html: string) {
+
         const response = await this.openAI.responses.create({
             model: "gpt-5-mini",
             text: {
@@ -65,6 +66,7 @@ class OpenAi {
             instructions: asistantContent,
             input: html,
         },
+
         )
 
         return OpenAi.validateOuput(response)
