@@ -8,6 +8,7 @@ import OpenAi from "./openAi.service";
 import ErrorHandler from "../utils/errorHandler.utils";
 import PuppeterService from "./puppeter.service";
 
+
 const virtualConsole = new VirtualConsole()
 
 interface VirtualDomProps {
@@ -17,6 +18,7 @@ interface VirtualDomProps {
 class VirtualDom {
     path: string
     root: HTMLComponent | null
+    validations: Array<{ issues: Issues, feedback: Array<string>, tokens: { input: number, output: number } }>
     private html: string
     constructor(
         private openAi: OpenAi,
@@ -25,6 +27,7 @@ class VirtualDom {
     ) {
         this.path = path
         this.root = null
+        this.validations = []
         this.html = ""
     }
 
@@ -56,24 +59,27 @@ class VirtualDom {
         if (!html || html.nodeName != "HTML") {
             throw new Error("No se encontro el elemento HTML")
         }
-        const recursive = (elem: Node) => {
+        const recursive = (elem: Node, pathDom: string) => {
             let children: Array<BaseComponent | TextComponent> = []
             if (elem.hasChildNodes()) {
-                for (const e of Array.from(elem.childNodes)) {
-                    if (e.nodeName == "#text") {
-                        const text = e.nodeValue || ""
+                for (let i = 0; i < elem.childNodes.length; i++) {
+                    const child = elem.childNodes[i] as ChildNode
+                    if (child.nodeName == "#text") {
+                        const text = child.nodeValue || ""
                         if (text.trim().length > 0) {
                             children.push(new TextComponent(text))
                         }
                     }
-                    else if (!["SCRIPT", "STYLE", "#comment", "svg", "LINK"].includes(e.nodeName)) {
-                        children.push(recursive(e))
+                    else if (!["SCRIPT", "STYLE", "#comment", "svg", "LINK", "NOSCRIPT"].includes(child.nodeName)) {
+                        children.push(recursive(child, pathDom + "/" + child.nodeName + "/" + i))
                     }
                 }
+
             }
-            return ComponentFactory.createComponent(elem as HTMLBaseElement, children)
+
+            return ComponentFactory.createComponent(elem as HTMLBaseElement, children, pathDom)
         }
-        return recursive(html)
+        return recursive(html, html.nodeName)
 
     }
 
@@ -104,11 +110,13 @@ class VirtualDom {
             tokens
         } = await this.validateWithOpenAI()
         const validateIssues = await this.validateDom()
-        return {
+        const currentValidation = {
             issues: [...validateIssues, ...issues],
             feedback,
             tokens
         }
+        this.validations.push(currentValidation)
+        return currentValidation
     }
 
     async start() {

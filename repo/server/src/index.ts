@@ -8,10 +8,18 @@ import AuthService from "./services/auth.service";
 import authMiddleware from "./middleware/auth.middleware";
 import cookieParser from "cookie-parser";
 import getEnsureEnv from "./utils/getEnsureEnv.utils";
+import analyzeMock from "./mocks/analyze.mock";
 
 const app = express()
 
 const virtualDomStore = new VirtualDomStore()
+
+const test = virtualDomStore.createOrGet("https://atticsexpress.com/")
+test.start()
+test.generateVirtualDom().then(r => console.log("FINISH VDOM"))
+test.validations.push(
+    analyzeMock
+)
 
 app.use(corsConfig)
 app.use(express.json())
@@ -45,6 +53,12 @@ app.get("/analyze", authMiddleware, ErrorHandler.routeHandler(async (req, res) =
     res.json(response)
 }))
 
+app.get("/validations", authMiddleware, ErrorHandler.routeHandler(async (req, res) => {
+    const url = req.query.url as string
+    const virtualDom = virtualDomStore.getIfExist(url)
+    res.json(virtualDom.validations)
+}))
+
 app.get("/calculate-token", authMiddleware, ErrorHandler.routeHandler(async (req, res) => {
     const url = req.query.url as string
     const virtualDom = virtualDomStore.getIfExist(url)
@@ -61,12 +75,14 @@ app.post("/create", authMiddleware, ErrorHandler.routeHandler(
         res.status(201).json({ message: "VirtualDom created" })
     }))
 
-app.get("/html", ErrorHandler.routeHandler(async (req, res) => {
+app.get("/html", authMiddleware, ErrorHandler.routeHandler(async (req, res) => {
     const url = req.query.url as string
     const virtualDom = virtualDomStore.createOrGet(url)
     await virtualDom.start()
+    const html = virtualDom.getOrGenerateHTML()
+    console.log("finish")
     res.json({
-        html: virtualDom.getOrGenerateHTML()
+        html
     })
 }))
 

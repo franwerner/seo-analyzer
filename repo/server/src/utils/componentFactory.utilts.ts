@@ -18,17 +18,16 @@ class ComponentFactory {
         return BaseComponent
     }
 
-    static pickPropertiesForHash(properties: HTMLElement | null) {
-        if (!properties) return ""
-        return Array.from(properties.attributes).map(attr => `${attr.name}=${attr.value}`).join(" ") + properties.nodeName
-    }
-
-    static createComponent(properties: HTMLElement, children: Array<BaseComponent | TextComponent>,) {
+    static createComponent(
+        properties: HTMLElement,
+        children: Array<BaseComponent | TextComponent>,
+        pathDom: string
+    ) {
         const Component = this.getComponent(properties.nodeName)
 
         return new Component({
             nodeName: properties.nodeName,
-            traceId: Component.generateHash(this.pickPropertiesForHash(properties) + this.pickPropertiesForHash(properties.parentElement)),
+            traceId: Component.generateHash(pathDom),
             attributes: properties.attributes,
             children,
         })
