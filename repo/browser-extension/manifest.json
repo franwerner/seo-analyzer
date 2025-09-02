@@ -1,0 +1,28 @@
+{
+    "name": "seo-analyzer",
+    "version": "1.0.0",
+    "manifest_version": 3,
+    "description": "Extension para analizar sitios web",
+    "permissions": [
+        "activeTab",
+        "scripting"
+    ],
+    "icons": {
+        "128": "assets/icons/icon128.png"
+    },
+    "action": {
+        "default_popup": "popup.html"
+    },
+    "content_scripts": [
+        {
+            "matches": [
+                "<all_urls>"
+            ],
+            "js": [
+                "lib/crc32.min.js",
+                "content.js"
+            ],
+            "run_at": "document_end"
+        }
+    ]
+}
