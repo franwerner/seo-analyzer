@@ -11,6 +11,12 @@ import PuppeterService from "./puppeter.service";
 
 const virtualConsole = new VirtualConsole()
 
+interface Validation {
+    issues: Issues,
+    feedback: string[],
+    tokens: { input: number, output: number }
+}
+
 interface VirtualDomProps {
     path: string
 }
@@ -18,7 +24,7 @@ interface VirtualDomProps {
 class VirtualDom {
     path: string
     root: HTMLComponent | null
-    validations: Array<{ issues: Issues, feedback: Array<string>, tokens: { input: number, output: number } }>
+    validations: Array<Validation>
     private html: string
     constructor(
         private openAi: OpenAi,
@@ -103,6 +109,22 @@ class VirtualDom {
         return await this.openAi.generateIssues(html)
     }
 
+    getValidations() {
+        if (this.validations.length == 0) throw new ErrorHandler({
+            message: "No validations found",
+            status_code: 404
+        })
+        return this.validations
+    }
+
+    setValidation(validation: Validation) {
+        this.validations.push(validation)
+
+        if (this.validations.length > 10) {
+            this.validations.shift()
+        }
+    }
+
     async validateAll() {
         const {
             feedback,
@@ -115,7 +137,7 @@ class VirtualDom {
             feedback,
             tokens
         }
-        this.validations.push(currentValidation)
+        this.setValidation(currentValidation)
         return currentValidation
     }
 

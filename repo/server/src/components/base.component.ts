@@ -3,7 +3,7 @@ import type { Issues } from "../schemas/issues.schema";
 import crc32 from "crc-32"
 
 interface BaseComponentProps {
-    nodeName: string;
+    tag: string;
     children?: Array<BaseComponent | TextComponent>
     attributes: NamedNodeMap
     traceId: string
@@ -22,25 +22,25 @@ type Attributes = Record<string, string>
 const notPickableAttributesExp = /^(class|id|style|data-.*|aria-.*)$/
 
 const selfClosingTags = [
-    "AREA", "BASE", "BR", "COL", "EMBED", "HR", "IMG",
-    "INPUT", "LINK", "META", "PARAM", "SOURCE", "TRACK", "WBR"
+    "area", "base", "br", "col", "embed", "hr", "img",
+    "input", "link", "meta", "param", "source", "track", "wbr"
 ]
 
 
 class BaseComponent {
 
-    nodeName: string;
+    tag: string;
     children: Children
     traceId: string
     attributes: Attributes
     needsClosingTag: boolean
 
-    constructor({ nodeName, children, attributes, traceId }: BaseComponentProps) {
-        this.nodeName = nodeName
+    constructor({ tag, children, attributes, traceId }: BaseComponentProps) {
+        this.tag = tag
         this.children = children || []
         this.attributes = (this.constructor as typeof BaseComponent).extractAttributes(attributes) /** el this.constructor hace referencia a la clase/subclase, */
         this.traceId = traceId
-        this.needsClosingTag = BaseComponent.needsClosingTag(nodeName)
+        this.needsClosingTag = BaseComponent.needsClosingTag(tag)
     }
 
     static generateHash(forHash: string) {
@@ -51,9 +51,9 @@ class BaseComponent {
     }
 
 
-    private static needsClosingTag(nodeName: string) {
+    private static needsClosingTag(tag: string) {
         /**Verifica si necesita un cierre  */
-        return !selfClosingTags.includes(nodeName)
+        return !selfClosingTags.includes(tag)
     }
     static extractAttributes(inputAttributes: NamedNodeMap) {
         return Array.from(inputAttributes).reduce((acc, attr) => {
@@ -73,7 +73,7 @@ class BaseComponent {
             .map(([key, value]) => `${key}=${value}`)
             .join(" ")
 
-        const tag = this.nodeName.toLowerCase()
+        const tag = this.tag
 
         const childrenStr = this.children
             .map(child => child instanceof TextComponent ? child.text : child.generateHTML())

@@ -13,13 +13,11 @@ import analyzeMock from "./mocks/analyze.mock";
 const app = express()
 
 const virtualDomStore = new VirtualDomStore()
+const t = virtualDomStore.createOrGet("https://atticsexpress.com/")
 
-const test = virtualDomStore.createOrGet("https://atticsexpress.com/")
-test.start()
-test.generateVirtualDom().then(r => console.log("FINISH VDOM"))
-test.validations.push(
-    analyzeMock
-)
+t.start()
+
+t.setValidation(analyzeMock)
 
 app.use(corsConfig)
 app.use(express.json())
@@ -56,7 +54,7 @@ app.get("/analyze", authMiddleware, ErrorHandler.routeHandler(async (req, res) =
 app.get("/validations", authMiddleware, ErrorHandler.routeHandler(async (req, res) => {
     const url = req.query.url as string
     const virtualDom = virtualDomStore.getIfExist(url)
-    res.json(virtualDom.validations)
+    res.json(virtualDom.getValidations())
 }))
 
 app.get("/calculate-token", authMiddleware, ErrorHandler.routeHandler(async (req, res) => {
@@ -80,7 +78,6 @@ app.get("/html", authMiddleware, ErrorHandler.routeHandler(async (req, res) => {
     const virtualDom = virtualDomStore.createOrGet(url)
     await virtualDom.start()
     const html = virtualDom.getOrGenerateHTML()
-    console.log("finish")
     res.json({
         html
     })

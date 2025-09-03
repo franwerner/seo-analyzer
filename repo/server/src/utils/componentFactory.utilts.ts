@@ -26,7 +26,7 @@ class ComponentFactory {
         const Component = this.getComponent(properties.nodeName)
 
         return new Component({
-            nodeName: properties.nodeName,
+            tag: properties.nodeName.toLowerCase(),
             traceId: Component.generateHash(pathDom),
             attributes: properties.attributes,
             children,

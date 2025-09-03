@@ -28,7 +28,7 @@ class AnchorComponent extends BaseComponent {
             return [{
                 message: `${this.attributes.href} NO RESPONDE`,
                 traceIds: [this.traceId],
-                tag: this.nodeName
+                tag: this.tag
             }]
         }
         return []
