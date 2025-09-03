@@ -1,0 +1,86 @@
+body {
+    width: 300px;
+    height: 400px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+#error-message {
+    display: block;
+    margin-top: 12px;
+    padding: 8px 12px;
+    background-color: #fee2e2;
+    color: #b91c1c;
+    border: 1px solid #fca5a5;
+    border-radius: 6px;
+    font-weight: 500;
+    font-size: 14px;
+    max-width: 100%;
+    word-break: break-word;
+    display: none;
+}
+
+
+/* Contenedor principal */
+#app {
+    padding: 16px;
+    font-family: sans-serif;
+    overflow: auto;
+    width: 100%;
+    max-height: 400px;
+    margin: 0 auto;
+}
+
+/* Botón Buscar análisis */
+#analyze-button {
+    padding: 10px 16px;
+    border-radius: 8px;
+    border: none;
+    width: 100%;
+    background-color: #0ea5e9;
+    /* sky-500 */
+    color: white;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    box-shadow: 0 2px 6px rgba(14, 165, 233, 0.4);
+    font-size: 16px;
+}
+
+#analyze-button:hover {
+    background-color: #0284c7;
+}
+
+#analysis-container {
+    margin-top: 16px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+}
+
+.analysis-item {
+    padding: 12px 16px;
+    border: 1px solid #7dd3fc;
+    border-radius: 8px;
+    background: #f0f9ff;
+    cursor: pointer;
+    width: 100%;
+    text-align: center;
+    transition: all 0.2s ease;
+    font-weight: 500;
+    color: #0c4a6e;
+    box-sizing: border-box;
+}
+
+.analysis-item:hover {
+    background: #7dd3fc;
+    color: #1e3a8a;
+}
+
+.analysis-item.selected {
+    background: #0ea5e9;
+    color: white;
+    font-weight: 600;
+    box-shadow: 0 2px 6px rgba(14, 165, 233, 0.4);
+}

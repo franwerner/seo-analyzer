@@ -1,0 +1,1 @@
+export type ReferencesIssues = Record<string, { ref: HTMLElement, messages: string[], tag: string }>
