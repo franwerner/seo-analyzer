@@ -10,7 +10,7 @@ export default function injectUi(issuesElements: ReferencesIssues) {
     document.body.appendChild(nav)
 
     Object.values(issuesElements).forEach(({ ref }) => {
-        ref.style.outline = "2px dashed #1d4ed8" // azul moderno
+        ref.style.outline = "2px dashed #1d4ed8"
         ref.style.outlineOffset = "2px"
         ref.setAttribute("data-issue", "true")
     })

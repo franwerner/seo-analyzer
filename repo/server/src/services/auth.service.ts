@@ -30,7 +30,7 @@ class AuthService {
             return jwt.verify(token, getEnsureEnv("JWT_SECRET"))
         } catch (error) {
             throw new ErrorHandler({
-                message: "Invalid token",
+                message: "Invalid session",
                 status_code: 401
             })
         }

@@ -8,16 +8,10 @@ import AuthService from "./services/auth.service";
 import authMiddleware from "./middleware/auth.middleware";
 import cookieParser from "cookie-parser";
 import getEnsureEnv from "./utils/getEnsureEnv.utils";
-import analyzeMock from "./mocks/analyze.mock";
 
 const app = express()
 
 const virtualDomStore = new VirtualDomStore()
-const t = virtualDomStore.createOrGet("https://atticsexpress.com/")
-
-t.start()
-
-t.setValidation(analyzeMock)
 
 app.use(corsConfig)
 app.use(express.json())

@@ -44,7 +44,6 @@ analyzeButton.addEventListener("click", () => {
       errorMessage.style.display = "none"
       analysisData = data
       renderAnalysisList(tabId)
-      chrome.tabs.sendMessage(tabId, { action: "getIssues", res: { data: data.at(-1), ok: true } })
     } catch (err) {
       errorMessage.style.display = "block"
       errorMessage.textContent = err as any
