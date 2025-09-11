@@ -89,20 +89,6 @@ const seoDetailsMock: SeoDetails = {
             ]
         }
     ],
-    "feedback": [
-        "Faltan etiquetas/meta importantes para SEO técnico: no hay meta description, no hay etiqueta canonical y no se detecta meta robots — añade descripción única, canonical adecuada y control de indexación según corresponda.",
-        "No se detecta meta viewport en el head; añade meta viewport para asegurar rendering móvil y mejorar métricas de SEO móvil.",
-        "Evita el uso de meta keywords (ya presente) y elimina cualquier texto oculto o técnicas de stuffing; Google penaliza keyword stuffing y contenido oculto.",
-        "Revisa contenido incrustado (iframe) y elementos obsoletos: considera reemplazar iframes por contenido indexable o proveer alternativas indexables.",
-        "Mejorar el title y los headings: sincroniza title, H1 y H2 con la intención de búsqueda objetivo; usa palabras clave relevantes de forma natural.",
-        "Añade Open Graph y Twitter Card metadata para mejorar visibilidad en redes sociales y CTR desde compartidos.",
-        "Implementa datos estructurados (schema.org) donde aplique (producto, artículo, breadcrumb, etc.) para mejorar CTR y resultados enriquecidos.",
-        "Asegura que las imágenes tengan atributos width/height para mejorar CLS y considera srcset/formats modernos para performance.",
-        "Evita elementos de presentación no semánticos (b/i/u, marquee) y usa etiquetas semánticas HTML5 (header, main, nav, article, section, footer) para clarificar la estructura para buscadores.",
-        "Recomendación general: elimina contenido de prueba/spam y publica contenido único, relevante y alineado a intención de búsqueda; revisa que todo el contenido indexable aporte valor.",
-        "No se detectaron errores ortográficos evidentes en el texto visible.",
-        "Recomiendo auditar el sitio con una herramienta de crawl (Screaming Frog, Sitebulb) y con Search Console para identificar 404/recursos bloqueados y problemas de rastreo que no pueden detectarse solo con el HTML estático."
-    ],
     "tokens": {
         "input": 944,
         "output": 4967

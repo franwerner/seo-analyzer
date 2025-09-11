@@ -70,24 +70,7 @@ const Issues = ({ issues }: { issues: SeoDetails['issues'] }) => {
 }
 
 
-const Feedback = ({ feedback }: { feedback: SeoDetails['feedback'] }) => {
-    return (
-        <div className=" py-4 px-2">
-            <h2 className="text-xl font-semibold text-sky-600">Feedback General</h2>
-            {feedback.length === 0 ?
-                <p className="text-gray-600">📌 No hay sugerencias adicionales.</p>
-                :
-                <ul className="list-disc list-inside mt-2">
-                    {feedback.map((item, idx) => (
-                        <li key={idx} className="text-gray-800">
-                            {item}
-                        </li>
-                    ))}
-                </ul>
-            }
-        </div>
-    )
-}
+
 type HistoryPickerProps = {
     selectedIndex: number | null
     handleSelect: (index: number) => void
@@ -153,10 +136,9 @@ type AnalysisResultProps = {
 }
 
 const AnalysisResult = ({ data }: AnalysisResultProps) => (
-    <div className="space-y-4 p-2">
+    <div className="space-y-4 pb-8">
         <TokenConsumption input={data.tokens.input} output={data.tokens.output} />
         <Issues issues={data.issues} />
-        <Feedback feedback={data.feedback} />
     </div>
 )
 
@@ -191,12 +173,10 @@ const AnalyzeComponent = () => {
     const handleFetch = () => {
         fetchData(`/analyze?url=${matches?.url}`, {
             onSuccess: ({
-                feedback,
                 issues,
                 tokens,
             }) => {
                 setHistory(prev => [...prev, {
-                    feedback,
                     issues,
                     tokens,
                 }])
