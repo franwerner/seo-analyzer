@@ -44,7 +44,7 @@ export default function getDomReferences(issuesForElement: GroupIssuesByTag) {
         if (elem.hasChildNodes()) {
             for (let i = 0; i < elem.childNodes.length; i++) {
                 const child = elem.childNodes[i]
-                if (!["SCRIPT", "STYLE", "#comment", "svg", "LINK", "#text"].includes(child.nodeName)) {
+                if (!["STYLE", "#comment", "svg", "LINK", "#text"].includes(child.nodeName)) {
                     tree(child as HTMLElement, pathDom + "/" + child.nodeName + "/" + i)
                 }
             }
