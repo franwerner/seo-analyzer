@@ -1,11 +1,13 @@
 import AnchorComponent from "../components/anchor.component";
 import BaseComponent from "../components/base.component";
 import HTMLComponent from "../components/html.component";
+import ScriptComponent from "../components/script.component";
 import type TextComponent from "../components/text.component";
 
 const components = {
     HTML: HTMLComponent,
     A: AnchorComponent,
+    SCRIPT: ScriptComponent
 }
 
 class ComponentFactory {
@@ -21,7 +23,7 @@ class ComponentFactory {
     static createComponent(
         properties: HTMLElement,
         children: Array<BaseComponent | TextComponent>,
-        pathDom: string
+        pathDom: string,
     ) {
         const Component = this.getComponent(properties.nodeName)
 

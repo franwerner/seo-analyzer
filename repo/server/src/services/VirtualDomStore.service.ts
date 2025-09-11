@@ -6,6 +6,9 @@ import VirtualDom from "./virtualDom.service"
 
 class VirtualDomStore {
 
+    /**
+     * Hacer limpieza de los virtualDOM cuando tengan un tiempo sin utilizarse para ahorrar recursos.
+     */
     private store: Map<string, VirtualDom>
     private openAi: OpenAi
     private puppeteer: PuppeterService

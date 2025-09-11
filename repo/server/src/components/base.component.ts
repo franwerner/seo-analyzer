@@ -1,12 +1,20 @@
 import TextComponent from "./text.component";
 import type { Issues } from "../schemas/issues.schema";
 import crc32 from "crc-32"
+/**
+ * `DomContext` es para proporcionar un contexto unico a todo la Dom.
+ * Por ejemplo, si se encuentra un script, se puede marcar en el contexto
+ * para que los demas componentes lo tengan en cuenta.
+ * */
+export class DomContext {
+    hasScriptSchema: boolean = false
+}
 
 interface BaseComponentProps {
     tag: string;
     children?: Array<BaseComponent | TextComponent>
     attributes: NamedNodeMap
-    traceId: string
+    traceId: string,
 }
 
 type Children = Array<BaseComponent | TextComponent>
@@ -43,6 +51,9 @@ class BaseComponent {
         this.needsClosingTag = BaseComponent.needsClosingTag(tag)
     }
 
+
+    protected canBeUsedInBranch(domContext: DomContext): boolean | undefined | void { return true }
+
     static generateHash(forHash: string) {
         /**
          * Este hash nos ayuda a rastrear posteriormente el elemento en el DOM.
@@ -67,7 +78,9 @@ class BaseComponent {
         }, {} as Attributes)
     }
 
-    generateHTML(): string {
+    generateHTML(domContext: DomContext = new DomContext()): string {
+        const canNotBeUsed = !this.canBeUsedInBranch(domContext)
+        if (canNotBeUsed) return ""
         const attrs = Object.entries(this.attributes)
             .filter(([_, value]) => value)
             .map(([key, value]) => `${key}=${value}`)
@@ -76,7 +89,7 @@ class BaseComponent {
         const tag = this.tag
 
         const childrenStr = this.children
-            .map(child => child instanceof TextComponent ? child.text : child.generateHTML())
+            .map(child => child instanceof TextComponent ? child.text : child.generateHTML(domContext))
             .join("")
 
         return this.needsClosingTag ?

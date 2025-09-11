@@ -22,9 +22,15 @@ class AnchorComponent extends BaseComponent {
 
     }
 
+    canBeUsedInBranch() {
+        const href = this.attributes.href
+        const hasBlackHole = href?.includes("blackhole")
+        return !hasBlackHole
+    }
+
     async validate(): Promise<Issues> {
-        const isValid = await this.validateHref()
-        if (!isValid) {
+        const isInvalid = !(await this.validateHref())
+        if (isInvalid) {
             return [{
                 message: `${this.attributes.href} NO RESPONDE`,
                 traceIds: [this.traceId],

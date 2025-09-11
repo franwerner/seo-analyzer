@@ -8,6 +8,10 @@ class PuppeterService {
     private browser: null | Promise<Browser> = null
     private pages_count = 0
 
+    /**
+     * En un futuro se debera agregar una cola de ESPERA para aquella instancia de paginas que no se puedan crear por que se supera el limite. 
+     */
+
     constructor() { }
 
     private async launch() {
@@ -60,7 +64,6 @@ class PuppeterService {
          * el conteo.
          */
         this.setIncrementPageIfAvailable()
-
         try {
             const page = await browser.newPage()
             page.once("close", () => {

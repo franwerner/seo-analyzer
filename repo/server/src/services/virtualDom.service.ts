@@ -7,13 +7,13 @@ import type { Issues } from "../schemas/issues.schema";
 import OpenAi from "./openAi.service";
 import ErrorHandler from "../utils/errorHandler.utils";
 import PuppeterService from "./puppeter.service";
+import { generalPrompt } from "../constants/assistantPrompt.constant";
 
 
 const virtualConsole = new VirtualConsole()
 
 interface Validation {
     issues: Issues,
-    feedback: string[],
     tokens: { input: number, output: number }
 }
 
@@ -76,7 +76,7 @@ class VirtualDom {
                             children.push(new TextComponent(text))
                         }
                     }
-                    else if (!["SCRIPT", "STYLE", "#comment", "svg", "LINK", "NOSCRIPT"].includes(child.nodeName)) {
+                    else if (!["STYLE", "#comment", "svg", "LINK", "NOSCRIPT"].includes(child.nodeName)) {
                         children.push(recursive(child, pathDom + "/" + child.nodeName + "/" + i))
                     }
                 }
@@ -106,7 +106,7 @@ class VirtualDom {
 
     private async validateWithOpenAI() {
         const html = this.getOrGenerateHTML()
-        return await this.openAi.generateIssues(html)
+        return await this.openAi.generateIssues(html, generalPrompt)
     }
 
     getValidations() {
@@ -127,14 +127,12 @@ class VirtualDom {
 
     async validateAll() {
         const {
-            feedback,
             issues,
             tokens
         } = await this.validateWithOpenAI()
         const validateIssues = await this.validateDom()
         const currentValidation = {
             issues: [...validateIssues, ...issues],
-            feedback,
             tokens
         }
         this.setValidation(currentValidation)
