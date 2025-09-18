@@ -7,14 +7,20 @@ class AnchorComponent extends BaseComponent {
 
     constructor(props: BaseComponentProps) {
         super(props)
+
+    }
+
+    protected shouldIgnore() {
+        const att = this.attributes
+        const isBlackHoleHref = att.href?.includes("blackhole")
+        return isBlackHoleHref
     }
 
     private async validateHref() {
         const href = this.attributes.href
-        const isBlackHoleHref = href?.includes("blackhole")
-        if (!isValidHttpUrl(this.attributes.href) || isBlackHoleHref) return true
+        if (!isValidHttpUrl(href)) return true
         try {
-            const res = await fetch(this.attributes.href, {
+            const res = await fetch(href, {
                 method: "HEAD",
             })
             return ![404, 500, 504].includes(res.status)
@@ -22,17 +28,11 @@ class AnchorComponent extends BaseComponent {
 
     }
 
-    canBeUsedInBranch() {
-        const href = this.attributes.href
-        const hasBlackHole = href?.includes("blackhole")
-        return !hasBlackHole
-    }
-
     async validate(): Promise<Issues> {
         const isInvalid = !(await this.validateHref())
         if (isInvalid) {
             return [{
-                message: `${this.attributes.href} NO RESPONDE`,
+                message: `${this.attributes.href} LINK BROKEN`,
                 traceIds: [this.traceId],
                 tag: this.tag
             }]

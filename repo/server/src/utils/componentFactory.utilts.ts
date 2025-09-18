@@ -1,13 +1,20 @@
+import LinkComponent from "@/components/link.component";
 import AnchorComponent from "../components/anchor.component";
 import BaseComponent from "../components/base.component";
+import H1Component from "../components/h1.component";
+import H2Component from "../components/h2.component";
 import HTMLComponent from "../components/html.component";
+import { ImgComponent } from "../components/img.component";
 import ScriptComponent from "../components/script.component";
-import type TextComponent from "../components/text.component";
 
 const components = {
     HTML: HTMLComponent,
     A: AnchorComponent,
-    SCRIPT: ScriptComponent
+    SCRIPT: ScriptComponent,
+    H2: H2Component,
+    IMG: ImgComponent,
+    H1: H1Component,
+    LINK: LinkComponent
 }
 
 class ComponentFactory {
@@ -20,20 +27,7 @@ class ComponentFactory {
         return BaseComponent
     }
 
-    static createComponent(
-        properties: HTMLElement,
-        children: Array<BaseComponent | TextComponent>,
-        pathDom: string,
-    ) {
-        const Component = this.getComponent(properties.nodeName)
 
-        return new Component({
-            tag: properties.nodeName.toLowerCase(),
-            traceId: Component.generateHash(pathDom),
-            attributes: properties.attributes,
-            children,
-        })
-    }
 }
 
 export default ComponentFactory

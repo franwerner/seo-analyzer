@@ -1,20 +1,17 @@
 import TextComponent from "./text.component";
 import type { Issues } from "../schemas/issues.schema";
-import crc32 from "crc-32"
-/**
- * `DomContext` es para proporcionar un contexto unico a todo la Dom.
- * Por ejemplo, si se encuentra un script, se puede marcar en el contexto
- * para que los demas componentes lo tengan en cuenta.
- * */
-export class DomContext {
-    hasScriptSchema: boolean = false
-}
+import crc32 from "crc-32";
+import { DomContext } from "../helper/domContext.helper";
+import OpenAi from "@/services/openAi.service";
+
 
 interface BaseComponentProps {
     tag: string;
     children?: Array<BaseComponent | TextComponent>
     attributes: NamedNodeMap
-    traceId: string,
+    pathDom: string,
+    domContext: DomContext
+    openAi: OpenAi
 }
 
 type Children = Array<BaseComponent | TextComponent>
@@ -35,6 +32,7 @@ const selfClosingTags = [
 ]
 
 
+
 class BaseComponent {
 
     tag: string;
@@ -42,19 +40,31 @@ class BaseComponent {
     traceId: string
     attributes: Attributes
     needsClosingTag: boolean
+    domContext: DomContext
+    isIgnored?: boolean
+    openAi: OpenAi
 
-    constructor({ tag, children, attributes, traceId }: BaseComponentProps) {
-        this.tag = tag
+
+    constructor({ tag, children, attributes, pathDom, domContext, openAi }: BaseComponentProps) {
+        this.tag = tag.toLowerCase()
         this.children = children || []
         this.attributes = (this.constructor as typeof BaseComponent).extractAttributes(attributes) /** el this.constructor hace referencia a la clase/subclase, */
-        this.traceId = traceId
+        this.traceId = BaseComponent.generateHash(pathDom)
         this.needsClosingTag = BaseComponent.needsClosingTag(tag)
+        this.openAi = openAi
+        this.domContext = domContext
+        this.isIgnored = this.shouldIgnore()
     }
 
+    protected shouldIgnore(): boolean | undefined {
+        /***
+         * No es un metodo estatico, ya que se necesita que para evaluar si debe ignorarse o no, 
+         * se hace en base a los valores de la instancia y como estan compuestos
+        */
+        return false
+    }
 
-    protected canBeUsedInBranch(domContext: DomContext): boolean | undefined | void { return true }
-
-    static generateHash(forHash: string) {
+    private static generateHash(forHash: string) {
         /**
          * Este hash nos ayuda a rastrear posteriormente el elemento en el DOM.
          */
@@ -66,7 +76,8 @@ class BaseComponent {
         /**Verifica si necesita un cierre  */
         return !selfClosingTags.includes(tag)
     }
-    static extractAttributes(inputAttributes: NamedNodeMap) {
+
+    private static extractAttributes(inputAttributes: NamedNodeMap) {
         return Array.from(inputAttributes).reduce((acc, attr) => {
             const currentName = attr.name
             if (
@@ -78,9 +89,7 @@ class BaseComponent {
         }, {} as Attributes)
     }
 
-    generateHTML(domContext: DomContext = new DomContext()): string {
-        const canNotBeUsed = !this.canBeUsedInBranch(domContext)
-        if (canNotBeUsed) return ""
+    generateHTML(): string {
         const attrs = Object.entries(this.attributes)
             .filter(([_, value]) => value)
             .map(([key, value]) => `${key}=${value}`)
@@ -89,7 +98,7 @@ class BaseComponent {
         const tag = this.tag
 
         const childrenStr = this.children
-            .map(child => child instanceof TextComponent ? child.text : child.generateHTML(domContext))
+            .map(child => child instanceof TextComponent ? child.text : child.generateHTML())
             .join("")
 
         return this.needsClosingTag ?

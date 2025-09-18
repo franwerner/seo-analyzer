@@ -31,6 +31,27 @@ class OpenAi {
         })
     }
 
+    async createResponse({
+        instructions,
+        input
+    }: {
+        instructions: string,
+        input: string
+    }) {
+        const response = await this.openAI.responses.create({
+            model: "gpt-5-mini",
+            instructions,
+            input,
+        })
+        return {
+            tokens: {
+                input: response.usage?.input_tokens || 0,
+                output: response.usage?.output_tokens || 0
+            },
+            output: response.output_text
+        }
+    }
+
     async generateIssues(html: string, instructions: string) {
 
         const response = await this.openAI.responses.create({

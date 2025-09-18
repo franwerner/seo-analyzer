@@ -33,7 +33,6 @@
     "@types/jsonwebtoken": "^9.0.10",
     "@types/node": "^24.3.0",
     "rollup": "^4.48.1",
-    "rollup-plugin-delete": "^3.0.1",
     "rollup-plugin-typescript2": "^0.36.0"
   }
 }

@@ -19,9 +19,16 @@ class VirtualDomStore {
         this.puppeteer = new PuppeterService()
     }
 
+    protected normalizedUrl(url: string) {
+        /**
+         * Aseguramos que la url termine con una barra, puede si otra url se quiere agregar y es la misma ruta pero le falta el "/" al final cuentan como diferentes.
+         */
+        return url.endsWith("/") ? url : url + "/"
+    }
+
     createOrGet(input: string) {
         const { url } = virtualDomInputSchema.parse({ url: input })
-        const getVDOM = this.store.get(url)
+        const getVDOM = this.store.get(this.normalizedUrl(url))
         if (getVDOM) {
             return getVDOM
         }
@@ -31,7 +38,7 @@ class VirtualDomStore {
     }
 
     getIfExist(url: string) {
-        const virtualDom = this.store.get(url)
+        const virtualDom = this.store.get(this.normalizedUrl(url))
         if (!virtualDom) {
             throw new ErrorHandler({
                 message: "VirtualDom not found",

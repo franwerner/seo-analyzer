@@ -40,7 +40,8 @@ app.post("/login", ErrorHandler.routeHandler((req, res) => {
 
 app.get("/analyze", authMiddleware, ErrorHandler.routeHandler(async (req, res) => {
     const url = req.query.url as string
-    const virtualDom = virtualDomStore.getIfExist(url)
+    const virtualDom = virtualDomStore.createOrGet(url)
+    await virtualDom.start()
     const response = await virtualDom.validateAll()
     res.json(response)
 }))
@@ -48,12 +49,13 @@ app.get("/analyze", authMiddleware, ErrorHandler.routeHandler(async (req, res) =
 app.get("/validations", authMiddleware, ErrorHandler.routeHandler(async (req, res) => {
     const url = req.query.url as string
     const virtualDom = virtualDomStore.getIfExist(url)
-    res.json(virtualDom.getValidations())
+    res.json(virtualDom.domValidator.getValidations())
 }))
 
 app.get("/calculate-token", authMiddleware, ErrorHandler.routeHandler(async (req, res) => {
     const url = req.query.url as string
-    const virtualDom = virtualDomStore.getIfExist(url)
+    const virtualDom = virtualDomStore.createOrGet(url)
+    await virtualDom.start()
     res.json({
         tokens: virtualDom.calculateTokens()
     })

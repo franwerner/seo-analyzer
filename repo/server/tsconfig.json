@@ -16,7 +16,13 @@
     "noUncheckedSideEffectImports": true,
     "moduleDetection": "force",
     "allowSyntheticDefaultImports": true,
-    "allowJs": true
+    "allowJs": true,
+    "baseUrl": ".",
+    "paths": {
+      "@/*": [
+        "src/*"
+      ]
+    }
   },
   "include": [
     "src"
