@@ -8,7 +8,7 @@ function setIssuesInStore(
     node: HTMLElement,
     issues: Array<Issues>,
     storeIssuesByTraceId: ReferencesIssues,
-    pathDom = node.nodeName
+    pathDom: string
 ) {
 
     const nodeName = node.nodeName.toLowerCase()
@@ -44,16 +44,13 @@ export default function getDomReferences(issuesForElement: GroupIssuesByTag) {
         if (elem.hasChildNodes()) {
             for (let i = 0; i < elem.childNodes.length; i++) {
                 const child = elem.childNodes[i]
-                if (!["STYLE", "#comment", "svg", "LINK", "#text"].includes(child.nodeName)) {
+                if (!["STYLE", "#comment", "svg", "NOSCRIPT", "#text"].includes(child.nodeName)) {
                     tree(child as HTMLElement, pathDom + "/" + child.nodeName + "/" + i)
                 }
             }
         }
-
         const nodeName = elem.nodeName.toLowerCase()
-
         if (!(nodeName in issuesForElement)) return
-
         setIssuesInStore(elem, issuesForElement[nodeName], storeIssuesByTraceId, pathDom)
 
     }
