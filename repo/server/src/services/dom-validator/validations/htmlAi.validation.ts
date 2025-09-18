@@ -1,5 +1,8 @@
+import OpenAi from "@/services/openAi.service";
+import ValidationUtility from "@/utils/validation.util";
 
 const generalPrompt = `
+#RESPONDE EN INGLES
 Eres un asistente experto en SEO técnico y SEO de contenido, especializado en optimizar sitios web para lograr un posicionamiento efectivo en buscadores. 
 Analiza tanto la semántica como el contenido del HTML. 
 Determina claramente de qué trata la página (tema principal e intención de búsqueda) y utiliza esa información para brindar el mejor feedback posible orientado a un correcto posicionamiento SEO. 
@@ -31,4 +34,17 @@ SOLO PROBLEMAS QUE AFECTAN AL SEO DIRECTAMENTE.
 8. Faltantes de alguna etiqueta IMPORTANTE para el SEO, utiliza el SCHEMA de salida y traceIds = [-0].
 `;
 
-export { generalPrompt }
+export default class HtmlAiValidation extends ValidationUtility {
+    constructor(
+        private openAi: OpenAi,
+        private html: string
+    ) {
+        super()
+    }
+
+    async validate() {
+        const issues = await this.openAi.generateIssues(this.html, generalPrompt)
+        this.addIssue(issues.issues)
+        this.addTokens(issues.tokens)
+    }
+}

@@ -1,40 +1,22 @@
 import BaseComponent from "@/components/base.component";
-import { generalPrompt } from "@/constants/assistantPrompt.constant";
-import { DomContext } from "@/helper/domContext.helper";
-import { Issue, Issues } from "@/schemas/issues.schema";
+import VDomContext from "@/context/vDom.context";
+import { Validation } from "@/types/Validation.interface";
 import ErrorHandler from "@/utils/errorHandler.utils";
+import ValidationUtility from "@/utils/validation.util";
 import OpenAi from "../openAi.service";
-import HeadingsRule from "./rules/headings.rule";
-import ScriptSchemasRule from "./rules/scriptSchemas.rule";
-import { OpenAiOutput } from "@/schemas/openAiOutput.schema";
+import ComponentTreeValidation from "./validations/componentTree.validation";
+import HeadingsValidation from "./validations/headings.validation";
+import ScriptSchemasValidation from "./validations/scriptSchemas.validation";
+import HtmlAiValidation from "./validations/htmlAi.validation";
+import { AnchorLinkValidation } from "./validations/anchorLink.validation";
 
-export interface Validations {
-    issues: Issues,
-    tokens: { input: number, output: number }
-}
+type ValidationWithTokens = Required<Validation>
 
 export default class DomValidator {
-    validations: Array<Validations> = []
+    validations: Array<ValidationWithTokens> = []
     constructor(
         private openAi: OpenAi
     ) { }
-
-    async localValidation(root: BaseComponent): Promise<Issues> {
-        const traverse = async (component: BaseComponent): Promise<Issues> => {
-            const validate = await component.validate()
-            const childIssues = await Promise.all(
-                component.children
-                    .filter(child => child instanceof BaseComponent)
-                    .map(child => traverse(child))
-            )
-            return [...validate, ...childIssues.flat()]
-        }
-        return traverse(root)
-    }
-
-    async openAiValidation(html: string) {
-        return await this.openAi.generateIssues(html, generalPrompt)
-    }
 
     getValidations() {
         if (this.validations.length == 0) throw new ErrorHandler({
@@ -44,73 +26,43 @@ export default class DomValidator {
         return this.validations
     }
 
-    setValidation(validation: Validations) {
+    setValidation(validation: ValidationWithTokens) {
         this.validations.push(validation)
         if (this.validations.length > 10) {
             this.validations.shift()
         }
     }
 
-    private groupByErrorType(issues: Issues): Issues {
-        const group = issues.reduce((acc, issue) => {
-            const key = issue.message + issue.tag
-            /**
-             * Hacemos la union de `key` para evitar que agrupen errores con un mismo mensajes pero de diferente tipo de tag
-             */
-            const current = acc[key]
-            if (current) {
-                current.traceIds.push(...issue.traceIds)
-            } else {
-                acc[key] = issue
-            }
-            return acc
-        }, {} as Record<string, Issue>)
-        return Object.values(group)
-    }
-
     async run({
         root,
         html,
-        domContext
+        vDomContext
     }: {
         root: BaseComponent,
         html: string,
-        domContext: DomContext
+        vDomContext: VDomContext
     }) {
-        const v = this.localValidation(root)
-        const c = ScriptSchemasRule({
-            context: domContext,
-            openAi: this.openAi,
-            html
-        })
-        const {
-            issues,
-            tokens
-        } = await this.openAiValidation(html)
-        const validateIssues = await v
-        const schemas = await ScriptSchemasRule({
-            context: domContext,
-            openAi: this.openAi,
-            html
-        })
+        const validationInstaces = [
+            new ComponentTreeValidation(root),
+            new HeadingsValidation(vDomContext),
+            new ScriptSchemasValidation(this.openAi, html, vDomContext),
+            new HtmlAiValidation(this.openAi, html),
+            new AnchorLinkValidation(this.openAi, vDomContext)
+        ]
 
-        const headings = HeadingsRule(domContext)
+        await Promise.all(validationInstaces.map(i => i.validate()))
 
-        const allTokens = [
-            tokens,
-            schemas.tokens
-        ].reduce((acc, token) => {
-            return {
-                input: acc.input + token.input,
-                output: acc.output + token.output
-            }
-        })
+        const mergedValidation = ValidationUtility.mergeValidations(validationInstaces.map(validation => validation.getValidation()))
 
-        const currentValidation = {
-            issues: this.groupByErrorType([...validateIssues, ...headings, ...schemas.issues, ...issues]),
-            tokens: allTokens
+        const groupByErrorType = ValidationUtility.groupByIssueType(mergedValidation.issues)
+
+        const validation = {
+            issues: groupByErrorType,
+            tokens: mergedValidation.tokens
         }
-        this.setValidation(currentValidation)
-        return currentValidation
+        this.setValidation(validation)
+
+        return validation
+
     }
 }

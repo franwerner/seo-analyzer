@@ -2,12 +2,12 @@ import { JSDOM, VirtualConsole } from "jsdom";
 import BaseComponent from "../components/base.component";
 import type HTMLComponent from "../components/html.component";
 import TextComponent from "../components/text.component";
-import { DomContext } from "../helper/domContext.helper";
 import ComponentFactory from "../utils/componentFactory.utilts";
 import ErrorHandler from "../utils/errorHandler.utils";
 import DomValidator from "./dom-validator";
 import OpenAi from "./openAi.service";
 import PuppeterService from "./puppeter.service";
+import VDomContext from "@/context/vDom.context";
 
 
 /**
@@ -15,9 +15,7 @@ import PuppeterService from "./puppeter.service";
  * Nos ayuda a pasar informacion entre todos lo nodos para evalucaciones mas generales.
  */
 
-
 const virtualConsole = new VirtualConsole()
-
 
 interface VirtualDomProps {
     path: string
@@ -27,7 +25,7 @@ class VirtualDom {
     path: string
     root: HTMLComponent | null
     private html: string
-    private domContext: DomContext
+    private vDomContext: VDomContext
     domValidator: DomValidator
     constructor(
         private openAi: OpenAi,
@@ -37,7 +35,7 @@ class VirtualDom {
         this.path = path
         this.root = null
         this.html = ""
-        this.domContext = new DomContext()
+        this.vDomContext = new VDomContext()
         this.domValidator = new DomValidator(this.openAi)
     }
 
@@ -97,10 +95,9 @@ class VirtualDom {
             return new Component({
                 tag: elem.nodeName,
                 attributes: elem.attributes,
-                domContext: this.domContext,
+                vDomContext: this.vDomContext,
                 children,
                 pathDom,
-                openAi: this.openAi
             })
         }
 
@@ -108,19 +105,28 @@ class VirtualDom {
     }
 
     async validateAll() {
-        return await this.domValidator.run({
-            root: this.assertRoot(),
-            html: this.getOrGenerateHTML(),
-            domContext: this.domContext
-        })
+        try {
+            return await this.domValidator.run({
+                root: this.assertRoot(),
+                html: this.getOrGenerateHTML(),
+                vDomContext: this.vDomContext
+            })
+        } catch (error) {
+            console.log(`ERROR VALIDATING DOM - ${error}`)
+            throw new ErrorHandler({
+                message: `ERROR VALIDATING DOM - ${error}`,
+                status_code: 500
+            })
+        }
     }
 
     async start() {
         try {
-            this.html = ""
-            this.domContext = new DomContext()
+            this.vDomContext = new VDomContext()
             this.root = await this.generateVirtualDom()
+            this.html = this.root.generateHTML()
         } catch (error) {
+            console.log(error)
             if (error instanceof ErrorHandler) {
                 throw error
             } else {

@@ -1,6 +1,7 @@
-import { Issues } from "../schemas/issues.schema";
+import { Issue } from "./Issue.interface";
+import { Tokens } from "./Tokens.interface";
 
 export interface Validation {
-    issues: Issues,
-    tokens: { input: number, output: number }
+    issues: Array<Issue>,
+    tokens?: Tokens
 }

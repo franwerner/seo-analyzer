@@ -1,8 +1,8 @@
 import TextComponent from "./text.component";
-import type { Issues } from "../schemas/issues.schema";
 import crc32 from "crc-32";
-import { DomContext } from "../helper/domContext.helper";
-import OpenAi from "@/services/openAi.service";
+import { Validation } from "@/types/Validation.interface";
+import VDomContext from "@/context/vDom.context";
+import { Issue } from "@/types/Issue.interface";
 
 
 interface BaseComponentProps {
@@ -10,8 +10,7 @@ interface BaseComponentProps {
     children?: Array<BaseComponent | TextComponent>
     attributes: NamedNodeMap
     pathDom: string,
-    domContext: DomContext
-    openAi: OpenAi
+    vDomContext: VDomContext
 }
 
 type Children = Array<BaseComponent | TextComponent>
@@ -40,31 +39,28 @@ class BaseComponent {
     traceId: string
     attributes: Attributes
     needsClosingTag: boolean
-    domContext: DomContext
+    vDomContext: VDomContext
     isIgnored?: boolean
-    openAi: OpenAi
 
 
-    constructor({ tag, children, attributes, pathDom, domContext, openAi }: BaseComponentProps) {
+    constructor({ tag, children, attributes, pathDom, vDomContext }: BaseComponentProps) {
         this.tag = tag.toLowerCase()
         this.children = children || []
         this.attributes = (this.constructor as typeof BaseComponent).extractAttributes(attributes) /** el this.constructor hace referencia a la clase/subclase, */
-        this.traceId = BaseComponent.generateHash(pathDom)
+        this.traceId = BaseComponent.generateTraceIdHash(pathDom)
         this.needsClosingTag = BaseComponent.needsClosingTag(tag)
-        this.openAi = openAi
-        this.domContext = domContext
+        this.vDomContext = vDomContext
         this.isIgnored = this.shouldIgnore()
     }
 
     protected shouldIgnore(): boolean | undefined {
         /***
-         * No es un metodo estatico, ya que se necesita que para evaluar si debe ignorarse o no, 
-         * se hace en base a los valores de la instancia y como estan compuestos
+         * Evalua si el componente en instancia debe ser ignorado, para no incluirse en el VDOM.
         */
         return false
     }
 
-    private static generateHash(forHash: string) {
+    private static generateTraceIdHash(forHash: string) {
         /**
          * Este hash nos ayuda a rastrear posteriormente el elemento en el DOM.
          */
@@ -105,7 +101,7 @@ class BaseComponent {
             `<${tag} t-id=${this.traceId} ${attrs}>${childrenStr}</${tag}>` : `<${tag} t-id=${this.traceId} ${attrs} />`
     }
 
-    async validate(): Promise<Issues> {
+    async validate(): Promise<Array<Issue>> {
         /**
          * cada subclase implementa sus propias validaciones.
          */

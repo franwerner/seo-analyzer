@@ -7,12 +7,11 @@ class ScriptComponent extends BaseComponent {
         super(props)
 
         if (this.hasSchema("FAQPage")) {
-            this.domContext.schemas.faqSchema = this
+            this.vDomContext.schemas.faq = this
         }
 
         if (this.hasSchema("LocalBusiness")) {
-            this.domContext.schemas.localBusinessSchema = this
-            console.log("LocalBusiness")
+            this.vDomContext.schemas.localBusiness = this
         }
     }
 

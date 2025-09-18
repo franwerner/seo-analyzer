@@ -7,6 +7,4 @@ const issueSchema = z.object({
 })
 const issuesSchema = z.array(issueSchema)
 
-export type Issues = z.infer<typeof issuesSchema>
-export type Issue = z.infer<typeof issueSchema>
 export default issuesSchema

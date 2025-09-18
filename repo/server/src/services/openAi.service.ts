@@ -52,7 +52,7 @@ class OpenAi {
         }
     }
 
-    async generateIssues(html: string, instructions: string) {
+    async generateIssues(input: string, instructions: string) {
 
         const response = await this.openAI.responses.create({
             model: "gpt-5-mini",
@@ -60,7 +60,7 @@ class OpenAi {
                 format: zodTextFormat(openAiInputSchema, "issues")
             },
             instructions,
-            input: html,
+            input: input,
         },
 
         )

@@ -9,6 +9,4 @@ const openAiOutputSchema = z.object({
     ...openAiInputSchema.shape
 })
 
-export type OpenAiOutput = z.infer<typeof openAiOutputSchema>
-
 export default openAiOutputSchema
