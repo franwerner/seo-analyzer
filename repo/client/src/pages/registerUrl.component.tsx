@@ -10,7 +10,7 @@ export default function RegisterUrl() {
   const { fetchData, response } = useFetch()
   const { onChange, formData } = useForm({
     url: "",
-    exhaustive: false,
+    analyze_type: "basic",
   })
 
   const { status } = response
@@ -18,13 +18,15 @@ export default function RegisterUrl() {
   const handleSubmit = (e: Event) => {
     e.preventDefault()
     fetchData(`/create`, {
-      body: JSON.stringify(formData),
+      body: JSON.stringify({
+        url: formData.url,
+      }),
       headers: {
         "Content-Type": "application/json"
       },
       method: "POST",
       onSuccess() {
-        nav(`/analyze?url=${formData.url}`)
+        nav(`/analyze?url=${formData.url}&analyze_type=${formData.analyze_type}`)
       },
     })
   }
@@ -48,16 +50,16 @@ export default function RegisterUrl() {
           <div className="flex items-center gap-2">
             <input
               type="checkbox"
-              name="exhaustive"
-              id="exhaustive"
-              checked={formData.exhaustive}
+              name="analyze_type"
+              id="analyze_type"
+              checked={formData.analyze_type == "full"}
               onChange={(e) => {
                 const target = e.target as HTMLInputElement
-                onChange({ target: { name: "exhaustive", value: target.checked } })
+                onChange({ target: { name: "analyze_type", value: target.checked ? "full" : "basic" } })
               }}
               className="w-4 h-4 text-sky-500 border-sky-300 rounded focus:ring-2 focus:ring-sky-400"
             />
-            <label htmlFor="exhaustive" className=" font-semibold select-none">
+            <label htmlFor="analyze_type" className=" font-semibold select-none">
               Análisis exhaustivo
             </label>
           </div>
@@ -68,7 +70,7 @@ export default function RegisterUrl() {
             type="button"
             className="w-full bg-sky-500 hover:bg-sky-600 text-white font-semibold py-2 px-4 rounded-md transition duration-200"
           >
-            {status === "loading" ? <Loading /> : formData.exhaustive ? "Enviar análisis exhaustivo" : "Enviar análisis"}
+            {status === "loading" ? <Loading /> : formData.analyze_type == "full" ? "Enviar análisis exhaustivo" : "Enviar análisis"}
           </button>
         </form>
 

@@ -171,7 +171,7 @@ const AnalyzeComponent = () => {
 
 
     const handleFetch = () => {
-        fetchData(`/analyze?url=${matches?.url}`, {
+        fetchData(`/analyze?url=${matches?.url}&analyze_type=${matches?.analyze_type}`, {
             onSuccess: ({
                 issues,
                 tokens,
