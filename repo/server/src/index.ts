@@ -40,9 +40,10 @@ app.post("/login", ErrorHandler.routeHandler((req, res) => {
 
 app.get("/analyze", authMiddleware, ErrorHandler.routeHandler(async (req, res) => {
     const url = req.query.url as string
+    const analyze = req.query.analyze_type as "full" | "basic"
     const virtualDom = virtualDomStore.createOrGet(url)
     await virtualDom.start()
-    const response = await virtualDom.validateAll()
+    const response = await virtualDom.validate(analyze)
     res.json(response)
 }))
 

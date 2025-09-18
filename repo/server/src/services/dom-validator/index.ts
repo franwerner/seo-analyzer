@@ -33,7 +33,38 @@ export default class DomValidator {
         }
     }
 
-    async run({
+    private async validationInstaces(instances: Array<any>) {
+        //TIPAR DEPUES ACA.
+        await Promise.all(instances.map(i => i.validate()))
+        const mergedValidation = ValidationUtility.mergeValidations(instances.map(validation => validation.getValidation()))
+        const groupByErrorType = ValidationUtility.groupByIssueType(mergedValidation.issues)
+        const validation = {
+            issues: groupByErrorType,
+            tokens: mergedValidation.tokens
+        }
+        this.setValidation(validation)
+
+        return validation
+    }
+
+    async runBasicValidation({
+        root,
+        html,
+        vDomContext
+    }: {
+        root: BaseComponent,
+        html: string,
+        vDomContext: VDomContext
+    }) {
+        const validationInstaces = [
+            new ComponentTreeValidation(root),
+            new HeadingsValidation(vDomContext),
+            new HtmlAiValidation(this.openAi, html),
+        ]
+        return await this.validationInstaces(validationInstaces)
+    }
+
+    async runValidation({
         root,
         html,
         vDomContext
@@ -50,19 +81,6 @@ export default class DomValidator {
             new AnchorLinkValidation(this.openAi, vDomContext)
         ]
 
-        await Promise.all(validationInstaces.map(i => i.validate()))
-
-        const mergedValidation = ValidationUtility.mergeValidations(validationInstaces.map(validation => validation.getValidation()))
-
-        const groupByErrorType = ValidationUtility.groupByIssueType(mergedValidation.issues)
-
-        const validation = {
-            issues: groupByErrorType,
-            tokens: mergedValidation.tokens
-        }
-        this.setValidation(validation)
-
-        return validation
-
+        return await this.validationInstaces(validationInstaces)
     }
 }

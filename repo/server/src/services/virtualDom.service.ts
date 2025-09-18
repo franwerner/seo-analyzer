@@ -104,9 +104,14 @@ class VirtualDom {
         return recursive(html, html.nodeName)
     }
 
-    async validateAll() {
+    async validate(analyze: "full" | "basic" = "basic") {
+
+        const fn = analyze === "basic" ?
+            this.domValidator.runBasicValidation.bind(this.domValidator) :
+            this.domValidator.runValidation.bind(this.domValidator)
+
         try {
-            return await this.domValidator.run({
+            return await fn({
                 root: this.assertRoot(),
                 html: this.getOrGenerateHTML(),
                 vDomContext: this.vDomContext
