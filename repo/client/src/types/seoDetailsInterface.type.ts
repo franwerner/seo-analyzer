@@ -1,7 +1,7 @@
 import type { Issue } from "./IssueInterface.type";
 
 interface SeoDetails {
-    issues: Issue[];
+    issues: Array<Issue>;
     tokens: {
         input: number;
         output: number;

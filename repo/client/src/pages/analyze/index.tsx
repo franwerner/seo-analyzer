@@ -48,7 +48,6 @@ const Content = ({ historyValidations }: ContentProps) => {
 
     const [{ matches }, nav] = useRouter()
 
-
     const handleFetch = () => {
         setSelectedIndex(-1)
         fetchData(`/analyze?url=${matches?.url}&analyze_type=${matches?.analyze_type}`, {
@@ -89,7 +88,6 @@ const Content = ({ historyValidations }: ContentProps) => {
                             </p>
                         </div>
                     )}
-
                     {currentHistory && <AnalysisResult data={currentHistory} />}
                 </div>
             }
