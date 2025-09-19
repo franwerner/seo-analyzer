@@ -8,12 +8,14 @@ import DomValidator from "./dom-validator";
 import OpenAi from "./openAi.service";
 import PuppeterService from "./puppeter.service";
 import VDomContext from "@/context/vDom.context";
+import { AnalyzeType } from "@/types/AnalyzeType.enum";
 
 
-/**
- * Contexto que se genera unica vez cuando se inicia un virtual dom.
- * Nos ayuda a pasar informacion entre todos lo nodos para evalucaciones mas generales.
- */
+
+enum AnalyzeStatus {
+    Analyzing = "analyzing",
+    Idle = "idle"
+}
 
 const virtualConsole = new VirtualConsole()
 
@@ -23,10 +25,10 @@ interface VirtualDomProps {
 
 class VirtualDom {
     path: string
-    root: HTMLComponent | null
-    private html: string
-    private vDomContext: VDomContext
-    status: "analyzing" | "initializing" = "initializing"
+    root: HTMLComponent | null = null
+    private html: string | null = null
+    private vDomContext: VDomContext | null = null
+    analyzeStatus: AnalyzeStatus = AnalyzeStatus.Idle
     domValidator: DomValidator
     constructor(
         private openAi: OpenAi,
@@ -34,9 +36,6 @@ class VirtualDom {
         { path }: VirtualDomProps
     ) {
         this.path = path
-        this.root = null
-        this.html = ""
-        this.vDomContext = new VDomContext()
         this.domValidator = new DomValidator(this.openAi)
     }
 
@@ -52,11 +51,19 @@ class VirtualDom {
         return this.root
     }
 
+    private getOrThrowVDomContext() {
+        if (!this.vDomContext) throw new ErrorHandler({
+            message: "VirtualDom not initialized",
+            status_code: 500
+        })
+        return this.vDomContext
+    }
+
     getOrGenerateHTML() {
         const root = this.assertRoot()
         if (this.html) return this.html
-        this.html = root.generateHTML()
-        return this.html
+        return (this.html = root.generateHTML())
+
     }
 
     async generateVirtualDom() {
@@ -71,6 +78,8 @@ class VirtualDom {
                 status_code: 404
             })
         }
+
+        const vDomContext = new VDomContext()
 
         const recursive = (elem: Element, pathDom: string) => {
             let children: Array<BaseComponent | TextComponent> = []
@@ -96,53 +105,87 @@ class VirtualDom {
             return new Component({
                 tag: elem.nodeName,
                 attributes: elem.attributes,
-                vDomContext: this.vDomContext,
+                vDomContext,
                 children,
                 pathDom,
             })
         }
 
-        return recursive(html, html.nodeName)
+        const root = recursive(html, html.nodeName)
+
+        return {
+            root,
+            vDomContext
+        }
     }
 
-    async analyze(analyze: "full" | "basic" = "basic") {
+    private setStatus(status: AnalyzeStatus) {
+        this.analyzeStatus = status
+    }
 
-        const fn = analyze === "basic" ?
+    private throwIfAnalyzing() {
+        if (this.analyzeStatus === AnalyzeStatus.Analyzing)
+            throw new ErrorHandler({
+                message: "The virtual dom is being analyzed, one request at a time",
+                status_code: 400
+            })
+    }
+
+    async analyze(analyze: AnalyzeType = AnalyzeType.Basic) {
+
+        this.throwIfAnalyzing()
+
+        const fn = analyze === AnalyzeType.Basic ?
             this.domValidator.runBasicValidation.bind(this.domValidator) :
             this.domValidator.runValidation.bind(this.domValidator)
 
-        this.status = "analyzing"
+        this.setStatus(AnalyzeStatus.Analyzing)
 
         try {
             const res = await fn({
                 root: this.assertRoot(),
                 html: this.getOrGenerateHTML(),
-                vDomContext: this.vDomContext
+                vDomContext: this.getOrThrowVDomContext()
             })
             return res
         } catch (error) {
             console.log(`ERROR VALIDATING DOM - ${error}`)
+            if (error instanceof ErrorHandler) throw error
             throw new ErrorHandler({
                 message: `ERROR VALIDATING DOM - ${error}`,
                 status_code: 500
             })
         } finally {
-            this.status = "initializing"
+            this.setStatus(AnalyzeStatus.Idle)
         }
 
     }
 
+    private resetVdom() {
+        /**
+        * Reinicia el estado del Virtual DOM antes de generar uno nuevo o simplemente limpiar cache.
+        *
+        * - Si hay un análisis en curso, se lanza un error para evitar conflictos.
+        * - Limpia el estado anterior (root, html, vDomContext) para asegurar que
+        *   no quede información residual al crear un nuevo Virtual DOM.
+        *
+        * Nota: Esto evita condiciones de carrera. Al resetear antes de cualquier
+        * async/await, garantizamos que funciones como `analyze` no accedan a un
+        * root o html desfasado o incompleto.
+        */
+        this.throwIfAnalyzing()
+        this.vDomContext = null
+        this.root = null
+        this.html = null
+    }
+
     async generate() {
 
-        if (this.status === "analyzing")
-            throw new ErrorHandler({
-                message: "The virtual dom is being analyzed",
-                status_code: 400
-            })
-
         try {
-            this.vDomContext = new VDomContext()
-            this.root = await this.generateVirtualDom()
+            this.resetVdom()
+            const { root, vDomContext } = await this.generateVirtualDom()
+            this.root = root
+            this.vDomContext = vDomContext
             this.html = this.root.generateHTML()
         } catch (error) {
             console.log(error)

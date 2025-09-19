@@ -8,6 +8,7 @@ import AuthService from "./services/auth.service";
 import authMiddleware from "./middleware/auth.middleware";
 import cookieParser from "cookie-parser";
 import getEnsureEnv from "./utils/getEnsureEnv.utils";
+import { AnalyzeType } from "./types/AnalyzeType.enum";
 
 const app = express()
 
@@ -40,7 +41,7 @@ app.post("/login", ErrorHandler.routeHandler((req, res) => {
 
 app.get("/analyze", authMiddleware, ErrorHandler.routeHandler(async (req, res) => {
     const url = req.query.url as string
-    const analyze = req.query.analyze_type as "full" | "basic"
+    const analyze = req.query.analyze_type as AnalyzeType
     const virtualDom = virtualDomStore.createOrGet(url)
     await virtualDom.generate()
     const response = await virtualDom.analyze(analyze)
@@ -50,15 +51,8 @@ app.get("/analyze", authMiddleware, ErrorHandler.routeHandler(async (req, res) =
 app.get("/validations", authMiddleware, ErrorHandler.routeHandler(async (req, res) => {
     const url = req.query.url as string
     const virtualDom = virtualDomStore.getIfExist(url)
-    res.json(virtualDom.domValidator.getValidations())
-}))
-
-app.get("/calculate-token", authMiddleware, ErrorHandler.routeHandler(async (req, res) => {
-    const url = req.query.url as string
-    const virtualDom = virtualDomStore.createOrGet(url)
-    await virtualDom.generate()
     res.json({
-        tokens: 0
+        validations: virtualDom.domValidator.getValidations()
     })
 }))
 
