@@ -59,7 +59,7 @@ SOLO PROBLEMAS QUE AFECTAN AL SEO DIRECTAMENTE.
 # Reglas de salida
 1. Detecta problemas técnicos de SEO (etiquetas faltantes, duplicadas —que no sean de un carrusel— o mal implementadas).  
 2. Analiza la jerarquía de los headings y si su contenido es coherente con el contenido de la página (Solo si existen).  
-3. Revisa errores de ortografía, solo palabras mal escritas que sean muy evidentes, no hagas correciones por mayusculas o cualquier otra cosa que no tenga que ver con palabras mal escritas..  
+3. Revisa errores de ortografía, solo palabras mal escritas que sean muy evidentes, no hagas correciones por mayusculas o decisiones de diseño al escribir asi. Ejemplo de palabras mal escritas: Hla => hola, Bnuenas ntches etc.
 4. Exactamente un mismo problema de una misma ETIQUETA lo debes agrupar en un solo objeto con un array de t-id.  
 5. En la propiedad "tag" incluye solo el nombre de UNA etiqueta (ej: "title", "meta", "h1"). No uses combinaciones ni texto adicional.  
 6. El campo "message" debe ser breve pero explicativo, conciso y nunca debe incluir IDs en el mensaje, solo información donde se indique el problema.  

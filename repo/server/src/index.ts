@@ -42,8 +42,8 @@ app.get("/analyze", authMiddleware, ErrorHandler.routeHandler(async (req, res) =
     const url = req.query.url as string
     const analyze = req.query.analyze_type as "full" | "basic"
     const virtualDom = virtualDomStore.createOrGet(url)
-    await virtualDom.start()
-    const response = await virtualDom.validate(analyze)
+    await virtualDom.generate()
+    const response = await virtualDom.analyze(analyze)
     res.json(response)
 }))
 
@@ -56,9 +56,9 @@ app.get("/validations", authMiddleware, ErrorHandler.routeHandler(async (req, re
 app.get("/calculate-token", authMiddleware, ErrorHandler.routeHandler(async (req, res) => {
     const url = req.query.url as string
     const virtualDom = virtualDomStore.createOrGet(url)
-    await virtualDom.start()
+    await virtualDom.generate()
     res.json({
-        tokens: virtualDom.calculateTokens()
+        tokens: 0
     })
 }))
 
@@ -66,14 +66,14 @@ app.post("/create", authMiddleware, ErrorHandler.routeHandler(
     async (req, res) => {
         const url = req.body.url as string
         const virtualDom = virtualDomStore.createOrGet(url)
-        await virtualDom.start()
+        await virtualDom.generate()
         res.status(201).json({ message: "VirtualDom created" })
     }))
 
 app.get("/html", authMiddleware, ErrorHandler.routeHandler(async (req, res) => {
     const url = req.query.url as string
     const virtualDom = virtualDomStore.createOrGet(url)
-    await virtualDom.start()
+    await virtualDom.generate()
     const html = virtualDom.getOrGenerateHTML()
     res.json({
         html

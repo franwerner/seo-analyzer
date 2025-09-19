@@ -22,11 +22,10 @@ export class AnchorLinkValidation extends ValidationUtility {
              # TAG : A
 
              # Reglas
-             - Sigue el schema indicado al 100%
+             - IMPORTANTE : Verifica si el HREF y el TEXT se relacionan (Solo si contiene texto en los children del elemento <A/>.), si no se relacionan genera un error con el mensaje "Href and text are not related".
              - Si el enlace tiene un texto descriptivo que se relacione con el href, no generar un error de ningun tipo.
              - El campo "message" debe ser breve pero explicativo, conciso y nunca debe incluir IDs en el mensaje, solo información donde se indique el problema.  
              - Exactamente un mismo problema de una misma ETIQUETA lo debes agrupar en un solo objeto con un array de t-id.
-             - Aquellos que tengan HREF y TEXT evalua si el texto se relaciona con el href, si no se relaciona genera un error dando un breve recomendacion de URL.  
              `
         )
         this.addIssue(res.issues)

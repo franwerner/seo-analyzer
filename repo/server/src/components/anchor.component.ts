@@ -14,7 +14,7 @@ class AnchorComponent extends BaseComponent {
         if (this.isIgnored) return
         this.text = AnchorComponent.getText(this)
         const containsKeyword = keywordsNotValid.some(keyword => this.text.toLowerCase() == keyword)
-        if (containsKeyword) return
+        if (!this.attributes.href || containsKeyword) return
         this.vDomContext.a.push(this)
     }
 
@@ -67,6 +67,11 @@ class AnchorComponent extends BaseComponent {
 
     async validate(): Promise<Array<Issue>> {
 
+        if (!this.attributes.href) return [{
+            message: "Anchor without href",
+            traceIds: [this.traceId],
+            tag: this.tag
+        }]
 
         const validations = await Promise.all([
             this.validateHref(),
