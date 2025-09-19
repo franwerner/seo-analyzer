@@ -31,8 +31,8 @@ async function fetchAnalysis(url: string): Promise<Array<AnalyzeInterface>> {
   const res = await fetch(`http://localhost:3000/validations?url=${url}`, { credentials: "include" })
   const json = (await res.json())
   if (!res.ok) throw new Error(json.message || "Error getting analysis")
-  const data = json as Array<AnalyzeInterface>
-  return data
+  const data = json as { validations: Array<AnalyzeInterface> }
+  return data.validations
 }
 
 analyzeButton.addEventListener("click", () => {
