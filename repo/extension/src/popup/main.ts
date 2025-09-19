@@ -1,5 +1,6 @@
 import { AnalyzeInterface } from "~/types/analyzeInterface.type"
 
+const BACKEND_URL = import.meta.env.VITE_BACKEND_URL
 const analyzeButton = document.querySelector("#analyze-button") as HTMLButtonElement
 const analysisContainer = document.querySelector("#analysis-container") as HTMLDivElement
 const errorMessage = document.querySelector("#error-message") as HTMLSpanElement
@@ -28,7 +29,7 @@ function renderAnalysisList(tabsId: number) {
 }
 
 async function fetchAnalysis(url: string): Promise<Array<AnalyzeInterface>> {
-  const res = await fetch(`http://localhost:3000/validations?url=${url}`, { credentials: "include" })
+  const res = await fetch(`${BACKEND_URL}/validations?url=${url}`, { credentials: "include" })
   const json = (await res.json())
   if (!res.ok) throw new Error(json.message || "Error getting analysis")
   const data = json as { validations: Array<AnalyzeInterface> }
