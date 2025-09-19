@@ -4,8 +4,6 @@ import { useRouter } from "preact-router"
 
 export default function LoginPage() {
 
-    //Todavia falta implementar. SIN USO
-
     const [_, nav] = useRouter()
 
     const {
