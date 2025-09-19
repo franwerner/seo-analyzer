@@ -26,6 +26,7 @@ class VirtualDom {
     root: HTMLComponent | null
     private html: string
     private vDomContext: VDomContext
+    status: "analyzing" | "initializing" = "initializing"
     domValidator: DomValidator
     constructor(
         private openAi: OpenAi,
@@ -61,7 +62,7 @@ class VirtualDom {
     async generateVirtualDom() {
         const to = await this.puppeteer.newPageIfAvailable()
         const htmlString = await to(this.path)
-        const dom = new JSDOM(htmlString, { url: this.path, virtualConsole })
+        const dom = new JSDOM(htmlString, { virtualConsole })
         const html = dom.window.document.children[0]
 
         if (!html || html.nodeName != "HTML") {
@@ -104,28 +105,41 @@ class VirtualDom {
         return recursive(html, html.nodeName)
     }
 
-    async validate(analyze: "full" | "basic" = "basic") {
+    async analyze(analyze: "full" | "basic" = "basic") {
 
         const fn = analyze === "basic" ?
             this.domValidator.runBasicValidation.bind(this.domValidator) :
             this.domValidator.runValidation.bind(this.domValidator)
 
+        this.status = "analyzing"
+
         try {
-            return await fn({
+            const res = await fn({
                 root: this.assertRoot(),
                 html: this.getOrGenerateHTML(),
                 vDomContext: this.vDomContext
             })
+            return res
         } catch (error) {
             console.log(`ERROR VALIDATING DOM - ${error}`)
             throw new ErrorHandler({
                 message: `ERROR VALIDATING DOM - ${error}`,
                 status_code: 500
             })
+        } finally {
+            this.status = "initializing"
         }
+
     }
 
-    async start() {
+    async generate() {
+
+        if (this.status === "analyzing")
+            throw new ErrorHandler({
+                message: "The virtual dom is being analyzed",
+                status_code: 400
+            })
+
         try {
             this.vDomContext = new VDomContext()
             this.root = await this.generateVirtualDom()
