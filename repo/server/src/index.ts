@@ -43,7 +43,6 @@ app.get("/analyze", authMiddleware, ErrorHandler.routeHandler(async (req, res) =
     const url = req.query.url as string
     const analyze = req.query.analyze_type as AnalyzeType
     const virtualDom = virtualDomStore.createOrGet(url)
-    await virtualDom.generate()
     const response = await virtualDom.analyze(analyze)
     res.json(response)
 }))

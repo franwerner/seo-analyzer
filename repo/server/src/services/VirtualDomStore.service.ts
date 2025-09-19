@@ -1,4 +1,3 @@
-import virtualDomInputSchema from "../schemas/virtualDomInput.schema"
 import ErrorHandler from "../utils/errorHandler.utils"
 import OpenAi from "./openAi.service"
 import PuppeterService from "./puppeter.service"
@@ -19,16 +18,21 @@ class VirtualDomStore {
         this.puppeteer = new PuppeterService()
     }
 
-    protected normalizedUrl(url: string) {
-        /**
-         * Aseguramos que la url termine con una barra, puede si otra url se quiere agregar y es la misma ruta pero le falta el "/" al final cuentan como diferentes.
-         */
-        return url.endsWith("/") ? url : url + "/"
+    static normalizedUrl(url: string) {
+        if (!/^https?:\/\//i.test(url)) {
+            url = `https://${url}`;
+        }
+
+        if (!url.endsWith("/")) {
+            url += "/"
+        }
+
+        return url
     }
 
     createOrGet(input: string) {
-        const { url } = virtualDomInputSchema.parse({ url: input })
-        const getVDOM = this.store.get(this.normalizedUrl(url))
+        const url = VirtualDomStore.normalizedUrl(input)
+        const getVDOM = this.store.get(url)
         if (getVDOM) {
             return getVDOM
         }
@@ -38,7 +42,8 @@ class VirtualDomStore {
     }
 
     getIfExist(url: string) {
-        const virtualDom = this.store.get(this.normalizedUrl(url))
+        const virtualDom = this.store.get(VirtualDomStore.normalizedUrl(url))
+        console.log(virtualDom)
         if (!virtualDom) {
             throw new ErrorHandler({
                 message: "VirtualDom not found",
