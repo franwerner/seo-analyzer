@@ -66,7 +66,7 @@ const Content = ({ historyValidations }: ContentProps) => {
     }
 
     return (
-        <div className="py-8 px-8 space-y-5 flex flex-col gap-4 h-screen">
+        <main className="py-8 max-w-7xl w-full mx-auto px-8 space-y-5 flex flex-col gap-4 h-screen">
             <HistoryPicker
                 selectedIndex={selectedIndex}
                 onRetry={handleFetch}
@@ -93,7 +93,7 @@ const Content = ({ historyValidations }: ContentProps) => {
                     {currentHistory && <AnalysisResult data={currentHistory} />}
                 </div>
             }
-        </div>
+        </main>
     )
 }
 

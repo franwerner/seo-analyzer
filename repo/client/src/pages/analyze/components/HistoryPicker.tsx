@@ -25,7 +25,7 @@ export default function HistoryPicker({
                     <li
                         key={index}
                         onClick={() => handleSelect(index)}
-                        className={`cursor-pointer h-full border border-sky-100 p-2 rounded-md hover:bg-sky-100 transition ${selectedIndex === index ? "bg-sky-200" : ""
+                        className={`cursor-pointer h-full border border-sky-100 p-2 rounded-md hover:bg-sky-200 transition ${selectedIndex === index ? "bg-sky-100" : ""
                             }`}
                     >
                         <span className="text-sm text-sky-600">
