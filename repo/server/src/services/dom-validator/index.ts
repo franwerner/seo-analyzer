@@ -10,6 +10,7 @@ import ScriptSchemasValidation from "./validations/scriptSchemas.validation";
 import HtmlAiValidation from "./validations/htmlAi.validation";
 import { AnchorLinkValidation } from "./validations/anchorLink.validation";
 
+
 type ValidationWithTokens = Required<Validation>
 
 export default class DomValidator {
@@ -33,8 +34,13 @@ export default class DomValidator {
         }
     }
 
-    private async validationInstaces(instances: Array<any>) {
-        //TIPAR DEPUES ACA.
+    private async validationInstaces(instances: Array<any>) {//TIPAR DEPUES ACA.
+        /**
+         * Cosas a tener en cuenta en un futuro:
+         * Los promise.all de cada validador si uno falla la promesa se rechaza por completo.
+         * Hacer uso de promise.allSettled, para dar un informe de cual fallo y el motivo, esto evita que todo el conjunto se rechaze por completo.
+         * Tal vez dar un feedback o categorizar las validaciones para que el cliente entienda de cual trata.
+         */
         await Promise.all(instances.map(i => i.validate()))
         const mergedValidation = ValidationUtility.mergeValidations(instances.map(validation => validation.getValidation()))
         const groupByErrorType = ValidationUtility.groupByIssueType(mergedValidation.issues)

@@ -43,7 +43,6 @@ class VirtualDomStore {
 
     getIfExist(url: string) {
         const virtualDom = this.store.get(VirtualDomStore.normalizedUrl(url))
-        console.log(virtualDom)
         if (!virtualDom) {
             throw new ErrorHandler({
                 message: "VirtualDom not found",

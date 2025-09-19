@@ -18,7 +18,6 @@ app.use(corsConfig)
 app.use(express.json())
 app.use(cookieParser())
 
-
 app.post("/login", ErrorHandler.routeHandler((req, res) => {
 
     const password = req.body.password as string
@@ -42,7 +41,7 @@ app.post("/login", ErrorHandler.routeHandler((req, res) => {
 app.get("/analyze", authMiddleware, ErrorHandler.routeHandler(async (req, res) => {
     const url = req.query.url as string
     const analyze = req.query.analyze_type as AnalyzeType
-    const virtualDom = virtualDomStore.createOrGet(url)
+    const virtualDom = virtualDomStore.getIfExist(url)
     const response = await virtualDom.analyze(analyze)
     res.json(response)
 }))
