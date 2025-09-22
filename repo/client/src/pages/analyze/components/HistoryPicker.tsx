@@ -19,7 +19,6 @@ export default function HistoryPicker({
     return (
         <div className="border rounded-md p-4 space-y-2 bg-gray-50">
             <h2 className="font-bold text-sky-700">Historial de Análisis</h2>
-            {history.length === 0 && <p className="text-gray-500">No hay análisis previos</p>}
             <ul className="space-y-1 group max-h-60 flex gap-x-4 gap-y-1 flex-wrap overflow-y-auto">
                 {history.map((item, index) => (
                     <li
