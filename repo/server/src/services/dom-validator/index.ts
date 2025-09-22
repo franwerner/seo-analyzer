@@ -55,35 +55,35 @@ export default class DomValidator {
 
     async runBasicValidation({
         root,
-        html,
+        htmlContent,
         vDomContext
     }: {
         root: BaseComponent,
-        html: string,
+        htmlContent: string,
         vDomContext: VDomContext
     }) {
         const validationInstaces = [
             new ComponentTreeValidation(root),
             new HeadingsValidation(vDomContext),
-            new HtmlAiValidation(this.openAi, html),
+            new HtmlAiValidation(this.openAi, htmlContent),
         ]
         return await this.validationInstaces(validationInstaces)
     }
 
     async runValidation({
         root,
-        html,
+        htmlContent,
         vDomContext
     }: {
         root: BaseComponent,
-        html: string,
+        htmlContent: string,
         vDomContext: VDomContext
     }) {
         const validationInstaces = [
             new ComponentTreeValidation(root),
             new HeadingsValidation(vDomContext),
-            new ScriptSchemasValidation(this.openAi, html, vDomContext),
-            new HtmlAiValidation(this.openAi, html),
+            new ScriptSchemasValidation(this.openAi, htmlContent, vDomContext),
+            new HtmlAiValidation(this.openAi, htmlContent),
             new AnchorLinkValidation(this.openAi, vDomContext)
         ]
 

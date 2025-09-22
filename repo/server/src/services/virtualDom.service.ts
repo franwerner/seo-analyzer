@@ -23,11 +23,15 @@ interface VirtualDomProps {
     path: string
 }
 
+interface VirtualDomSnapshot {
+    root: HTMLComponent
+    vDomContext: VDomContext
+    htmlContent: string
+}
+
 class VirtualDom {
     path: string
-    root: HTMLComponent | null = null
-    private html: string | null = null
-    private vDomContext: VDomContext | null = null
+    snapshot: Promise<VirtualDomSnapshot> | null = null
     analyzeStatus: AnalyzeStatus = AnalyzeStatus.Idle
     domValidator: DomValidator
     constructor(
@@ -39,39 +43,11 @@ class VirtualDom {
         this.domValidator = new DomValidator(this.openAi)
     }
 
-    calculateTokens() {
-        return OpenAi.calculateTokens(this.getOrGenerateHTML())
-    }
-
-    getOrThrowRoot() {
-        if (!this.root) throw new ErrorHandler({
-            message: "VirtualDom not generated",
-            status_code: 404
-        })
-        return this.root
-    }
-
-    private getOrThrowVDomContext() {
-        if (!this.vDomContext) throw new ErrorHandler({
-            message: "VDomContext not found",
-            status_code: 404
-        })
-        return this.vDomContext
-    }
-
-    getOrGenerateHTML() {
-        const root = this.getOrThrowRoot()
-        if (this.html) return this.html
-        return (this.html = root.generateHTML())
-
-    }
-
     async generateVirtualDom() {
         const to = await this.puppeteer.newPageIfAvailable()
         const htmlString = await to("https://" + this.path)
         const dom = new JSDOM(htmlString, { virtualConsole })
         const html = dom.window.document.children[0]
-
         if (!html || html.nodeName != "HTML") {
             throw new ErrorHandler({
                 message: "HTML element not found",
@@ -157,13 +133,10 @@ class VirtualDom {
 
         this.setStatus(AnalyzeStatus.Analyzing)
 
+        const snapshot = await this.getOrGenerateSnapshot()
+
         try {
-            const res = await fn({
-                root: this.getOrThrowRoot(),
-                html: this.getOrGenerateHTML(),
-                vDomContext: this.getOrThrowVDomContext()
-            })
-            return res
+            return await fn(snapshot)
         } catch (error) {
             console.log(`ERROR VALIDATING DOM - ${error}`)
             if (error instanceof ErrorHandler) throw error
@@ -177,27 +150,42 @@ class VirtualDom {
 
     }
 
-    clearVdom() {
-        console.log(`CLEAR VDOM => ${this.path}`)
-        this.vDomContext = null
-        this.root = null
-        this.html = null
+    clearSnapshot() {
+        console.log(`CLEAR SNAPSHOT => ${this.path}`)
+        this.snapshot = null
     }
 
-    async generate() {
+    private async createSnapshot(): Promise<VirtualDomSnapshot> {
+        const { root, vDomContext } = await this.generateVirtualDom()
+        const htmlContent = root.generateHTML()
+        return {
+            root,
+            vDomContext,
+            htmlContent
+        }
+    }
+    async getOrGenerateSnapshot() {
         try {
-            const { root, vDomContext } = await this.generateVirtualDom()
-            this.root = root
-            this.vDomContext = vDomContext
-            this.html = this.root.generateHTML()
+            /**
+            * Este enfoque garantiza que solo exista una generación de snapshot a la vez.
+            * Al solicitar una snapshot, se almacena la promesa correspondiente a la generación.
+            * Si se vuelve a solicitar mientras la generación está en curso, se devuelve la misma promesa.
+            * De esta forma, todos los consumidores esperan y reciben el mismo resultado al mismo tiempo,
+            * y se evita que se creen múltiples snapshots en paralelo.
+            */
+            if (!this.snapshot) {
+                this.snapshot = this.createSnapshot()
+            }
+            return await this.snapshot
         } catch (error) {
-            console.log(error)
+            console.log(`ERROR GENERATING SNAPSHOT => ${this.path}`)
+            this.snapshot = null
             if (error instanceof ErrorHandler) {
                 throw error
             } else {
                 throw new ErrorHandler({
                     message: `
-                    Unknown error occurred while initializing the VirtualDom -
+                    Unknown error occurred while generating the VirtualDom snapshot -
                     ${error}
                     `,
                     status_code: 500
@@ -205,6 +193,7 @@ class VirtualDom {
             }
         }
     }
+
 }
 
 export default VirtualDom

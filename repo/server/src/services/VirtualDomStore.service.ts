@@ -3,7 +3,7 @@ import OpenAi from "./openAi.service"
 import PuppeterService from "./puppeter.service"
 import VirtualDom from "./virtualDom.service"
 
-const timeoutDuration = 1000 * 60 * 5 // 10M
+const timeoutDuration = 1000 * 60 * 5 // 5M
 const maxVDomDuration = 1000 * 60 * 30 //30M
 const regexpHttps = /https?:\/\//i
 
@@ -25,7 +25,7 @@ class VirtualDomStore {
     }
 
 
-    static normalizedUrl(url: string) {
+    private static normalizedUrl(url: string) {
         try {
             if (!regexpHttps.test(url)) {
                 url = `https://${url}`;
@@ -42,7 +42,7 @@ class VirtualDomStore {
         }
     }
 
-    createOrGet(input: string) {
+    getOrCreate(input: string) {
         const url = VirtualDomStore.normalizedUrl(input)
         const getVDOM = this.store.get(url)
         if (getVDOM) return getVDOM
@@ -52,7 +52,7 @@ class VirtualDomStore {
         return vdom
     }
 
-    getIfExist(url: string) {
+    getOrThrow(url: string) {
         const virtualDom = this.store.get(VirtualDomStore.normalizedUrl(url))
         if (!virtualDom) throw new ErrorHandler({
             message: "VirtualDom not found",
@@ -79,7 +79,7 @@ class VirtualDomStore {
             this.virtualDomLastTouch.forEach((lastTouch, vdom) => {
                 if (now - lastTouch >= maxVDomDuration) {
                     this.virtualDomLastTouch.delete(vdom)
-                    vdom.clearVdom()
+                    vdom.clearSnapshot()
                 }
             })
             this.timeout = null
