@@ -10,12 +10,12 @@ import PuppeterService from "./puppeter.service";
 import VDomContext from "@/context/vDom.context";
 import { AnalyzeType } from "@/types/AnalyzeType.enum";
 
-
-
 enum AnalyzeStatus {
     Analyzing = "analyzing",
     Idle = "idle"
 }
+
+const ignoreTags = ["STYLE", "#comment", "svg", "NOSCRIPT"]
 
 const virtualConsole = new VirtualConsole()
 
@@ -80,9 +80,9 @@ class VirtualDom {
         }
 
         const vDomContext = new VDomContext()
-        const ignoreTags = ["STYLE", "#comment", "svg", "NOSCRIPT"]
 
         const recursive = (elem: Element, pathDom: string, parent: BaseComponent) => {
+
             let children: Array<BaseComponent | TextComponent> = []
 
             const Component = ComponentFactory.getComponent(elem.nodeName)
@@ -104,7 +104,10 @@ class VirtualDom {
                 if (isText) {
                     const text = child.nodeValue || ""
                     if (text.trim().length > 0) {
-                        const textComponent = new TextComponent(text)
+                        const textComponent = new TextComponent({
+                            text,
+                            parent: component
+                        })
                         children.push(textComponent)
                     }
                 } else if (!ignoreTags.includes(child.nodeName)) {
@@ -114,13 +117,11 @@ class VirtualDom {
                         nextPath,
                         component
                     )
-                    node && children.push(node)
+                    children.push(node)
                 }
             }
 
-
-            if (component.shouldIgnore()) return
-
+            component.setShouldIgnore()
             component.contextualizeVDom()
             return component
         }
@@ -177,13 +178,13 @@ class VirtualDom {
     }
 
     clearVdom() {
+        console.log(`CLEAR VDOM => ${this.path}`)
         this.vDomContext = null
         this.root = null
         this.html = null
     }
 
     async generate() {
-
         try {
             const { root, vDomContext } = await this.generateVirtualDom()
             this.root = root

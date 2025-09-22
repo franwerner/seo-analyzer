@@ -41,6 +41,7 @@ class BaseComponent {
     needsClosingTag: boolean
     vDomContext: VDomContext
     parent: BaseComponent
+    shouldIgnore: boolean = false
 
     constructor({ tag, children, attributes, pathDom, vDomContext, parent }: BaseComponentProps) {
         this.tag = tag.toLowerCase()
@@ -60,7 +61,7 @@ class BaseComponent {
          */
     }
 
-    shouldIgnore(): boolean | undefined {
+    setShouldIgnore() {
         /***
          * Evalua si el componente  debe ser ignorado para incluirse en el arbol,
          * se debe realizar luego de obtener los componetes hijos.
@@ -68,7 +69,6 @@ class BaseComponent {
          * Ya que muchas veces se debe evaluar los hijos de los elementos para
          * determinar si se debe ignorar o no.
         */
-        return false
     }
 
     private static generateTraceIdHash(forHash: string) {
@@ -97,6 +97,7 @@ class BaseComponent {
     }
 
     generateHTML(): string {
+        if (this.shouldIgnore) return ""
         const attrs = Object.entries(this.attributes)
             .filter(([_, value]) => value)
             .map(([key, value]) => `${key}=${value}`)
