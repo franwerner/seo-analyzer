@@ -10,6 +10,7 @@ import cookieParser from "cookie-parser";
 import getEnsureEnv from "./utils/getEnsureEnv.utils";
 import { AnalyzeType } from "./types/AnalyzeType.enum";
 
+
 const app = express()
 
 const virtualDomStore = new VirtualDomStore()

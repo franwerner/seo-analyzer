@@ -8,17 +8,18 @@ const keywordsNotValid = ["read more", "learn more", "see more"]
 
 class AnchorComponent extends BaseComponent {
 
-    text: string = ""
     constructor(props: BaseComponentProps) {
         super(props)
-        if (this.isIgnored) return
-        this.text = AnchorComponent.getText(this)
-        const containsKeyword = keywordsNotValid.some(keyword => this.text.toLowerCase() == keyword)
+    }
+
+    contextualizeVDom() {
+        const text = AnchorComponent.getText(this)
+        const containsKeyword = keywordsNotValid.some(keyword => text.toLowerCase() == keyword)
         if (!this.attributes.href || containsKeyword) return
         this.vDomContext.a.push(this)
     }
 
-    protected shouldIgnore() {
+    shouldIgnore() {
         const att = this.attributes
         const isBlackHoleHref = att.href?.includes("blackhole")
         return isBlackHoleHref
@@ -53,7 +54,7 @@ class AnchorComponent extends BaseComponent {
 
     private async validateText(): Promise<Issue | undefined> {
 
-        const text = this.text
+        const text = AnchorComponent.getText(this)
         const containsKeyword = keywordsNotValid.some(keyword => text.toLowerCase() == keyword)
 
         if (containsKeyword) {

@@ -5,7 +5,7 @@ export default class LinkComponent extends BaseComponent {
         super(props)
     }
 
-    protected shouldIgnore(): boolean | undefined {
+    shouldIgnore(): boolean | undefined {
         const ignore = this.attributes.rel !== "canonical"
         return ignore
     }

@@ -5,7 +5,16 @@ import TextComponent from "./text.component";
 class ScriptComponent extends BaseComponent {
     constructor(props: BaseComponentProps) {
         super(props)
+    }
 
+    shouldIgnore() {
+        const isFaqSchema = this.hasSchema("FAQPage")
+        const isLocalBusinessSchema = this.hasSchema("LocalBusiness")
+        const hasNotSchema = !(isFaqSchema || isLocalBusinessSchema)
+        return hasNotSchema
+    }
+
+    contextualizeVDom() {
         if (this.hasSchema("FAQPage")) {
             this.vDomContext.schemas.faq = this
         }
@@ -13,14 +22,6 @@ class ScriptComponent extends BaseComponent {
         if (this.hasSchema("LocalBusiness")) {
             this.vDomContext.schemas.localBusiness = this
         }
-    }
-
-
-    protected shouldIgnore() {
-        const isFaqSchema = this.hasSchema("FAQPage")
-        const isLocalBusinessSchema = this.hasSchema("LocalBusiness")
-        const hasNotSchema = !(isFaqSchema || isLocalBusinessSchema)
-        return hasNotSchema
     }
 
     private hasSchema(type: string) {

@@ -11,6 +11,7 @@ interface BaseComponentProps {
     attributes: NamedNodeMap
     pathDom: string,
     vDomContext: VDomContext
+    parent: BaseComponent
 }
 
 type Children = Array<BaseComponent | TextComponent>
@@ -31,7 +32,6 @@ const selfClosingTags = [
 ]
 
 
-
 class BaseComponent {
 
     tag: string;
@@ -40,22 +40,33 @@ class BaseComponent {
     attributes: Attributes
     needsClosingTag: boolean
     vDomContext: VDomContext
-    isIgnored?: boolean
+    parent: BaseComponent
 
-
-    constructor({ tag, children, attributes, pathDom, vDomContext }: BaseComponentProps) {
+    constructor({ tag, children, attributes, pathDom, vDomContext, parent }: BaseComponentProps) {
         this.tag = tag.toLowerCase()
+        this.parent = parent
         this.children = children || []
         this.attributes = (this.constructor as typeof BaseComponent).extractAttributes(attributes) /** el this.constructor hace referencia a la clase/subclase, */
         this.traceId = BaseComponent.generateTraceIdHash(pathDom)
         this.needsClosingTag = BaseComponent.needsClosingTag(tag)
         this.vDomContext = vDomContext
-        this.isIgnored = this.shouldIgnore()
     }
 
-    protected shouldIgnore(): boolean | undefined {
+
+    contextualizeVDom() {
+        /**
+         * Se contextualiza el `this.vDomContext`, 
+         * se debe realizar luego de obtener los componetes hijos.
+         */
+    }
+
+    shouldIgnore(): boolean | undefined {
         /***
-         * Evalua si el componente en instancia debe ser ignorado, para no incluirse en el VDOM.
+         * Evalua si el componente  debe ser ignorado para incluirse en el arbol,
+         * se debe realizar luego de obtener los componetes hijos.
+         * Para poder tener todo el arbol completo y realmente analizar si se debe ignorar o no.
+         * Ya que muchas veces se debe evaluar los hijos de los elementos para
+         * determinar si se debe ignorar o no.
         */
         return false
     }

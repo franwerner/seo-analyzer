@@ -43,24 +43,24 @@ class VirtualDom {
         return OpenAi.calculateTokens(this.getOrGenerateHTML())
     }
 
-    assertRoot() {
+    getOrThrowRoot() {
         if (!this.root) throw new ErrorHandler({
-            message: "VirtualDom not initialized",
-            status_code: 500
+            message: "VirtualDom not generated",
+            status_code: 404
         })
         return this.root
     }
 
     private getOrThrowVDomContext() {
         if (!this.vDomContext) throw new ErrorHandler({
-            message: "VirtualDom not initialized",
-            status_code: 500
+            message: "VDomContext not found",
+            status_code: 404
         })
         return this.vDomContext
     }
 
     getOrGenerateHTML() {
-        const root = this.assertRoot()
+        const root = this.getOrThrowRoot()
         if (this.html) return this.html
         return (this.html = root.generateHTML())
 
@@ -68,7 +68,7 @@ class VirtualDom {
 
     async generateVirtualDom() {
         const to = await this.puppeteer.newPageIfAvailable()
-        const htmlString = await to(this.path)
+        const htmlString = await to("https://" + this.path)
         const dom = new JSDOM(htmlString, { virtualConsole })
         const html = dom.window.document.children[0]
 
@@ -80,38 +80,53 @@ class VirtualDom {
         }
 
         const vDomContext = new VDomContext()
+        const ignoreTags = ["STYLE", "#comment", "svg", "NOSCRIPT"]
 
-        const recursive = (elem: Element, pathDom: string) => {
+        const recursive = (elem: Element, pathDom: string, parent: BaseComponent) => {
             let children: Array<BaseComponent | TextComponent> = []
 
-            if (elem.hasChildNodes()) {
-                for (let i = 0; i < elem.childNodes.length; i++) {
-                    const child = elem.childNodes[i] as ChildNode
-                    if (child.nodeName == "#text") {
-                        const text = child.nodeValue || ""
-                        if (text.trim().length > 0) {
-                            children.push(new TextComponent(text))
-                        }
-                    }
-                    else if (!["STYLE", "#comment", "svg", "NOSCRIPT"].includes(child.nodeName)) {
-                        const node = recursive(child as Element, pathDom + "/" + child.nodeName + "/" + i)
-                        if (node.isIgnored) continue
-                        children.push(node)
-                    }
-                }
-            }
-
             const Component = ComponentFactory.getComponent(elem.nodeName)
-            return new Component({
+
+            const component = new Component({
                 tag: elem.nodeName,
                 attributes: elem.attributes,
                 vDomContext,
                 children,
                 pathDom,
+                parent
             })
+
+            for (let i = 0; i < elem.childNodes.length; i++) {
+
+                const child = elem.childNodes[i] as ChildNode
+                const isText = child.nodeName == "#text"
+
+                if (isText) {
+                    const text = child.nodeValue || ""
+                    if (text.trim().length > 0) {
+                        const textComponent = new TextComponent(text)
+                        children.push(textComponent)
+                    }
+                } else if (!ignoreTags.includes(child.nodeName)) {
+                    const nextPath = pathDom + "/" + child.nodeName + "/" + i
+                    const node = recursive(
+                        child as Element,
+                        nextPath,
+                        component
+                    )
+                    node && children.push(node)
+                }
+            }
+
+
+            if (component.shouldIgnore()) return
+
+            component.contextualizeVDom()
+            return component
         }
 
-        const root = recursive(html, html.nodeName)
+        //@ts-ignore
+        const root = recursive(html, html.nodeName) as HTMLComponent
 
         return {
             root,
@@ -143,7 +158,7 @@ class VirtualDom {
 
         try {
             const res = await fn({
-                root: this.assertRoot(),
+                root: this.getOrThrowRoot(),
                 html: this.getOrGenerateHTML(),
                 vDomContext: this.getOrThrowVDomContext()
             })
@@ -161,19 +176,7 @@ class VirtualDom {
 
     }
 
-    private resetVdom() {
-        /**
-        * Reinicia el estado del Virtual DOM antes de generar uno nuevo o simplemente limpiar cache.
-        *
-        * - Si hay un análisis en curso, se lanza un error para evitar conflictos.
-        * - Limpia el estado anterior (root, html, vDomContext) para asegurar que
-        *   no quede información residual al crear un nuevo Virtual DOM.
-        *
-        * Nota: Esto evita condiciones de carrera. Al resetear antes de cualquier
-        * async/await, garantizamos que funciones como `analyze` no accedan a un
-        * root o html desfasado o incompleto.
-        */
-        this.throwIfAnalyzing()
+    clearVdom() {
         this.vDomContext = null
         this.root = null
         this.html = null
@@ -182,7 +185,6 @@ class VirtualDom {
     async generate() {
 
         try {
-            this.resetVdom()
             const { root, vDomContext } = await this.generateVirtualDom()
             this.root = root
             this.vDomContext = vDomContext
