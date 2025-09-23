@@ -84,6 +84,17 @@ class BaseComponent {
         return !selfClosingTags.includes(tag)
     }
 
+    static getOnlyText(node: BaseComponent) {
+        return node.children.reduce((acc, child) => {
+            if (child instanceof TextComponent) {
+                acc += child.text
+            } else {
+                acc += BaseComponent.getOnlyText(child)
+            }
+            return acc
+        }, "")
+    }
+
     private static extractAttributes(inputAttributes: NamedNodeMap) {
         return Array.from(inputAttributes).reduce((acc, attr) => {
             const currentName = attr.name

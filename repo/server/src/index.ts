@@ -55,10 +55,20 @@ app.get("/validations", authMiddleware, ErrorHandler.routeHandler(async (req, re
     })
 }))
 
+app.get("/context", authMiddleware, ErrorHandler.routeHandler(async (req, res) => {
+    const url = req.query.url as string
+    const virtualDom = virtualDomStore.getOrCreate(url)
+    const snapshot = await virtualDom.getOrGenerateSnapshot()
+    res.json({
+        context: snapshot.vDomContext.texts
+    })
+}))
+
 app.post("/create", authMiddleware, ErrorHandler.routeHandler(
     async (req, res) => {
         const url = req.body.url as string
         const virtualDom = virtualDomStore.getOrCreate(url)
+        virtualDom.clearSnapshot()
         await virtualDom.getOrGenerateSnapshot()
         res.status(201).json({ message: "VirtualDom created" })
     }))

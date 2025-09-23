@@ -82,7 +82,7 @@ export default class DomValidator {
         const validationInstaces = [
             new ComponentTreeValidation(root),
             new HeadingsValidation(vDomContext),
-            new ScriptSchemasValidation(this.openAi, htmlContent, vDomContext),
+            new ScriptSchemasValidation(this.openAi, vDomContext),
             new HtmlAiValidation(this.openAi, htmlContent),
             new AnchorLinkValidation(this.openAi, vDomContext)
         ]

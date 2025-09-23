@@ -5,11 +5,10 @@ export default class H1Component extends BaseComponent {
         super(props)
     }
 
-
     contextualizeVDom() {
         const vDomContext = this.vDomContext
-        vDomContext.h1.push(this)
+        vDomContext.headings.h1.push(this)
     }
 
 
-}   
+}       

@@ -10,7 +10,7 @@ export default class HeadingsValidation extends ValidationUtility {
     }
 
     private validateH1() {
-        const h1 = this.context.h1
+        const h1 = this.context.headings.h1
 
         if (h1.length > 1) {
             this.addIssue({
@@ -28,7 +28,7 @@ export default class HeadingsValidation extends ValidationUtility {
     }
 
     private validateH2() {
-        const h2 = this.context.h2
+        const h2 = this.context.headings.h2
         if (h2.length > 10) {
             this.addIssue({
                 message: "The webpage contains more than 10 h2 elements",

@@ -24,7 +24,7 @@ class ScriptComponent extends BaseComponent {
 
     contextualizeVDom() {
         if (this.hasSchema("FAQPage")) {
-            this.vDomContext.schemas.faq = this
+            this.vDomContext.schemas.faqPage = this
         }
 
         if (this.hasSchema("LocalBusiness")) {

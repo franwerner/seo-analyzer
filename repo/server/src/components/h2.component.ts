@@ -7,6 +7,6 @@ export default class H2Component extends BaseComponent {
 
     contextualizeVDom() {
         const vDomContext = this.vDomContext
-        vDomContext.h2.push(this)
+        vDomContext.headings.h2.push(this)
     }
 }

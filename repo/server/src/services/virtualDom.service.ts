@@ -82,8 +82,10 @@ class VirtualDom {
                     if (text.trim().length > 0) {
                         const textComponent = new TextComponent({
                             text,
+                            vDomContext: vDomContext,
                             parent: component
                         })
+                        textComponent.contextualizeVDom()
                         children.push(textComponent)
                     }
                 } else if (!ignoreTags.includes(child.nodeName)) {
@@ -156,6 +158,9 @@ class VirtualDom {
     }
 
     private async createSnapshot(): Promise<VirtualDomSnapshot> {
+        /**
+         * Solo se debe utilizar para la primera generación del snapshot internamente en `getOrGenerateSnapshot`
+         */
         const { root, vDomContext } = await this.generateVirtualDom()
         const htmlContent = root.generateHTML()
         return {
