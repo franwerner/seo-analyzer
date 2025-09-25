@@ -1,6 +1,5 @@
 import OpenAI from "openai";
 import { zodTextFormat } from "openai/helpers/zod";
-import { encoding_for_model } from "tiktoken";
 import openAiInputSchema from "../schemas/openAiInput.schema";
 import openAiOutputSchema from "../schemas/openAiOutput.schema";
 
@@ -12,11 +11,6 @@ class OpenAi {
         this.openAI = new OpenAI({
             apiKey: process.env.OPENAI_KEY,
         })
-    }
-
-    static calculateTokens(html: string) {
-        const encoder = encoding_for_model("gpt-5-mini")
-        return encoder.encode(html).length
     }
 
     static validateOuput(response: OpenAI.Responses.Response) {

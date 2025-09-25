@@ -22,9 +22,9 @@
     "express": "^5.1.0",
     "jsdom": "^26.1.0",
     "jsonwebtoken": "^9.0.2",
+    "nlp-compromise": "^7.0.0",
     "openai": "^5.15.0",
     "puppeteer": "^24.17.0",
-    "tiktoken": "^1.0.22",
     "typo-js": "^1.3.1"
   },
   "devDependencies": {
