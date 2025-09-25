@@ -1,4 +1,4 @@
-import typescript from 'rollup-plugin-typescript2'
+import typescript from "@rollup/plugin-typescript"
 
 export default {
   input: [
@@ -15,6 +15,6 @@ export default {
     exclude: 'node_modules/**'
   },
   plugins: [
-    typescript({ tsconfig: './tsconfig.json', useTsconfigDeclarationDir: true }),
+    typescript({ tsconfig: './tsconfig.json' }),
   ]
 }
