@@ -43,7 +43,7 @@ class AnchorComponent extends BaseValidatableComponent {
         } catch (error) {
             return {
                 message: `${href} link broken`,
-                traceId: this.traceId,
+                traceIds: [this.traceId],
                 tag: this.tag,
                 type: "general"
             } satisfies Issue
@@ -86,7 +86,7 @@ class AnchorComponent extends BaseValidatableComponent {
         if (containNotValidText) {
             return {
                 message: `the text "${value}" is not very descriptive`,
-                traceId: this.traceId,
+                traceIds: [this.traceId],
                 tag: this.tag,
                 type: "general"
             } satisfies Issue
@@ -97,7 +97,7 @@ class AnchorComponent extends BaseValidatableComponent {
 
         if (!this.attributes.href) return {
             message: "Anchor without href",
-            traceId: this.traceId,
+            traceIds: [this.traceId],
             tag: this.tag,
             type: "general"
         } satisfies Issue

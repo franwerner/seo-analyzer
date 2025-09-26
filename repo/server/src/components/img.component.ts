@@ -11,7 +11,7 @@ export default class ImgComponent extends BaseValidatableComponent {
         if (!this.attributes.alt) return {
             message: "Image without alt",
             tag: this.tag,
-            traceId: this.traceId,
+            traceIds: [this.traceId],
             type: "general",
         } satisfies Issue
     }

@@ -3,7 +3,7 @@ import { z } from "zod"
 const issueSchema = z.object({
     message: z.string(),
     tag: z.string(),
-    traceId: z.string().optional(),
+    traceIds: z.array(z.string()).optional(),
     type: z.enum(["schema", "semantic", "spelling", "general"]),
 })
 

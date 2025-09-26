@@ -16,6 +16,23 @@ export default abstract class ValidationUtility {
     }
     issues: Array<Issue> = []
 
+    static groupByIssueType(issues: Array<Issue>): Array<Issue> {
+        const group = issues.reduce((acc, issue) => {
+            const key = issue.message + issue.tag
+            /**
+             * Hacemos la union de `key` para evitar que agrupen errores con un mismo mensajes pero de diferente tipo de tag
+             */
+            const current = acc[key]
+            if (current && current.traceIds) {
+                current.traceIds.push(...(issue.traceIds || []))
+            } else if (!current) {
+                acc[key] = issue
+            }
+            return acc
+        }, {} as Record<string, Issue>)
+        return Object.values(group)
+    }
+
 
     static mergeValidations(validations: Array<Validation>): Required<Validation> {
         return validations.reduce((acc, current) => {
