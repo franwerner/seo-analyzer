@@ -1,4 +1,4 @@
-import { Issue } from "@/types/Issue.interface"
+import { Issue } from "@/schemas/issues.schema"
 import { Tokens } from "@/types/Tokens.interface"
 import { Validation } from "@/types/Validation.interface"
 
@@ -15,23 +15,6 @@ export default abstract class ValidationUtility {
         output: 0
     }
     issues: Array<Issue> = []
-
-    static groupByIssueType(issues: Array<Issue>): Array<Issue> {
-        const group = issues.reduce((acc, issue) => {
-            const key = issue.message + issue.tag
-            /**
-             * Hacemos la union de `key` para evitar que agrupen errores con un mismo mensajes pero de diferente tipo de tag
-             */
-            const current = acc[key]
-            if (current) {
-                current.traceIds.push(...issue.traceIds)
-            } else {
-                acc[key] = issue
-            }
-            return acc
-        }, {} as Record<string, Issue>)
-        return Object.values(group)
-    }
 
 
     static mergeValidations(validations: Array<Validation>): Required<Validation> {

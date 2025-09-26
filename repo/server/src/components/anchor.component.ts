@@ -1,12 +1,13 @@
+import { Issue } from "@/schemas/issues.schema";
 import isValidHttpUrl from "../utils/isValidHttpUrl.util";
 import type { BaseComponentProps } from "./base.component";
 import BaseComponent from "./base.component";
+import BaseValidatableComponent from "./baseValidatable.component";
 import TextComponent from "./text.component";
-import { Issue } from "@/types/Issue.interface";
 
 const notValidText = ["read more", "learn more", "see more"]
 
-class AnchorComponent extends BaseComponent {
+class AnchorComponent extends BaseValidatableComponent {
 
     text: {
         value: string
@@ -21,6 +22,7 @@ class AnchorComponent extends BaseComponent {
     }
 
     contextualizeVDom() {
+        super.contextualizeVDom()
         if (!this.attributes.href || !this.getText().containNotValidText) return
         this.vDomContext.a.push(this)
     }
@@ -32,11 +34,7 @@ class AnchorComponent extends BaseComponent {
         return !!isBlackHoleHref
     }
 
-    setShouldIgnore() {
-        this.shouldIgnore = this.hasBlackHoleHref()
-    }
-
-    private async validateHref(): Promise<Issue | undefined> {
+    private async validateHref() {
         const href = this.attributes.href
         if (!isValidHttpUrl(href) || this.hasBlackHoleHref()) return
         try {
@@ -45,9 +43,10 @@ class AnchorComponent extends BaseComponent {
         } catch (error) {
             return {
                 message: `${href} link broken`,
-                traceIds: [this.traceId],
-                tag: this.tag
-            }
+                traceId: this.traceId,
+                tag: this.tag,
+                type: "general"
+            } satisfies Issue
         }
     }
 
@@ -77,7 +76,7 @@ class AnchorComponent extends BaseComponent {
 
     }
 
-    private async validateText(): Promise<Issue | undefined> {
+    private async validateText() {
 
         const {
             value,
@@ -87,19 +86,21 @@ class AnchorComponent extends BaseComponent {
         if (containNotValidText) {
             return {
                 message: `the text "${value}" is not very descriptive`,
-                traceIds: [this.traceId],
-                tag: this.tag
-            }
+                traceId: this.traceId,
+                tag: this.tag,
+                type: "general"
+            } satisfies Issue
         }
     }
 
-    async validate(): Promise<Array<Issue>> {
+    async validate() {
 
-        if (!this.attributes.href) return [{
+        if (!this.attributes.href) return {
             message: "Anchor without href",
-            traceIds: [this.traceId],
-            tag: this.tag
-        }]
+            traceId: this.traceId,
+            tag: this.tag,
+            type: "general"
+        } satisfies Issue
 
         const validations = await Promise.all([
             this.validateHref(),

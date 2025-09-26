@@ -1,8 +1,6 @@
 import TextComponent from "./text.component";
 import crc32 from "crc-32";
 import VDomContext from "@/context/vDom.context";
-import { Issue } from "@/types/Issue.interface";
-
 
 interface BaseComponentProps {
     tag: string;
@@ -54,6 +52,8 @@ const inlineTextSeparatorTags = [
 ]
 
 
+
+
 class BaseComponent {
 
     tag: string;
@@ -63,7 +63,6 @@ class BaseComponent {
     needsClosingTag: boolean
     vDomContext: VDomContext
     parent: Parent
-    shouldIgnore: boolean = false
     innerText?: string | null;
     private isInlineTextSeparator: boolean = false
 
@@ -88,20 +87,8 @@ class BaseComponent {
 
 
     protected contextualizeVDom() {
-        /**
-         * Se contextualiza el `this.vDomContext`, 
-         * se debe realizar luego de obtener los componetes hijos.
-         */
-    }
-
-    protected setShouldIgnore() {
-        /***
-         * Evalua si el componente  debe ser ignorado para incluirse en el arbol,
-         * se debe realizar luego de obtener los componetes hijos.
-         * Para poder tener todo el arbol completo y realmente analizar si se debe ignorar o no.
-         * Ya que muchas veces se debe evaluar los hijos de los elementos para
-         * determinar si se debe ignorar o no.
-        */
+        if (!this.innerText) return
+        this.vDomContext.texts.push(`<${this.tag} >${this.innerText}</${this.tag}>`)
     }
 
     private static generateTraceIdHash(forHash: string) {
@@ -109,14 +96,6 @@ class BaseComponent {
          * Este hash nos ayuda a rastrear posteriormente el elemento en el DOM.
          */
         return crc32.str(forHash).toString()
-    }
-
-    protected contextualizeTextVDom() {
-
-        if (!this.innerText) return
-
-        this.vDomContext.texts.push(`<${this.tag} >${this.innerText}</${this.tag}>`)
-
     }
 
 
@@ -138,7 +117,6 @@ class BaseComponent {
     }
 
     generateHTML(): string {
-        if (this.shouldIgnore) return ""
         const attrs = Object.entries(this.attributes)
             .filter(([_, value]) => value)
             .map(([key, value]) => `${key}=${value}`)
@@ -154,12 +132,6 @@ class BaseComponent {
             `<${tag} t-id=${this.traceId} ${attrs}>${childrenStr}</${tag}>` : `<${tag} t-id=${this.traceId} ${attrs} />`
     }
 
-    async validate(): Promise<Array<Issue>> {
-        /**
-         * cada subclase implementa sus propias validaciones.
-         */
-        return []
-    }
 
     private setInnerText() {
 
@@ -190,9 +162,7 @@ class BaseComponent {
 
     afterCreateInstance() {
         this.setInnerText()
-        this.setShouldIgnore()
         this.contextualizeVDom()
-        this.contextualizeTextVDom()
     }
 
     toJSON() {
@@ -204,7 +174,6 @@ class BaseComponent {
             attributes: this.attributes,
             traceId: this.traceId,
             needsClosingTag: this.needsClosingTag,
-            shouldIgnore: this.shouldIgnore,
             innerText: this.innerText,
             children: children,
         }

@@ -1,4 +1,5 @@
 import BaseComponent from "@/components/base.component";
+import BaseValidatableComponent from "@/components/baseValidatable.component";
 import ValidationUtility from "@/utils/validation.util";
 
 export default class ComponentTreeValidation extends ValidationUtility {
@@ -9,13 +10,13 @@ export default class ComponentTreeValidation extends ValidationUtility {
 
     async validate() {
         const traverse = async (component: BaseComponent) => {
-            const validate = await component.validate()
+            const validate = component instanceof BaseValidatableComponent ? await component.validate() : undefined
             await Promise.all(
                 component.children
                     .filter(child => child instanceof BaseComponent)
                     .map(child => traverse(child))
             )
-            this.addIssue(validate)
+            if (validate) this.addIssue(validate)
         }
         await traverse(this.root)
     }

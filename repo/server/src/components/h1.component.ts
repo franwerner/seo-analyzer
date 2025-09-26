@@ -6,6 +6,7 @@ export default class H1Component extends BaseComponent {
     }
 
     contextualizeVDom() {
+        super.contextualizeVDom()
         const vDomContext = this.vDomContext
         vDomContext.headings.h1.push(this)
     }

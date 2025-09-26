@@ -1,17 +1,18 @@
-import BaseComponent, { BaseComponentProps } from "./base.component"
-import { Issue } from "@/types/Issue.interface";
+import { Issue } from "@/schemas/issues.schema"
+import { BaseComponentProps } from "./base.component"
+import BaseValidatableComponent from "./baseValidatable.component"
 
-export default class ImgComponent extends BaseComponent {
+export default class ImgComponent extends BaseValidatableComponent {
     constructor(props: BaseComponentProps) {
         super(props)
     }
 
-    async validate(): Promise<Array<Issue>> {
-        if (!this.attributes.alt) return [{
+    async validate() {
+        if (!this.attributes.alt) return {
             message: "Image without alt",
             tag: this.tag,
-            traceIds: [this.traceId]
-        }]
-        return []
+            traceId: this.traceId,
+            type: "general",
+        } satisfies Issue
     }
 }

@@ -5,8 +5,4 @@ export default class LinkComponent extends BaseComponent {
         super(props)
     }
 
-    setShouldIgnore() {
-        const ignore = this.attributes.rel !== "canonical"
-        this.shouldIgnore = ignore
-    }
 }
