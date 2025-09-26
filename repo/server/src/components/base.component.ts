@@ -1,20 +1,21 @@
 import TextComponent from "./text.component";
 import crc32 from "crc-32";
-import { Validation } from "@/types/Validation.interface";
 import VDomContext from "@/context/vDom.context";
 import { Issue } from "@/types/Issue.interface";
 
 
 interface BaseComponentProps {
     tag: string;
-    children?: Array<BaseComponent | TextComponent>
+    children?: Childrens
     attributes: NamedNodeMap
     pathDom: string,
     vDomContext: VDomContext
-    parent: BaseComponent
+    parent: Parent
 }
 
-type Children = Array<BaseComponent | TextComponent>
+export type Children = BaseComponent | TextComponent
+export type Parent = BaseComponent | null
+type Childrens = Array<Children>
 type Attributes = Record<string, string>
 
 /*
@@ -31,37 +32,69 @@ const selfClosingTags = [
     "input", "link", "meta", "param", "source", "track", "wbr"
 ]
 
+const inlineTextSeparatorTags = [
+    "b",
+    "strong",
+    "i",
+    "em",
+    "u",
+    "span",
+    "a",
+    "small",
+    "sub",
+    "sup",
+    "mark",
+    "code",
+    "cite",
+    "del",
+    "ins",
+    "q",
+    "abbr",
+    "br"
+]
+
 
 class BaseComponent {
 
     tag: string;
-    children: Children
+    children: Childrens
     traceId: string
     attributes: Attributes
     needsClosingTag: boolean
     vDomContext: VDomContext
-    parent: BaseComponent
+    parent: Parent
     shouldIgnore: boolean = false
+    innerText?: string | null;
+    private isInlineTextSeparator: boolean = false
 
     constructor({ tag, children, attributes, pathDom, vDomContext, parent }: BaseComponentProps) {
-        this.tag = tag.toLowerCase()
+        const tagToLowerCase = tag.toLowerCase()
+        this.tag = tagToLowerCase
         this.parent = parent
         this.children = children || []
-        this.attributes = (this.constructor as typeof BaseComponent).extractAttributes(attributes) /** el this.constructor hace referencia a la clase/subclase, */
+        this.isInlineTextSeparator = inlineTextSeparatorTags.includes(tagToLowerCase)
+        this.attributes = BaseComponent.extractAttributes(attributes)
         this.traceId = BaseComponent.generateTraceIdHash(pathDom)
-        this.needsClosingTag = BaseComponent.needsClosingTag(tag)
+        this.needsClosingTag = BaseComponent.needsClosingTag(tagToLowerCase)
         this.vDomContext = vDomContext
     }
 
+    getParentIfNotNull() {
+        if (!this.parent) {
+            throw new Error("Parent is null")
+        }
+        return this.parent
+    }
 
-    contextualizeVDom() {
+
+    protected contextualizeVDom() {
         /**
          * Se contextualiza el `this.vDomContext`, 
          * se debe realizar luego de obtener los componetes hijos.
          */
     }
 
-    setShouldIgnore() {
+    protected setShouldIgnore() {
         /***
          * Evalua si el componente  debe ser ignorado para incluirse en el arbol,
          * se debe realizar luego de obtener los componetes hijos.
@@ -78,21 +111,18 @@ class BaseComponent {
         return crc32.str(forHash).toString()
     }
 
+    protected contextualizeTextVDom() {
+
+        if (!this.innerText) return
+
+        this.vDomContext.texts.push(`<${this.tag} >${this.innerText}</${this.tag}>`)
+
+    }
+
 
     private static needsClosingTag(tag: string) {
         /**Verifica si necesita un cierre  */
         return !selfClosingTags.includes(tag)
-    }
-
-    static getOnlyText(node: BaseComponent) {
-        return node.children.reduce((acc, child) => {
-            if (child instanceof TextComponent) {
-                acc += child.text
-            } else {
-                acc += BaseComponent.getOnlyText(child)
-            }
-            return acc
-        }, "")
     }
 
     private static extractAttributes(inputAttributes: NamedNodeMap) {
@@ -129,6 +159,55 @@ class BaseComponent {
          * cada subclase implementa sus propias validaciones.
          */
         return []
+    }
+
+    private setInnerText() {
+
+        if (["script"].includes(this.tag) || this.innerText === null) return
+
+        const treeText = (children: Childrens) => {
+            return children.reduce((acc, child, index) => {
+                if (child instanceof TextComponent) {
+                    acc += child.text
+                }
+                else if (child.tag == "br") {
+                    acc += " "
+                }
+                else if (child.isInlineTextSeparator) {
+                    child.innerText = null
+                    const nextSibling = children[index + 1]
+                    const treeTextOuput = treeText(child.children)
+                    const includeSpace = nextSibling instanceof BaseComponent && !nextSibling.isInlineTextSeparator && !treeTextOuput.endsWith(" ") ? " " : ""
+                    acc += treeTextOuput + includeSpace
+                }
+                return acc
+            }, "")
+        }
+
+
+        this.innerText = treeText(this.children)
+    }
+
+    afterCreateInstance() {
+        this.setInnerText()
+        this.setShouldIgnore()
+        this.contextualizeVDom()
+        this.contextualizeTextVDom()
+    }
+
+    toJSON() {
+
+        const children = this.children.map(child => child instanceof TextComponent ? child.text : child.toJSON()) as Childrens
+
+        return {
+            tag: this.tag,
+            attributes: this.attributes,
+            traceId: this.traceId,
+            needsClosingTag: this.needsClosingTag,
+            shouldIgnore: this.shouldIgnore,
+            innerText: this.innerText,
+            children: children,
+        }
     }
 
 }

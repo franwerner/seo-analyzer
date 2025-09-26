@@ -1,7 +1,7 @@
 import BaseComponent, { BaseComponentProps } from "./base.component"
 import { Issue } from "@/types/Issue.interface";
 
-export class ImgComponent extends BaseComponent {
+export default class ImgComponent extends BaseComponent {
     constructor(props: BaseComponentProps) {
         super(props)
     }

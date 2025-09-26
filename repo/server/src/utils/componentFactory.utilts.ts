@@ -1,11 +1,11 @@
 import LinkComponent from "@/components/link.component";
-import AnchorComponent from "../components/anchor.component";
-import BaseComponent from "../components/base.component";
-import H1Component from "../components/h1.component";
-import H2Component from "../components/h2.component";
-import HTMLComponent from "../components/html.component";
-import { ImgComponent } from "../components/img.component";
-import ScriptComponent from "../components/script.component";
+import AnchorComponent from "@/components/anchor.component";
+import BaseComponent from "@/components/base.component";
+import H1Component from "@/components/h1.component";
+import H2Component from "@/components/h2.component";
+import HTMLComponent from "@/components/html.component";
+import ImgComponent from "@/components/img.component";
+import ScriptComponent from "@/components/script.component";
 
 const components = {
     HTML: HTMLComponent,
@@ -15,7 +15,7 @@ const components = {
     IMG: ImgComponent,
     H1: H1Component,
     LINK: LinkComponent
-}
+} as const
 
 class ComponentFactory {
 

@@ -1,23 +1,17 @@
-import { JSDOM, VirtualConsole } from "jsdom";
-import BaseComponent from "../components/base.component";
+import VDomContext from "@/context/vDom.context";
+import { AnalyzeType } from "@/types/AnalyzeType.enum";
 import type HTMLComponent from "../components/html.component";
-import TextComponent from "../components/text.component";
-import ComponentFactory from "../utils/componentFactory.utilts";
 import ErrorHandler from "../utils/errorHandler.utils";
 import DomValidator from "./dom-validator";
 import OpenAi from "./openAi.service";
 import PuppeterService from "./puppeter.service";
-import VDomContext from "@/context/vDom.context";
-import { AnalyzeType } from "@/types/AnalyzeType.enum";
+import VirtualDomUtility from "@/utils/virtualDomGenerator.utils";
 
 enum AnalyzeStatus {
     Analyzing = "analyzing",
     Idle = "idle"
 }
 
-const ignoreTags = ["STYLE", "#comment", "svg", "NOSCRIPT"]
-
-const virtualConsole = new VirtualConsole()
 
 interface VirtualDomProps {
     path: string
@@ -43,76 +37,6 @@ class VirtualDom {
         this.domValidator = new DomValidator(this.openAi)
     }
 
-    async generateVirtualDom() {
-        const to = await this.puppeteer.newPageIfAvailable()
-        const htmlString = await to("https://" + this.path)
-        const dom = new JSDOM(htmlString, { virtualConsole })
-        const html = dom.window.document.children[0]
-        if (!html || html.nodeName != "HTML") {
-            throw new ErrorHandler({
-                message: "HTML element not found",
-                status_code: 404
-            })
-        }
-
-        const vDomContext = new VDomContext()
-
-        const recursive = (elem: Element, pathDom: string, parent: BaseComponent) => {
-
-            let children: Array<BaseComponent | TextComponent> = []
-
-            const Component = ComponentFactory.getComponent(elem.nodeName)
-
-            const component = new Component({
-                tag: elem.nodeName,
-                attributes: elem.attributes,
-                vDomContext,
-                children,
-                pathDom,
-                parent
-            })
-
-            for (let i = 0; i < elem.childNodes.length; i++) {
-
-                const child = elem.childNodes[i] as ChildNode
-                const isText = child.nodeName == "#text"
-
-                if (isText) {
-                    const text = child.nodeValue || ""
-                    if (text.trim().length > 0) {
-                        const textComponent = new TextComponent({
-                            text,
-                            vDomContext: vDomContext,
-                            parent: component
-                        })
-                        textComponent.contextualizeVDom()
-                        children.push(textComponent)
-                    }
-                } else if (!ignoreTags.includes(child.nodeName)) {
-                    const nextPath = pathDom + "/" + child.nodeName + "/" + i
-                    const node = recursive(
-                        child as Element,
-                        nextPath,
-                        component
-                    )
-                    children.push(node)
-                }
-            }
-
-            component.setShouldIgnore()
-            component.contextualizeVDom()
-            return component
-        }
-
-        //@ts-ignore
-        const root = recursive(html, html.nodeName) as HTMLComponent
-
-        return {
-            root,
-            vDomContext
-        }
-    }
-
     private setStatus(status: AnalyzeStatus) {
         this.analyzeStatus = status
     }
@@ -129,7 +53,9 @@ class VirtualDom {
 
         this.throwIfAnalyzing()
 
-        const fn = analyze === AnalyzeType.Basic ?
+        const isValidAnalyzeType = Object.values(AnalyzeType).includes(analyze) ? analyze : AnalyzeType.Basic
+
+        const fn = isValidAnalyzeType === AnalyzeType.Basic ?
             this.domValidator.runBasicValidation.bind(this.domValidator) :
             this.domValidator.runValidation.bind(this.domValidator)
 
@@ -161,8 +87,15 @@ class VirtualDom {
         /**
          * Solo se debe utilizar para la primera generación del snapshot internamente en `getOrGenerateSnapshot`
          */
-        const { root, vDomContext } = await this.generateVirtualDom()
+
+        const to = await this.puppeteer.newPageIfAvailable()
+        const path = `http://${this.path}`
+        const htmlString = await to(path)
+
+        const { root, vDomContext } = await VirtualDomUtility.generateRoot(htmlString)
+
         const htmlContent = root.generateHTML()
+
         return {
             root,
             vDomContext,
