@@ -10,7 +10,6 @@ import ScriptSchemasValidation from "./validations/scriptSchemas.validation";
 import HtmlAiValidation from "./validations/htmlAi.validation";
 import { AnchorLinkValidation } from "./validations/anchorLink.validation";
 
-
 type ValidationWithTokens = Required<Validation>
 
 export default class DomValidator {
@@ -51,23 +50,6 @@ export default class DomValidator {
         this.setValidation(validation)
 
         return validation
-    }
-
-    async runBasicValidation({
-        root,
-        htmlContent,
-        vDomContext
-    }: {
-        root: BaseComponent,
-        htmlContent: string,
-        vDomContext: VDomContext
-    }) {
-        const validationInstaces = [
-            new ComponentTreeValidation(root),
-            new HeadingsValidation(vDomContext),
-            new HtmlAiValidation(this.openAi, htmlContent),
-        ]
-        return await this.validationInstaces(validationInstaces)
     }
 
     async runValidation({

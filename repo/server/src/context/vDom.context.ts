@@ -13,11 +13,7 @@ interface Headings {
     h2: Array<H2Component>
 }
 
-type Texts = Array<{
-    traceId: string,
-    tag: string,
-    text: string
-}>
+type Texts = Array<string>
 /**
  * El `VDomContext` nos ayuda a contextualizar el VDOM una vez finalice todo su creación y recorrido.
  * Cada componente, al ejecutarse, puede actualizar el `VDomContext` con información relevante.

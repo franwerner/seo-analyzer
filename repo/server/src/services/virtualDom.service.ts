@@ -1,5 +1,4 @@
 import VDomContext from "@/context/vDom.context";
-import { AnalyzeType } from "@/types/AnalyzeType.enum";
 import type HTMLComponent from "../components/html.component";
 import ErrorHandler from "../utils/errorHandler.utils";
 import DomValidator from "./dom-validator";
@@ -49,22 +48,16 @@ class VirtualDom {
             })
     }
 
-    async analyze(analyze: AnalyzeType = AnalyzeType.Basic) {
+    async analyze() {
 
         this.throwIfAnalyzing()
-
-        const isValidAnalyzeType = Object.values(AnalyzeType).includes(analyze) ? analyze : AnalyzeType.Basic
-
-        const fn = isValidAnalyzeType === AnalyzeType.Basic ?
-            this.domValidator.runBasicValidation.bind(this.domValidator) :
-            this.domValidator.runValidation.bind(this.domValidator)
 
         this.setStatus(AnalyzeStatus.Analyzing)
 
         const snapshot = await this.getOrGenerateSnapshot()
 
         try {
-            return await fn(snapshot)
+            return await this.domValidator.runValidation(snapshot)
         } catch (error) {
             console.log(`ERROR VALIDATING DOM - ${error}`)
             if (error instanceof ErrorHandler) throw error
@@ -89,7 +82,7 @@ class VirtualDom {
          */
 
         const to = await this.puppeteer.newPageIfAvailable()
-        const path = `http://${this.path}`
+        const path = `https://${this.path}`
         const htmlString = await to(path)
 
         const { root, vDomContext } = await VirtualDomUtility.generateRoot(htmlString)

@@ -1,14 +1,13 @@
+import cookieParser from "cookie-parser";
 import express from "express";
-import "./config/dotenv.config";
 import corsConfig from "./config/cors.config";
-import VirtualDomStore from "./services/VirtualDomStore.service";
-import ErrorHandler from "./utils/errorHandler.utils";
+import "./config/dotenv.config";
+import authMiddleware from "./middleware/auth.middleware";
 import errorGlobal from "./middleware/errorGlobal.middleware";
 import AuthService from "./services/auth.service";
-import authMiddleware from "./middleware/auth.middleware";
-import cookieParser from "cookie-parser";
+import VirtualDomStore from "./services/VirtualDomStore.service";
+import ErrorHandler from "./utils/errorHandler.utils";
 import getEnsureEnv from "./utils/getEnsureEnv.utils";
-import { AnalyzeType } from "./types/AnalyzeType.enum";
 
 
 const app = express()
@@ -41,9 +40,8 @@ app.post("/login", ErrorHandler.routeHandler((req, res) => {
 
 app.get("/analyze", authMiddleware, ErrorHandler.routeHandler(async (req, res) => {
     const url = req.query.url as string
-    const analyze = req.query.analyze_type as AnalyzeType
     const virtualDom = virtualDomStore.getOrThrow(url)
-    const response = await virtualDom.analyze(analyze)
+    const response = await virtualDom.analyze()
     res.json(response)
 }))
 
@@ -61,6 +59,15 @@ app.get("/context", authMiddleware, ErrorHandler.routeHandler(async (req, res) =
     const snapshot = await virtualDom.getOrGenerateSnapshot()
     res.json({
         context: snapshot.vDomContext.texts
+    })
+}))
+
+app.get("/json", authMiddleware, ErrorHandler.routeHandler(async (req, res) => {
+    const url = req.query.url as string
+    const virtualDom = virtualDomStore.getOrCreate(url)
+    const snapshot = await virtualDom.getOrGenerateSnapshot()
+    res.json({
+        json: snapshot.root.vDomContext.texts
     })
 }))
 
