@@ -7,9 +7,10 @@ import OpenAi from "../openAi.service";
 import ComponentTreeValidation from "./validations/componentTree.validation";
 import HeadingsValidation from "./validations/headings.validation";
 import ScriptSchemasValidation from "./validations/scriptSchemas.validation";
-import HtmlAiValidation from "./validations/htmlAi.validation";
 import { AnchorLinkValidation } from "./validations/anchorLink.validation";
 import SpellingValidation from "./validations/spelling.validation";
+import { VirtualDomSnapshot } from "../virtualDom.service";
+import StructureValidation from "./validations/structure.validation";
 
 type ValidationWithTokens = Required<Validation>
 
@@ -55,20 +56,16 @@ export default class DomValidator {
 
     async runValidation({
         root,
-        htmlContent,
-        vDomContext
-    }: {
-        root: BaseComponent,
-        htmlContent: string,
-        vDomContext: VDomContext
-    }) {
+        vDomContext,
+        htmlStructure
+    }: VirtualDomSnapshot) {
         const validationInstaces = [
             // new ComponentTreeValidation(root),
             // new HeadingsValidation(vDomContext),
             // new ScriptSchemasValidation(this.openAi, vDomContext),
-            // new HtmlAiValidation(this.openAi, htmlContent),
             // new AnchorLinkValidation(this.openAi, vDomContext)
-            new SpellingValidation(vDomContext, this.openAi)
+            new StructureValidation(this.openAi, htmlStructure),
+            // new SpellingValidation(vDomContext, this.openAi)
         ]
 
         return await this.validationInstaces(validationInstaces)

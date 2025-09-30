@@ -16,10 +16,10 @@ interface VirtualDomProps {
     path: string
 }
 
-interface VirtualDomSnapshot {
+export interface VirtualDomSnapshot {
     root: HTMLComponent
     vDomContext: VDomContext
-    htmlContent: string
+    htmlStructure: string
 }
 
 class VirtualDom {
@@ -59,10 +59,10 @@ class VirtualDom {
         try {
             return await this.domValidator.runValidation(snapshot)
         } catch (error) {
-            console.log(`ERROR VALIDATING DOM - ${error}`)
+            console.log(`ERROR ANALYZING DOM - ${error}`)
             if (error instanceof ErrorHandler) throw error
             throw new ErrorHandler({
-                message: `ERROR VALIDATING DOM - ${error}`,
+                message: `ERROR ANALYZING DOM - ${error}`,
                 status_code: 500
             })
         } finally {
@@ -85,14 +85,12 @@ class VirtualDom {
         const path = `https://${this.path}`
         const htmlString = await to(path)
 
-        const { root, vDomContext } = await VirtualDomUtility.generateRoot(htmlString)
-
-        const htmlContent = root.generateHTML()
+        const { root, vDomContext, htmlStructure } = await VirtualDomUtility.generateRoot(htmlString)
 
         return {
             root,
             vDomContext,
-            htmlContent
+            htmlStructure
         }
     }
     async getOrGenerateSnapshot() {

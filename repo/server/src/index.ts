@@ -58,7 +58,7 @@ app.get("/context", authMiddleware, ErrorHandler.routeHandler(async (req, res) =
     const snapshot = await virtualDom.getOrGenerateSnapshot()
 
     res.json({
-        context: snapshot.vDomContext.innerTextChunks.chunks[0]
+        context: snapshot.htmlStructure
     })
 }))
 
@@ -83,9 +83,9 @@ app.post("/create", authMiddleware, ErrorHandler.routeHandler(
 app.get("/html", authMiddleware, ErrorHandler.routeHandler(async (req, res) => {
     const url = req.query.url as string
     const virtualDom = virtualDomStore.getOrCreate(url)
-    const { htmlContent } = await virtualDom.getOrGenerateSnapshot()
+    const { htmlStructure } = await virtualDom.getOrGenerateSnapshot()
     res.json({
-        htmlContent
+        htmlStructure
     })
 }))
 

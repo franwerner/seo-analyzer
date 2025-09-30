@@ -5,13 +5,19 @@ import OpenAi from "@/services/openAi.service";
 import { Chunk } from "@/utils/textChunker.util";
 import ValidationUtility from "@/utils/validation.util";
 
-interface QueryResult {
-    query: {
-        tokens: Tokens,
-        words: string[]
-    }
-    chunk: Chunk
-}
+const prompt = `
+Eres un asistente de corrección ortográfica.
+
+        # Instrucciones:
+        1. Analiza el TEXTO proporcionado y detecta únicamente palabras con errores **ortográficos**.
+        2. Ignora por completo la gramática, sintaxis, puntuación, redacción o palabras mal empleadas en contexto. SOLO revisa si la palabra está mal escrita.
+        3. No incluyas explicaciones, definiciones ni texto adicional fuera del Array.
+        4. No marques como error:
+        - Abreviaturas válidas (ej: "etc.", "Sr.", "Dr.", "vs.")
+        - Siglas o acrónimos en mayúsculas (ej: "ONU", "NASA")
+        - Palabras técnicas correctamente escritas.
+        5. Cada palabra debe aparecer solo una vez en el Array, aunque se repita en el texto.
+`
 
 export default class SpellingValidation extends ValidationUtility {
     constructor(
@@ -24,7 +30,7 @@ export default class SpellingValidation extends ValidationUtility {
     private async getCheckWordsResult() {
         const queries = this.context.innerTextChunks.chunks
             .map(chunk =>
-                this.openAI.generateIssueWords(JSON.stringify(chunk.parts_texts))
+                this.openAI.generateIssueWords(JSON.stringify(chunk.parts_texts), prompt)
             )
         const results = await Promise.all(queries)
 

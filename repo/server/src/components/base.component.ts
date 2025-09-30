@@ -114,23 +114,6 @@ class BaseComponent {
         }, {} as Attributes)
     }
 
-    generateHTML(): string {
-        const attrs = Object.entries(this.attributes)
-            .filter(([_, value]) => value)
-            .map(([key, value]) => `${key}=${value}`)
-            .join(" ")
-
-        const tag = this.tag
-
-        const childrenStr = this.children
-            .map(child => child instanceof TextComponent ? child.text : child.generateHTML())
-            .join("")
-
-        return this.needsClosingTag ?
-            `<${tag} t-id=${this.traceId} ${attrs}>${childrenStr}</${tag}>` : `<${tag} t-id=${this.traceId} ${attrs} />`
-    }
-
-
     private setInnerText() {
 
         if (["script"].includes(this.tag) || this.innerText === null) return

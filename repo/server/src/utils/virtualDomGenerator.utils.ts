@@ -4,13 +4,31 @@ import VDomContext from "@/context/vDom.context"
 import { JSDOM, VirtualConsole } from "jsdom"
 import ComponentFactory from "./componentFactory.utilts"
 import ErrorHandler from "./errorHandler.utils"
+import HTMLComponent from "@/components/html.component"
 
 
 export default class VirtualDomGeneratorUtility {
 
     private static readonly virtualConsole = new VirtualConsole()
     private static readonly ignoreTags = ["STYLE", "#comment", "svg", "NOSCRIPT"]
+    private static readonly ignoreTagsForHtmlStructure = ["script", "link", "meta"]
 
+
+    private static generateHtmlStructure(root: HTMLComponent) {
+
+        const tree = (c: BaseComponent): string => {
+
+            const { tag, traceId, children } = c
+
+            if (!c.needsClosingTag) return `<${tag} t-id=${traceId}/>`
+
+            const onlyChildrenBaseComponent = children.filter(child => child instanceof BaseComponent && !this.ignoreTagsForHtmlStructure.includes(child.tag)) as Array<BaseComponent>
+
+            return `<${tag} t-id=${traceId}>${onlyChildrenBaseComponent.map(child => tree(child)).join("")}</${tag}>`
+        }
+
+        return tree(root)
+    }
 
     private static createJSDOM(htmlString: string) {
         const dom = new JSDOM(htmlString, { virtualConsole: this.virtualConsole })
@@ -32,7 +50,7 @@ export default class VirtualDomGeneratorUtility {
     }
 
 
-    private static generateChildren(parent: BaseComponent, elem: Element, pathDom: string, ctx: Array<Function>) {
+    private static generateChildren(parent: BaseComponent, elem: Element, parentPathDom: string, ctx: Array<Function>) {
 
         const childrens: Array<Children> = []
 
@@ -49,7 +67,7 @@ export default class VirtualDomGeneratorUtility {
                 }
             }
             else if (!this.ignoreTags.includes(child.nodeName) && child.nodeName != "HTML") {
-                const nextPathDom = pathDom + "/" + child.nodeName + "/" + i
+                const nextPathDom = parentPathDom + "/" + child.nodeName + "/" + i
                 const Component = ComponentFactory.getComponent(child.nodeName)
                 const componentInstance = new Component({
                     tag: child.nodeName,
@@ -92,9 +110,13 @@ export default class VirtualDomGeneratorUtility {
         htmlInstance.children = this.generateChildren(htmlInstance, html, htmlPathDom, ctx)
 
         ctx.forEach(fn => fn())
+
+        const htmlStructure = this.generateHtmlStructure(htmlInstance)
+
         return {
             root: htmlInstance,
-            vDomContext
+            vDomContext,
+            htmlStructure
         }
     }
 

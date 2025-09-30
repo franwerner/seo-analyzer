@@ -43,9 +43,6 @@ export default class ScriptSchemasValidation extends ValidationUtility {
         
         TAG : script
 
-        ${localBusiness ? `LocalBusiness Schema: ${localBusiness.generateHTML()}` : ""}
-
-        ${faqPage ? `FAQPage Schema: ${faqPage.generateHTML()}` : ""}
         
         INSTRUCCIONES:
         1. Analiza únicamente cada schema individualmente.
