@@ -9,6 +9,7 @@ import HeadingsValidation from "./validations/headings.validation";
 import ScriptSchemasValidation from "./validations/scriptSchemas.validation";
 import HtmlAiValidation from "./validations/htmlAi.validation";
 import { AnchorLinkValidation } from "./validations/anchorLink.validation";
+import SpellingValidation from "./validations/spelling.validation";
 
 type ValidationWithTokens = Required<Validation>
 
@@ -62,11 +63,12 @@ export default class DomValidator {
         vDomContext: VDomContext
     }) {
         const validationInstaces = [
-            new ComponentTreeValidation(root),
-            new HeadingsValidation(vDomContext),
-            new ScriptSchemasValidation(this.openAi, vDomContext),
-            new HtmlAiValidation(this.openAi, htmlContent),
-            new AnchorLinkValidation(this.openAi, vDomContext)
+            // new ComponentTreeValidation(root),
+            // new HeadingsValidation(vDomContext),
+            // new ScriptSchemasValidation(this.openAi, vDomContext),
+            // new HtmlAiValidation(this.openAi, htmlContent),
+            // new AnchorLinkValidation(this.openAi, vDomContext)
+            new SpellingValidation(vDomContext, this.openAi)
         ]
 
         return await this.validationInstaces(validationInstaces)

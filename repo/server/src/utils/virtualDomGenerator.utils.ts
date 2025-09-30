@@ -1,4 +1,4 @@
-import BaseComponent, { Children, Parent } from "@/components/base.component"
+import BaseComponent, { Children } from "@/components/base.component"
 import TextComponent from "@/components/text.component"
 import VDomContext from "@/context/vDom.context"
 import { JSDOM, VirtualConsole } from "jsdom"
@@ -32,12 +32,12 @@ export default class VirtualDomGeneratorUtility {
     }
 
 
-    private static generateChildren(parent: BaseComponent, elem: Element, pathDom: string) {
+    private static generateChildren(parent: BaseComponent, elem: Element, pathDom: string, ctx: Array<Function>) {
 
         const childrens: Array<Children> = []
 
-        for (let i = 0; i < elem.children.length; i++) {
-            const child = elem.children[i] as Element
+        for (let i = 0; i < elem.childNodes.length; i++) {
+            const child = elem.childNodes[i] as Element
 
             if (child.nodeName == "#text") {
                 const text = child.nodeValue || ""
@@ -48,8 +48,7 @@ export default class VirtualDomGeneratorUtility {
                     }))
                 }
             }
-
-            if (!this.ignoreTags.includes(child.nodeName) && child.nodeName != "HTML") {
+            else if (!this.ignoreTags.includes(child.nodeName) && child.nodeName != "HTML") {
                 const nextPathDom = pathDom + "/" + child.nodeName + "/" + i
                 const Component = ComponentFactory.getComponent(child.nodeName)
                 const componentInstance = new Component({
@@ -60,7 +59,8 @@ export default class VirtualDomGeneratorUtility {
                     pathDom: nextPathDom,
                     parent
                 })
-                componentInstance.children = this.generateChildren(componentInstance, child, nextPathDom)
+                ctx.push(componentInstance.afterCreateInstance.bind(componentInstance))
+                componentInstance.children = this.generateChildren(componentInstance, child, nextPathDom, ctx)
                 childrens.push(componentInstance)
             }
         }
@@ -76,7 +76,7 @@ export default class VirtualDomGeneratorUtility {
 
         const HTMLComponent = ComponentFactory.getComponent("HTML")
 
-        const htmlPathDom = "/"
+        const htmlPathDom = "HTML"
 
         const htmlInstance = new HTMLComponent({
             tag: "HTML",
@@ -87,8 +87,11 @@ export default class VirtualDomGeneratorUtility {
             parent: null
         })
 
-        htmlInstance.children = this.generateChildren(htmlInstance, html, htmlPathDom)
+        const ctx: Array<Function> = []
 
+        htmlInstance.children = this.generateChildren(htmlInstance, html, htmlPathDom, ctx)
+
+        ctx.forEach(fn => fn())
         return {
             root: htmlInstance,
             vDomContext

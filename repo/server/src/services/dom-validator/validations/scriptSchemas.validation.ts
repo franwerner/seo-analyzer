@@ -58,10 +58,7 @@ export default class ScriptSchemasValidation extends ValidationUtility {
         8. Todo de un mismo schema solo en un messaje de respuesta no generes varios mensajes del mismo tipo
         `;
 
-        const { issues: issuesOpenAi, tokens: tokensOpenAi } = await this.openAi.generateIssues(JSON.stringify(this.context.texts), prompt)
 
-        this.addIssue(issuesOpenAi)
-        this.addTokens(tokensOpenAi)
     }
 
 

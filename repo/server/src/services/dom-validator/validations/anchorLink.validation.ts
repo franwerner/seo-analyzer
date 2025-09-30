@@ -28,7 +28,6 @@ export class AnchorLinkValidation extends ValidationUtility {
              - Exactamente un mismo problema de una misma ETIQUETA lo debes agrupar en un solo objeto con un array de t-id.
              `
         )
-        this.addIssue(res.issues)
-        this.addTokens(res.tokens)
+
     }
 }

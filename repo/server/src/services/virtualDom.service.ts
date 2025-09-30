@@ -109,7 +109,7 @@ class VirtualDom {
             }
             return await this.snapshot
         } catch (error) {
-            console.log(`ERROR GENERATING SNAPSHOT => ${this.path}`)
+            console.log(`ERROR GENERATING SNAPSHOT => ${this.path} , ${error}`)
             this.snapshot = null
             if (error instanceof ErrorHandler) {
                 throw error

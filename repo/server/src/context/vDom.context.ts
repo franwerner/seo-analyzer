@@ -2,6 +2,8 @@ import AnchorComponent from "@/components/anchor.component"
 import H1Component from "../components/h1.component"
 import H2Component from "../components/h2.component"
 import ScriptComponent from "../components/script.component"
+import BaseComponent from "@/components/base.component"
+import TextChunker from "@/utils/textChunker.util"
 
 interface Schemas {
     faqPage: ScriptComponent | null,
@@ -37,9 +39,10 @@ export default class VDomContext {
         faqPage: null,
         localBusiness: null
     }
-    texts: Texts = []
+    innerTextChunks: TextChunker = new TextChunker()
     a: Array<AnchorComponent> = []
 
     constructor() { }
+
 
 }

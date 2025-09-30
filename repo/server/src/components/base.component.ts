@@ -52,8 +52,6 @@ const inlineTextSeparatorTags = [
 ]
 
 
-
-
 class BaseComponent {
 
     tag: string;
@@ -88,7 +86,7 @@ class BaseComponent {
 
     protected contextualizeVDom() {
         if (!this.innerText) return
-        this.vDomContext.texts.push(`<${this.tag} >${this.innerText}</${this.tag}>`)
+        this.vDomContext.innerTextChunks.pushComponentText(this)
     }
 
     private static generateTraceIdHash(forHash: string) {
