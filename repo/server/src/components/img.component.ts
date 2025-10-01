@@ -1,4 +1,4 @@
-import { Issue } from "@/schemas/issues.schema"
+import { Issue } from "@/schemas/issue.schema"
 import { BaseComponentProps } from "./base.component"
 import BaseValidatableComponent from "./baseValidatable.component"
 
@@ -12,7 +12,7 @@ export default class ImgComponent extends BaseValidatableComponent {
             message: "Image without alt",
             tag: this.tag,
             traceIds: [this.traceId],
-            type: "general",
+            type: "semantic",
         } satisfies Issue
     }
 }

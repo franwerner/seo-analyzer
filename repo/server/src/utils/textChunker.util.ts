@@ -11,7 +11,7 @@ export class Chunk {
     forEachPartMatchingWord(word: string, callback: (part: BaseComponent) => void) {
         const regex = new RegExp(`\\b${word}\\b`, "i") //case-insensitive
         return this.parts.forEach(part => {
-            if (!part.innerText || !regex.test(part.innerText)) return
+            if (!part.innerText || !regex.test(part.innerText.value)) return
             callback(part)
         })
     }
@@ -40,7 +40,7 @@ export default class TextChunker {
 
     pushComponentText(component: BaseComponent) {
 
-        const text = component.innerText
+        const text = component.innerText.value
 
         if (!text) return
 

@@ -58,7 +58,7 @@ app.get("/context", authMiddleware, ErrorHandler.routeHandler(async (req, res) =
     const snapshot = await virtualDom.getOrGenerateSnapshot()
 
     res.json({
-        context: snapshot.htmlStructure
+        context: snapshot.htmlSemantic
     })
 }))
 

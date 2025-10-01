@@ -1,7 +1,8 @@
+import { IssueType } from "@/schemas/issueType.schema";
+import { issueOutputSchema, issueOutputWithOutTypeSchema } from "@/schemas/openAiOutput.schema";
+import WordsSchema from "@/schemas/words.schema";
 import OpenAI from "openai";
 import { zodTextFormat } from "openai/helpers/zod";
-import openAiInputSchema from "../schemas/openAiInput.schema";
-import WordsSchema from "@/schemas/words.schema";
 
 class OpenAi {
   openAI: OpenAI
@@ -32,6 +33,31 @@ class OpenAi {
       words: WordsSchema.parse(JSON.parse(response.output_text)).words,
       tokens: OpenAi.getTokenUsage(response)
     }
+  }
+
+
+  async generateIssuesAsType(
+    input: string,
+    instructions: string,
+    type: IssueType
+  ) {
+
+    const response = await this.openAI.responses.create({
+      model: "gpt-5-mini",
+      instructions,
+      input,
+      text: {
+        format: zodTextFormat(issueOutputWithOutTypeSchema, "issues")
+      }
+    })
+
+    const outputIssues = issueOutputWithOutTypeSchema.parse(JSON.parse(response.output_text)).issues
+    const issues = outputIssues.map(issue => ({ ...issue, type }))
+
+    return {
+      issues,
+      tokens: OpenAi.getTokenUsage(response)
+    }
 
   }
 
@@ -41,15 +67,14 @@ class OpenAi {
     const response = await this.openAI.responses.create({
       model: "gpt-5-mini",
       text: {
-        format: zodTextFormat(openAiInputSchema, "issues")
+        format: zodTextFormat(issueOutputSchema, "issues")
       },
       instructions,
       input,
-    },
-    )
+    })
 
     return {
-      issues: openAiInputSchema.parse(JSON.parse(response.output_text)).issues,
+      issues: issueOutputSchema.parse(JSON.parse(response.output_text)).issues,
       tokens: OpenAi.getTokenUsage(response)
     }
   }

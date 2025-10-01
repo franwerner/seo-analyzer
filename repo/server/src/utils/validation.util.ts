@@ -1,4 +1,4 @@
-import { Issue } from "@/schemas/issues.schema"
+import { Issue } from "@/schemas/issue.schema"
 import { Tokens } from "@/types/Tokens.interface"
 import { Validation } from "@/types/Validation.interface"
 

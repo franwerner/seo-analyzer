@@ -2,8 +2,10 @@ import AnchorComponent from "@/components/anchor.component"
 import H1Component from "../components/h1.component"
 import H2Component from "../components/h2.component"
 import ScriptComponent from "../components/script.component"
-import BaseComponent from "@/components/base.component"
 import TextChunker from "@/utils/textChunker.util"
+import H3Component from "@/components/h3.component"
+import TitleComponent from "@/components/title.component"
+import MetaComponent from "@/components/meta.component"
 
 interface Schemas {
     faqPage: ScriptComponent | null,
@@ -13,9 +15,9 @@ interface Schemas {
 interface Headings {
     h1: Array<H1Component>
     h2: Array<H2Component>
+    h3: Array<H3Component>
 }
 
-type Texts = Array<string>
 /**
  * El `VDomContext` nos ayuda a contextualizar el VDOM una vez finalice todo su creación y recorrido.
  * Cada componente, al ejecutarse, puede actualizar el `VDomContext` con información relevante.
@@ -30,15 +32,20 @@ type Texts = Array<string>
  * - Validaciones locales: cada componente valida sus propias reglas inmediatas (alt de imágenes, textos vacíos, etc.).
  * - Validaciones globales: reglas que requieren conocer todo el DOM (existencia de H1, duplicados, schemas, links rotos).
  */
+
+
 export default class VDomContext {
     headings: Headings = {
         h1: [],
-        h2: []
+        h2: [],
+        h3: []
     }
     schemas: Schemas = {
         faqPage: null,
         localBusiness: null
     }
+    metaDescription: Array<MetaComponent> = []
+    title: Array<TitleComponent> = []
     innerTextChunks: TextChunker = new TextChunker()
     a: Array<AnchorComponent> = []
 

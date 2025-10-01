@@ -18,7 +18,9 @@ export default class VirtualDomGeneratorUtility {
 
         const tree = (c: BaseComponent): string => {
 
-            const { tag, traceId, children } = c
+            const { tag, traceId } = c
+
+            const children = c.getOrThrowChildren()
 
             if (!c.needsClosingTag) return `<${tag} t-id=${traceId}/>`
 
@@ -28,6 +30,22 @@ export default class VirtualDomGeneratorUtility {
         }
 
         return tree(root)
+    }
+
+    private static genenerateHtmlSemantic(context: VDomContext): Array<string> {
+
+        const metaFirst = context.metaDescription.at(0)
+        const titleFirst = context.title.at(0)
+        const h1First = context.headings.h1.at(0)
+
+        const anchor = context.a.map(i => i.generateInnerHTML({ includeAttributes: false }))
+        const meta = metaFirst ? `<meta t-id=${metaFirst.traceId} name="description" content="${metaFirst.attributes.content}"/>` : ""
+        const title = titleFirst ? `<title t-id=${titleFirst.traceId}>${titleFirst.innerText.value}</title>` : ""
+        const h1 = h1First ? `<h1 t-id=${h1First.traceId}>${h1First.innerText.value}</h1>` : ""
+        const h2s = context.headings.h2.map(i => `<h2 t-id=${i.traceId}>${i.innerText.value}</h2>`)
+        const h3s = context.headings.h3.map(i => `<h3 t-id=${i.traceId}>${i.innerText.value}</h3>`)
+
+        return [...anchor, meta, title, h1, ...h2s, ...h3s].filter(i => i != "")
     }
 
     private static createJSDOM(htmlString: string) {
@@ -50,7 +68,7 @@ export default class VirtualDomGeneratorUtility {
     }
 
 
-    private static generateChildren(parent: BaseComponent, elem: Element, parentPathDom: string, ctx: Array<Function>) {
+    private static generateChildren(parent: BaseComponent, elem: Element, parentPathDom: string) {
 
         const childrens: Array<Children> = []
 
@@ -73,17 +91,28 @@ export default class VirtualDomGeneratorUtility {
                     tag: child.nodeName,
                     attributes: child.attributes,
                     vDomContext: parent.vDomContext,
-                    children: [],
                     pathDom: nextPathDom,
                     parent
                 })
-                ctx.push(componentInstance.afterCreateInstance.bind(componentInstance))
-                componentInstance.children = this.generateChildren(componentInstance, child, nextPathDom, ctx)
+                componentInstance.children = this.generateChildren(componentInstance, child, nextPathDom)
+                componentInstance.afterCreateChildrens()
                 childrens.push(componentInstance)
             }
         }
 
         return childrens
+    }
+
+    private static contextualizeTree(base: BaseComponent) {
+
+        base.contextualizeVDom()
+
+        base.getOrThrowChildren().forEach(child => {
+            if (child instanceof BaseComponent) {
+                this.contextualizeTree(child)
+            }
+        })
+
     }
 
     static async generateRoot(htmlString: string) {
@@ -100,23 +129,24 @@ export default class VirtualDomGeneratorUtility {
             tag: "HTML",
             attributes: html.attributes,
             vDomContext,
-            children: [],
             pathDom: htmlPathDom,
             parent: null
         })
 
-        const ctx: Array<Function> = []
 
-        htmlInstance.children = this.generateChildren(htmlInstance, html, htmlPathDom, ctx)
+        htmlInstance.children = this.generateChildren(htmlInstance, html, htmlPathDom)
+        htmlInstance.afterCreateChildrens()
 
-        ctx.forEach(fn => fn())
 
+        this.contextualizeTree(htmlInstance)
         const htmlStructure = this.generateHtmlStructure(htmlInstance)
+        const htmlSemantic = this.genenerateHtmlSemantic(vDomContext)
 
         return {
             root: htmlInstance,
             vDomContext,
-            htmlStructure
+            htmlStructure,
+            htmlSemantic
         }
     }
 

@@ -14,7 +14,7 @@ interface BaseComponentProps {
 export type Children = BaseComponent | TextComponent
 export type Parent = BaseComponent | null
 type Childrens = Array<Children>
-type Attributes = Record<string, string>
+export type Attributes = Record<string, string>
 
 /*
  * Solo se indican los atributos que **no se deben pickear**, porque la IA 
@@ -24,6 +24,8 @@ type Attributes = Record<string, string>
  */
 
 const notPickableAttributesExp = /^(class|id|style|data-.*|aria-.*)$/
+
+const notPickInnertTextTags = ["script"]
 
 const selfClosingTags = [
     "area", "base", "br", "col", "embed", "hr", "img",
@@ -51,28 +53,33 @@ const inlineTextSeparatorTags = [
     "br"
 ]
 
-
 class BaseComponent {
 
     tag: string;
-    children: Childrens
+    children?: Childrens
     traceId: string
     attributes: Attributes
     needsClosingTag: boolean
     vDomContext: VDomContext
     parent: Parent
-    innerText?: string | null;
+    innerText: {
+        value: string,
+        claimedByParent: boolean
+    } = {
+            value: "",
+            claimedByParent: false
+        }
     private isInlineTextSeparator: boolean = false
 
     constructor({ tag, children, attributes, pathDom, vDomContext, parent }: BaseComponentProps) {
         const tagToLowerCase = tag.toLowerCase()
         this.tag = tagToLowerCase
         this.parent = parent
-        this.children = children || []
+        this.children = children
         this.isInlineTextSeparator = inlineTextSeparatorTags.includes(tagToLowerCase)
         this.attributes = BaseComponent.extractAttributes(attributes)
         this.traceId = BaseComponent.generateTraceIdHash(pathDom)
-        this.needsClosingTag = BaseComponent.needsClosingTag(tagToLowerCase)
+        this.needsClosingTag = !selfClosingTags.includes(tagToLowerCase)
         this.vDomContext = vDomContext
     }
 
@@ -83,9 +90,23 @@ class BaseComponent {
         return this.parent
     }
 
+    getOrThrowChildren() {
+        if (!this.children) {
+            throw new Error("Children is null")
+        }
+        return this.children
+    }
 
-    protected contextualizeVDom() {
-        if (!this.innerText) return
+    contextualizeVDom() {
+        /**
+        * @note
+        * 
+        * La contextualización se apoya en la estructura completa del VDOM, y debe ejecutarse en orden jerárquico
+        * de arriba hacia abajo para garantizar consistencia.
+        * Esto se debe a que algunas contextualizacion necesitan acceder al estado de sus hijos para tomar deciciones de contextualizacion.
+        * 
+        */
+        if (this.innerText.claimedByParent || !this.innerText.value) return
         this.vDomContext.innerTextChunks.pushComponentText(this)
     }
 
@@ -94,12 +115,6 @@ class BaseComponent {
          * Este hash nos ayuda a rastrear posteriormente el elemento en el DOM.
          */
         return crc32.str(forHash).toString()
-    }
-
-
-    private static needsClosingTag(tag: string) {
-        /**Verifica si necesita un cierre  */
-        return !selfClosingTags.includes(tag)
     }
 
     private static extractAttributes(inputAttributes: NamedNodeMap) {
@@ -114,10 +129,28 @@ class BaseComponent {
         }, {} as Attributes)
     }
 
-    private setInnerText() {
+    generateInnerHTML(props: {
+        includeAttributes?: boolean
+    } = {}): string {
 
-        if (["script"].includes(this.tag) || this.innerText === null) return
+        const { includeAttributes } = props
 
+        const attrs = includeAttributes ? Object.entries(this.attributes)
+            .filter(([_, value]) => value)
+            .map(([key, value]) => `${key}=${value}`)
+            .join(" ") : ""
+
+        const tag = this.tag
+
+        const childrenStr = this.getOrThrowChildren()
+            .map(child => child instanceof TextComponent ? child.text : child.generateInnerHTML(props))
+            .join("")
+
+        return this.needsClosingTag ?
+            `<${tag} t-id=${this.traceId} ${attrs}>${childrenStr}</${tag}>` : `<${tag} t-id=${this.traceId} ${attrs} />`
+    }
+
+    private generateInnerText() {
         const treeText = (children: Childrens) => {
             return children.reduce((acc, child, index) => {
                 if (child instanceof TextComponent) {
@@ -127,28 +160,37 @@ class BaseComponent {
                     acc += " "
                 }
                 else if (child.isInlineTextSeparator) {
-                    child.innerText = null
+                    child.innerText.claimedByParent = true
                     const nextSibling = children[index + 1]
-                    const treeTextOuput = treeText(child.children)
-                    const includeSpace = nextSibling instanceof BaseComponent && !nextSibling.isInlineTextSeparator && !treeTextOuput.endsWith(" ") ? " " : ""
+                    const treeTextOuput = child.innerText.value
+
+                    const includeSpace = nextSibling instanceof BaseComponent
+                        && !nextSibling.isInlineTextSeparator && treeTextOuput &&
+                        !treeTextOuput.endsWith(" ") ? " " : ""
+
                     acc += treeTextOuput + includeSpace
                 }
                 return acc
             }, "")
         }
+        return treeText(this.getOrThrowChildren())
+    }
+    private setInnerText() {
 
+        if (notPickInnertTextTags.includes(this.tag)) return
 
-        this.innerText = treeText(this.children)
+        this.innerText.value = this.generateInnerText()
     }
 
-    afterCreateInstance() {
+
+    afterCreateChildrens() {
+        //Todo lo que esta se debe ejecutar luego de agregar los componentes hijos.
         this.setInnerText()
-        this.contextualizeVDom()
     }
 
     toJSON() {
 
-        const children = this.children.map(child => child instanceof TextComponent ? child.text : child.toJSON()) as Childrens
+        const children = this.getOrThrowChildren().map(child => child instanceof TextComponent ? child.text : child.toJSON()) as Childrens
 
         return {
             tag: this.tag,

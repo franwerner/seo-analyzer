@@ -12,7 +12,7 @@ export default class ComponentTreeValidation extends ValidationUtility {
         const traverse = async (component: BaseComponent) => {
             const validate = component instanceof BaseValidatableComponent ? await component.validate() : undefined
             await Promise.all(
-                component.children
+                component.getOrThrowChildren()
                     .filter(child => child instanceof BaseComponent)
                     .map(child => traverse(child))
             )

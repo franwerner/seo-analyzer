@@ -1,3 +1,4 @@
+import { IssueType } from "@/schemas/issueType.schema";
 import OpenAi from "@/services/openAi.service";
 import ValidationUtility from "@/utils/validation.util";
 
@@ -23,7 +24,6 @@ const prompt = `
                   "tag": "h1",
                   "message": "Se detectaron múltiples elementos.",
                   "traceIds": [123, 456],
-                  "type" : "structure"
                   }]
 `
 
@@ -37,11 +37,11 @@ export default class StructureValidation extends ValidationUtility {
 
     async validate() {
 
-        const response = await this.openAI.generateIssues(
+        const response = await this.openAI.generateIssuesAsType(
             this.htmlStructure,
-            prompt
+            prompt,
+            IssueType.STRUCTURE
         )
-        console.log(response.issues)
 
         this.addTokens(response.tokens)
         this.addIssue(response.issues)

@@ -1,5 +1,5 @@
 import VDomContext from "@/context/vDom.context";
-import { Issue } from "@/schemas/issues.schema";
+import { Issue } from "@/schemas/issue.schema";
 import OpenAi from "@/services/openAi.service";
 import ValidationUtility from "@/utils/validation.util";
 
@@ -15,6 +15,7 @@ export default class ScriptSchemasValidation extends ValidationUtility {
         return {
             message: `Not found ${name} schema`,
             tag: "script",
+            traceIds: [],
             type: "schema"
         }
     }

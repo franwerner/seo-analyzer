@@ -16,14 +16,15 @@ export default class HeadingsValidation extends ValidationUtility {
             this.addIssue(h1.map(prev => ({
                 message: "The webpage contains more than one h1 element",
                 tag: "H1",
-                traceId: prev.traceId,
-                type: "semantic"
+                traceIds: [prev.traceId],
+                type: "structure"
             })))
         } else if (h1.length === 0) {
             this.addIssue({
                 message: "No h1 found",
                 tag: "H1",
-                type: "semantic"
+                traceIds: [],
+                type: "structure"
             })
         }
     }
@@ -34,8 +35,8 @@ export default class HeadingsValidation extends ValidationUtility {
             this.addIssue(h2.map(prev => ({
                 message: "The webpage contains more than 10 h2 elements",
                 tag: "h2",
-                traceId: prev.traceId,
-                type: "semantic"
+                traceIds: [prev.traceId],
+                type: "structure"
             })))
         }
     }

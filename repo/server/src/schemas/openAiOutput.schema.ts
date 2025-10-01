@@ -1,14 +1,17 @@
 import { z } from "zod"
-import openAiInputSchema from "./openAiInput.schema"
+import issueSchema, { issueSchemaWithOutType } from "./issue.schema"
+import tokensSchema from "./tokens.schema"
 
-const tokensSchema = z.object({
-    input: z.number(),
-    output: z.number()
-})
 
-const openAiOutputSchema = z.object({
+const issueOutputSchema = z.object({
     tokens: tokensSchema,
-    ...openAiInputSchema.shape
+    issues: z.array(issueSchema)
 })
-export type Tokens = z.infer<typeof tokensSchema>
-export default openAiOutputSchema
+
+
+const issueOutputWithOutTypeSchema = z.object({
+    tokens: tokensSchema,
+    issues: z.array(issueSchemaWithOutType)
+})
+
+export { issueOutputWithOutTypeSchema, issueOutputSchema }

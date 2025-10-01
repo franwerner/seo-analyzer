@@ -1,8 +1,6 @@
 import BaseComponent from "@/components/base.component";
 import VDomContext from "@/context/vDom.context";
-import { Tokens } from "@/schemas/openAiOutput.schema";
 import OpenAi from "@/services/openAi.service";
-import { Chunk } from "@/utils/textChunker.util";
 import ValidationUtility from "@/utils/validation.util";
 
 const prompt = `

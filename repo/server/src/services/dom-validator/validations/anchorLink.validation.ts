@@ -8,8 +8,7 @@ export class AnchorLinkValidation extends ValidationUtility {
     constructor(private openAI: OpenAi, private context: VDomContext) { super() }
 
     async validate() {
-
-        const a = this.context.a.map(e => e.generateHTML())
+        const a = this.context.a.map(e => e.innerText.value)
 
         const res = await this.openAI.generateIssues(
             JSON.stringify(a),

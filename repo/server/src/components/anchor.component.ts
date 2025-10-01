@@ -1,42 +1,53 @@
-import { Issue } from "@/schemas/issues.schema";
-import isValidHttpUrl from "../utils/isValidHttpUrl.util";
-import type { BaseComponentProps } from "./base.component";
-import BaseComponent from "./base.component";
+import { Issue } from "@/schemas/issue.schema";
+import type { Attributes, BaseComponentProps } from "./base.component";
 import BaseValidatableComponent from "./baseValidatable.component";
-import TextComponent from "./text.component";
 
 const notValidText = ["read more", "learn more", "see more"]
 
 class AnchorComponent extends BaseValidatableComponent {
 
-    text: {
-        value: string
-        containNotValidText: boolean
+    private localContext: {
+        isValidHttpUrl: boolean
+        isGenericText: boolean
+        hasBlackHoleHref: boolean
     } = {
-            value: "",
-            containNotValidText: false
+            isValidHttpUrl: false,
+            isGenericText: false,
+            hasBlackHoleHref: false
         }
+
+    static readonly pattern = /^(https?:\/\/)(([a-zA-Z0-9-]+\.)+[a-zA-Z]{2,})(:\d+)?(\/[^\s]*)?$/;
 
     constructor(props: BaseComponentProps) {
         super(props)
     }
 
-    contextualizeVDom() {
-        super.contextualizeVDom()
-        if (!this.attributes.href || !this.getText().containNotValidText) return
-        this.vDomContext.a.push(this)
+    private static isValidHttpUrl(url: any) {
+        return AnchorComponent.pattern.test(url);
+    }
+
+    private static isGenericText(text: string) {
+        const containsKeyword = notValidText.some(keyword => text.toLowerCase() == keyword)
+        return containsKeyword
+    }
+
+    private static hasBlackHoleHref(attributes: Attributes) {
+        const isBlackHoleHref = attributes.href?.includes("blackhole")
+        return !!isBlackHoleHref
     }
 
 
-    hasBlackHoleHref() {
-        const att = this.attributes
-        const isBlackHoleHref = att.href?.includes("blackhole")
-        return !!isBlackHoleHref
+    contextualizeVDom() {
+        super.contextualizeVDom()
+        const { isGenericText, hasBlackHoleHref } = this.localContext
+        if (!this.attributes.href || isGenericText || hasBlackHoleHref) return
+        this.vDomContext.a.push(this)
     }
 
     private async validateHref() {
         const href = this.attributes.href
-        if (!isValidHttpUrl(href) || this.hasBlackHoleHref()) return
+        const { isValidHttpUrl, hasBlackHoleHref } = this.localContext
+        if (!isValidHttpUrl || hasBlackHoleHref || !href) return
         try {
             const res = await fetch(href, { method: "HEAD" })
             if ([404, 500, 504].includes(res.status)) throw ""
@@ -45,50 +56,20 @@ class AnchorComponent extends BaseValidatableComponent {
                 message: `${href} link broken`,
                 traceIds: [this.traceId],
                 tag: this.tag,
-                type: "general"
+                type: "resource"
             } satisfies Issue
         }
     }
 
-    private getText() {
-
-        if (this.text.value) return this.text
-
-        const recursiveText = (node: BaseComponent) => {
-            return node.children.reduce((acc, child) => {
-                if (child instanceof TextComponent) {
-                    acc += child.text
-                } else {
-                    acc += recursiveText(child)
-                }
-                return acc
-            }, "")
-        }
-
-        const text = recursiveText(this).replace(/\s+/g, " ").trim()
-
-        const containsKeyword = notValidText.some(keyword => text.toLowerCase() == keyword)
-
-        return this.text = {
-            value: text,
-            containNotValidText: containsKeyword
-        }
-
-    }
-
     private async validateText() {
 
-        const {
-            value,
-            containNotValidText
-        } = this.getText()
-
-        if (containNotValidText) {
+        const { isGenericText } = this.localContext
+        if (isGenericText) {
             return {
-                message: `the text "${value}" is not very descriptive`,
+                message: `the text "${this.innerText}" is not very descriptive`,
                 traceIds: [this.traceId],
                 tag: this.tag,
-                type: "general"
+                type: "semantic"
             } satisfies Issue
         }
     }
@@ -99,7 +80,7 @@ class AnchorComponent extends BaseValidatableComponent {
             message: "Anchor without href",
             traceIds: [this.traceId],
             tag: this.tag,
-            type: "general"
+            type: "semantic"
         } satisfies Issue
 
         const validations = await Promise.all([
@@ -108,6 +89,20 @@ class AnchorComponent extends BaseValidatableComponent {
         ])
 
         return validations.filter(issue => issue !== undefined)
+    }
+
+    private setLocalContext() {
+        /**
+         * Nos ayuda a cachear algunas validaciones internas que se repitan en varios metodos internos del componente.
+         */
+        this.localContext.isValidHttpUrl = AnchorComponent.isValidHttpUrl(this.attributes.href)
+        this.localContext.isGenericText = AnchorComponent.isGenericText(this.innerText.value)
+        this.localContext.hasBlackHoleHref = AnchorComponent.hasBlackHoleHref(this.attributes)
+    }
+
+    afterCreateChildrens(): void {
+        super.afterCreateChildrens()
+        this.setLocalContext()
     }
 
 }

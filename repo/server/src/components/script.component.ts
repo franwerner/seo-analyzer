@@ -23,7 +23,10 @@ class ScriptComponent extends BaseComponent {
 
     private hasSchema(type: "FAQPage" | "LocalBusiness") {
         const isSchema = this.attributes.type === "application/ld+json"
-        const firstChildren = this.children[0]
+        const firstChildren = this.getOrThrowChildren()[0]
+        /**
+         * Se accede al primer hijo porque el innerText no se genera para los scripts.
+         */
         if (isSchema && firstChildren instanceof TextComponent) {
             const parse = JSON.parse(firstChildren.text)
             const schema = parse["@type"]

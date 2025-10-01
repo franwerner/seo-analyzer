@@ -20,6 +20,7 @@ export interface VirtualDomSnapshot {
     root: HTMLComponent
     vDomContext: VDomContext
     htmlStructure: string
+    htmlSemantic: Array<string>
 }
 
 class VirtualDom {
@@ -85,12 +86,13 @@ class VirtualDom {
         const path = `https://${this.path}`
         const htmlString = await to(path)
 
-        const { root, vDomContext, htmlStructure } = await VirtualDomUtility.generateRoot(htmlString)
+        const { root, vDomContext, htmlStructure, htmlSemantic } = await VirtualDomUtility.generateRoot(htmlString)
 
         return {
             root,
             vDomContext,
-            htmlStructure
+            htmlStructure,
+            htmlSemantic
         }
     }
     async getOrGenerateSnapshot() {
