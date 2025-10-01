@@ -183,7 +183,7 @@ class BaseComponent {
     }
 
 
-    afterCreateChildrens() {
+    init() {
         //Todo lo que esta se debe ejecutar luego de agregar los componentes hijos.
         this.setInnerText()
     }

@@ -93,15 +93,15 @@ class AnchorComponent extends BaseValidatableComponent {
 
     private setLocalContext() {
         /**
-         * Nos ayuda a cachear algunas validaciones internas que se repitan en varios metodos internos del componente.
+         * Nos ayuda a cachear algunas verificaciones internas que se repitan en varios metodos internos del componente.
          */
         this.localContext.isValidHttpUrl = AnchorComponent.isValidHttpUrl(this.attributes.href)
         this.localContext.isGenericText = AnchorComponent.isGenericText(this.innerText.value)
         this.localContext.hasBlackHoleHref = AnchorComponent.hasBlackHoleHref(this.attributes)
     }
 
-    afterCreateChildrens(): void {
-        super.afterCreateChildrens()
+    init(): void {
+        super.init()
         this.setLocalContext()
     }
 

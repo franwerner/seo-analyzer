@@ -95,7 +95,7 @@ export default class VirtualDomGeneratorUtility {
                     parent
                 })
                 componentInstance.children = this.generateChildren(componentInstance, child, nextPathDom)
-                componentInstance.afterCreateChildrens()
+                componentInstance.init()
                 childrens.push(componentInstance)
             }
         }
@@ -135,7 +135,7 @@ export default class VirtualDomGeneratorUtility {
 
 
         htmlInstance.children = this.generateChildren(htmlInstance, html, htmlPathDom)
-        htmlInstance.afterCreateChildrens()
+        htmlInstance.init()
 
 
         this.contextualizeTree(htmlInstance)
