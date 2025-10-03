@@ -1,10 +1,10 @@
-import BaseComponent, { Children } from "@/components/base.component"
-import TextComponent from "@/components/text.component"
-import VDomContext from "@/context/vDom.context"
+import BaseComponent, { Children } from "@/domain/virtual-dom/components/base.component"
+import TextComponent from "@/domain/virtual-dom/components/text.component"
+import VDomContext from "@/domain/virtual-dom/context/vDom.context"
 import { JSDOM, VirtualConsole } from "jsdom"
-import ComponentFactory from "./componentFactory.utilts"
-import ErrorHandler from "./errorHandler.utils"
-import HTMLComponent from "@/components/html.component"
+import HTMLComponent from "@/domain/virtual-dom/components/html.component"
+import ErrorHandler from "@/utils/errorHandler.utils"
+import ComponentFactory from "@/domain/virtual-dom/utils/componentFactory.util"
 
 
 export default class VirtualDomGeneratorUtility {

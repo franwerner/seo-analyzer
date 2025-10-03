@@ -1,6 +1,6 @@
 import { IssueType } from "@/schemas/issueType.schema";
 import OpenAi from "@/services/openAi.service";
-import ValidationUtility from "@/utils/validation.util";
+import ValidationUtility from "@/domain/virtual-dom/utils/validation.util";
 
 const prompt = `
                 #RESPONDE EN INGLES

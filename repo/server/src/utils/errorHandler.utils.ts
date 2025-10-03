@@ -32,7 +32,7 @@ class ErrorHandler extends Error {
                     })
                 }
                 else {
-                    next(error)
+                    next()
                 }
             }
         }

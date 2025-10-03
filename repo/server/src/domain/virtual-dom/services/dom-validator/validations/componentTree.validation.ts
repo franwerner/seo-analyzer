@@ -1,6 +1,6 @@
-import BaseComponent from "@/components/base.component";
-import BaseValidatableComponent from "@/components/baseValidatable.component";
-import ValidationUtility from "@/utils/validation.util";
+import BaseComponent from "@/domain/virtual-dom/components/base.component";
+import BaseValidatableComponent from "@/domain/virtual-dom/components/baseValidatable.component";
+import ValidationUtility from "@/domain/virtual-dom/utils/validation.util";
 
 export default class ComponentTreeValidation extends ValidationUtility {
 

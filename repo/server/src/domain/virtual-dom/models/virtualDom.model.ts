@@ -1,20 +1,19 @@
-import VDomContext from "@/context/vDom.context";
+import VDomContext from "@/domain/virtual-dom/context/vDom.context";
 import type HTMLComponent from "../components/html.component";
-import ErrorHandler from "../utils/errorHandler.utils";
-import DomValidator from "./dom-validator";
-import OpenAi from "./openAi.service";
-import PuppeterService from "./puppeter.service";
-import VirtualDomUtility from "@/utils/virtualDomGenerator.utils";
+import DomValidator from "../services/dom-validator";
 import { URLInterface } from "@/types/URL.interface";
+import VirtualDomGeneratorUtility from "../utils/virtualDomGenerator.utils";
+import PuppeterService from "@/services/puppeter.service";
+import ErrorHandler from "@/utils/errorHandler.utils";
 
 enum AnalyzeStatus {
     Analyzing = "analyzing",
     Idle = "idle"
 }
 
-
 interface VirtualDomProps {
     url: URLInterface
+    domValidator: DomValidator
 }
 
 export interface VirtualDomSnapshot {
@@ -30,12 +29,11 @@ class VirtualDom {
     analyzeStatus: AnalyzeStatus = AnalyzeStatus.Idle
     domValidator: DomValidator
     constructor(
-        private openAi: OpenAi,
         private puppeteer: PuppeterService,
-        { url }: VirtualDomProps
+        { url, domValidator }: VirtualDomProps
     ) {
         this.url = url
-        this.domValidator = new DomValidator(this.openAi)
+        this.domValidator = domValidator
     }
 
     private setStatus(status: AnalyzeStatus) {
@@ -86,7 +84,7 @@ class VirtualDom {
         const url = this.url.href
         const htmlString = await to(url)
 
-        const { root, vDomContext, htmlStructure, htmlSemantic } = await VirtualDomUtility.generateRoot(htmlString)
+        const { root, vDomContext, htmlStructure, htmlSemantic } = await VirtualDomGeneratorUtility.generateRoot(htmlString)
 
         return {
             root,

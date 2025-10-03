@@ -1,5 +1,5 @@
-import VDomContext from "@/context/vDom.context";
-import ValidationUtility from "@/utils/validation.util";
+import VDomContext from "@/domain/virtual-dom/context/vDom.context";
+import ValidationUtility from "@/domain/virtual-dom/utils/validation.util";
 
 export default class HeadingsValidation extends ValidationUtility {
     context: VDomContext

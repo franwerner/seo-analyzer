@@ -1,7 +1,7 @@
-import BaseComponent from "@/components/base.component";
-import VDomContext from "@/context/vDom.context";
+import BaseComponent from "@/domain/virtual-dom/components/base.component";
+import VDomContext from "@/domain/virtual-dom/context/vDom.context";
 import OpenAi from "@/services/openAi.service";
-import ValidationUtility from "@/utils/validation.util";
+import ValidationUtility from "@/domain/virtual-dom/utils/validation.util";
 
 const prompt = `
 Eres un asistente de corrección ortográfica.

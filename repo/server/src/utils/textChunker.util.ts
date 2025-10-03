@@ -1,4 +1,4 @@
-import BaseComponent from "@/components/base.component"
+import BaseComponent from "@/domain/virtual-dom/components/base.component"
 
 export class Chunk {
     constructor(

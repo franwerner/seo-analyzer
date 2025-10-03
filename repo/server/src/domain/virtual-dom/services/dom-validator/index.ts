@@ -1,23 +1,26 @@
-import BaseComponent from "@/components/base.component";
-import VDomContext from "@/context/vDom.context";
+import BaseComponent from "@/domain/virtual-dom/components/base.component";
+import VDomContext from "@/domain/virtual-dom/context/vDom.context";
 import { Validation } from "@/types/Validation.interface";
 import ErrorHandler from "@/utils/errorHandler.utils";
-import ValidationUtility from "@/utils/validation.util";
-import OpenAi from "../openAi.service";
+import ValidationUtility from "@/domain/virtual-dom/utils/validation.util";
 import ComponentTreeValidation from "./validations/componentTree.validation";
 import HeadingsValidation from "./validations/headings.validation";
 import ScriptSchemasValidation from "./validations/scriptSchemas.validation";
 import { AnchorLinkValidation } from "./validations/anchorLink.validation";
 import SpellingValidation from "./validations/spelling.validation";
-import { VirtualDomSnapshot } from "../virtualDom.service";
+import { VirtualDomSnapshot } from "../../models/virtualDom.model";
 import StructureValidation from "./validations/structure.validation";
+import SemanticValidation from "./validations/semantic.validation";
+import { WebSummary } from "@/types/WebSummary.interface";
+import OpenAi from "@/services/openAi.service";
 
 type ValidationWithTokens = Required<Validation>
 
 export default class DomValidator {
     validations: Array<ValidationWithTokens> = []
     constructor(
-        private openAi: OpenAi
+        private openAi: OpenAi,
+        private webSummary?: WebSummary | null
     ) { }
 
     getValidations() {
@@ -26,6 +29,10 @@ export default class DomValidator {
             status_code: 404
         })
         return this.validations
+    }
+
+    updateWebSummaryContext(webSummary: WebSummary) {
+        this.webSummary = webSummary
     }
 
     setValidation(validation: ValidationWithTokens) {
@@ -64,8 +71,9 @@ export default class DomValidator {
             // new HeadingsValidation(vDomContext),
             // new ScriptSchemasValidation(this.openAi, vDomContext),
             // new AnchorLinkValidation(this.openAi, vDomContext)
-            new StructureValidation(this.openAi, htmlStructure),
+            // new StructureValidation(this.openAi, htmlStructure),
             // new SpellingValidation(vDomContext, this.openAi)
+            new SemanticValidation(this.openAi, vDomContext)
         ]
 
         return await this.validationInstaces(validationInstaces)

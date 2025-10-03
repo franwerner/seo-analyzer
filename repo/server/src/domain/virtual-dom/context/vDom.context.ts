@@ -1,11 +1,11 @@
-import AnchorComponent from "@/components/anchor.component"
+import AnchorComponent from "@/domain/virtual-dom/components/anchor.component"
 import H1Component from "../components/h1.component"
 import H2Component from "../components/h2.component"
 import ScriptComponent from "../components/script.component"
 import TextChunker from "@/utils/textChunker.util"
-import H3Component from "@/components/h3.component"
-import TitleComponent from "@/components/title.component"
-import MetaComponent from "@/components/meta.component"
+import H3Component from "@/domain/virtual-dom/components/h3.component"
+import TitleComponent from "@/domain/virtual-dom/components/title.component"
+import MetaComponent from "@/domain/virtual-dom/components/meta.component"
 
 interface Schemas {
     faqPage: ScriptComponent | null,
