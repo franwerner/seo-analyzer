@@ -77,12 +77,10 @@ export default class VirtualDomGeneratorUtility {
 
             if (child.nodeName == "#text") {
                 const text = child.nodeValue || ""
-                if (text.trim().length > 0) {
-                    childrens.push(new TextComponent({
-                        text,
-                        parent
-                    }))
-                }
+                childrens.push(new TextComponent({
+                    text,
+                    parent
+                }))
             }
             else if (!this.ignoreTags.includes(child.nodeName) && child.nodeName != "HTML") {
                 const nextPathDom = parentPathDom + "/" + child.nodeName + "/" + i
@@ -92,7 +90,7 @@ export default class VirtualDomGeneratorUtility {
                     attributes: child.attributes,
                     vDomContext: parent.vDomContext,
                     pathDom: nextPathDom,
-                    parent
+                    parent,
                 })
                 componentInstance.children = this.generateChildren(componentInstance, child, nextPathDom)
                 componentInstance.init()
@@ -125,12 +123,13 @@ export default class VirtualDomGeneratorUtility {
 
         const htmlPathDom = "HTML"
 
+
         const htmlInstance = new HTMLComponent({
             tag: "HTML",
             attributes: html.attributes,
             vDomContext,
             pathDom: htmlPathDom,
-            parent: null
+            parent: null,
         })
 
 

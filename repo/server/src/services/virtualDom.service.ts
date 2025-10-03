@@ -5,6 +5,7 @@ import DomValidator from "./dom-validator";
 import OpenAi from "./openAi.service";
 import PuppeterService from "./puppeter.service";
 import VirtualDomUtility from "@/utils/virtualDomGenerator.utils";
+import { URLInterface } from "@/types/URL.interface";
 
 enum AnalyzeStatus {
     Analyzing = "analyzing",
@@ -13,7 +14,7 @@ enum AnalyzeStatus {
 
 
 interface VirtualDomProps {
-    path: string
+    url: URLInterface
 }
 
 export interface VirtualDomSnapshot {
@@ -24,16 +25,16 @@ export interface VirtualDomSnapshot {
 }
 
 class VirtualDom {
-    path: string
+    url: URLInterface
     snapshot: Promise<VirtualDomSnapshot> | null = null
     analyzeStatus: AnalyzeStatus = AnalyzeStatus.Idle
     domValidator: DomValidator
     constructor(
         private openAi: OpenAi,
         private puppeteer: PuppeterService,
-        { path }: VirtualDomProps
+        { url }: VirtualDomProps
     ) {
-        this.path = path
+        this.url = url
         this.domValidator = new DomValidator(this.openAi)
     }
 
@@ -73,7 +74,7 @@ class VirtualDom {
     }
 
     clearSnapshot() {
-        console.log(`CLEAR SNAPSHOT => ${this.path}`)
+        console.log(`CLEAR SNAPSHOT => ${this.url.href}`)
         this.snapshot = null
     }
 
@@ -81,10 +82,9 @@ class VirtualDom {
         /**
          * Solo se debe utilizar para la primera generación del snapshot internamente en `getOrGenerateSnapshot`
          */
-
         const to = await this.puppeteer.newPageIfAvailable()
-        const path = `https://${this.path}`
-        const htmlString = await to(path)
+        const url = this.url.href
+        const htmlString = await to(url)
 
         const { root, vDomContext, htmlStructure, htmlSemantic } = await VirtualDomUtility.generateRoot(htmlString)
 
@@ -109,7 +109,7 @@ class VirtualDom {
             }
             return await this.snapshot
         } catch (error) {
-            console.log(`ERROR GENERATING SNAPSHOT => ${this.path} , ${error}`)
+            console.log(`ERROR GENERATING SNAPSHOT => ${this.url.href} , ${error}`)
             this.snapshot = null
             if (error instanceof ErrorHandler) {
                 throw error

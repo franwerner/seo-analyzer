@@ -106,7 +106,7 @@ class BaseComponent {
         * Esto se debe a que algunas contextualizacion necesitan acceder al estado de sus hijos para tomar deciciones de contextualizacion.
         * 
         */
-        if (this.innerText.claimedByParent || !this.innerText.value) return
+        if (this.innerText.claimedByParent || !this.innerText.value.trim()) return
         this.vDomContext.innerTextChunks.pushComponentText(this)
     }
 
@@ -131,9 +131,10 @@ class BaseComponent {
 
     generateInnerHTML(props: {
         includeAttributes?: boolean
+        includeChildrenAtts?: boolean
     } = {}): string {
 
-        const { includeAttributes } = props
+        const { includeAttributes, includeChildrenAtts } = props
 
         const attrs = includeAttributes ? Object.entries(this.attributes)
             .filter(([_, value]) => value)
@@ -143,7 +144,7 @@ class BaseComponent {
         const tag = this.tag
 
         const childrenStr = this.getOrThrowChildren()
-            .map(child => child instanceof TextComponent ? child.text : child.generateInnerHTML(props))
+            .map(child => child instanceof TextComponent ? child.text : child.generateInnerHTML({ includeAttributes: includeChildrenAtts }))
             .join("")
 
         return this.needsClosingTag ?
@@ -151,29 +152,35 @@ class BaseComponent {
     }
 
     private generateInnerText() {
-        const treeText = (children: Childrens) => {
-            return children.reduce((acc, child, index) => {
-                if (child instanceof TextComponent) {
-                    acc += child.text
-                }
-                else if (child.tag == "br") {
-                    acc += " "
-                }
-                else if (child.isInlineTextSeparator) {
-                    child.innerText.claimedByParent = true
-                    const nextSibling = children[index + 1]
-                    const treeTextOuput = child.innerText.value
+        const children = this.getOrThrowChildren()
+        return children.reduce((acc, child, index) => {
+            if (child instanceof TextComponent) {
+                acc += child.text
+            }
+            else if (child.tag == "br") {
+                /**
+                 * Como no se detectan los saltos de linea con \n se debe verificar, 
+                 * si el siguiente hermano tiene un espacio al inicio, entonces no sera necesario agregar el espacio.
+                 */
+                const nextSibling = children[index + 1]
+                const innerText = nextSibling instanceof TextComponent ? nextSibling.text : nextSibling?.innerText.value
+                if (!innerText) return acc
+                const includeSpace = innerText.startsWith(" ") ? "" : " "
+                acc += includeSpace
+            }
+            else if (child.isInlineTextSeparator) {
+                child.innerText.claimedByParent = true
+                /**
+                 * @note
+                 * Cuando se obtiene el innerText de un hijo, ese hijo ya previamente deberia haber
+                 * obtenido su innerText a travez de sus hijos y asi recursivamente.
+                 */
+                const treeTextOuput = child.innerText.value
 
-                    const includeSpace = nextSibling instanceof BaseComponent
-                        && !nextSibling.isInlineTextSeparator && treeTextOuput &&
-                        !treeTextOuput.endsWith(" ") ? " " : ""
-
-                    acc += treeTextOuput + includeSpace
-                }
-                return acc
-            }, "")
-        }
-        return treeText(this.getOrThrowChildren())
+                acc += treeTextOuput
+            }
+            return acc
+        }, "")
     }
     private setInnerText() {
 
@@ -184,7 +191,10 @@ class BaseComponent {
 
 
     init() {
-        //Todo lo que esta se debe ejecutar luego de agregar los componentes hijos.
+        /**
+         * Inicializa el componente.
+         * @note Los children deben estar creados antes de ejecutar este método.
+         */
         this.setInnerText()
     }
 

@@ -5,13 +5,13 @@ import corsConfig from "./config/cors.config";
 import authMiddleware from "./middleware/auth.middleware";
 import errorGlobal from "./middleware/errorGlobal.middleware";
 import AuthService from "./services/auth.service";
-import VirtualDomStore from "./services/VirtualDomStore.service";
 import ErrorHandler from "./utils/errorHandler.utils";
 import getEnsureEnv from "./utils/getEnsureEnv.utils";
+import VirtualWebStore from "./services/VirtualWebStore.service";
 
 const app = express()
 
-const virtualDomStore = new VirtualDomStore()
+const virtualWebStore = new VirtualWebStore()
 
 app.use(corsConfig)
 app.use(express.json())
@@ -38,34 +38,40 @@ app.post("/login", ErrorHandler.routeHandler((req, res) => {
 }))
 
 app.get("/analyze", authMiddleware, ErrorHandler.routeHandler(async (req, res) => {
-    const url = req.query.url as string
-    const virtualDom = virtualDomStore.getOrCreate(url)
-    const response = await virtualDom.analyze()
+    const host = req.query.host as string
+    const path = req.query.path as string
+    const virtualWeb = virtualWebStore.getOrCreate(host).vdomStore.getOrCreate(path)
+    const response = await virtualWeb.analyze()
     res.json(response)
 }))
 
 app.get("/validations", authMiddleware, ErrorHandler.routeHandler(async (req, res) => {
-    const url = req.query.url as string
-    const virtualDom = virtualDomStore.getOrThrow(url)
+    const host = req.query.host as string
+    const path = req.query.path as string
+    const virtualWeb = virtualWebStore.getOrCreate(host).vdomStore.getOrCreate(path)
     res.json({
-        validations: virtualDom.domValidator.getValidations()
+        validations: virtualWeb.domValidator.getValidations()
     })
 }))
 
 app.get("/context", authMiddleware, ErrorHandler.routeHandler(async (req, res) => {
-    const url = req.query.url as string
-    const virtualDom = virtualDomStore.getOrCreate(url)
-    const snapshot = await virtualDom.getOrGenerateSnapshot()
+    const host = req.query.host as string
+    const path = req.query.path as string
+    const virtualWeb = virtualWebStore.getOrCreate(host)
+
+    virtualWeb.setMainVDom(path)
+
+    const context = await virtualWeb.createContextSummary()
 
     res.json({
-        context: snapshot.htmlSemantic
+        context
     })
 }))
 
 app.get("/json", authMiddleware, ErrorHandler.routeHandler(async (req, res) => {
     const url = req.query.url as string
-    const virtualDom = virtualDomStore.getOrCreate(url)
-    const snapshot = await virtualDom.getOrGenerateSnapshot()
+    const virtualWeb = virtualWebStore.getOrCreate(url).vdomStore.getOrCreate(url)
+    const snapshot = await virtualWeb.getOrGenerateSnapshot()
     res.json({
         json: snapshot.root
     })
@@ -74,16 +80,16 @@ app.get("/json", authMiddleware, ErrorHandler.routeHandler(async (req, res) => {
 app.post("/create", authMiddleware, ErrorHandler.routeHandler(
     async (req, res) => {
         const url = req.body.url as string
-        const virtualDom = virtualDomStore.getOrCreate(url)
-        virtualDom.clearSnapshot()
-        await virtualDom.getOrGenerateSnapshot()
+        const virtualWeb = virtualWebStore.getOrCreate(url).vdomStore.getOrCreate(url)
+        virtualWeb.clearSnapshot()
+        await virtualWeb.getOrGenerateSnapshot()
         res.status(201).json({ message: "VirtualDom created" })
     }))
 
 app.get("/html", authMiddleware, ErrorHandler.routeHandler(async (req, res) => {
     const url = req.query.url as string
-    const virtualDom = virtualDomStore.getOrCreate(url)
-    const { htmlStructure } = await virtualDom.getOrGenerateSnapshot()
+    const virtualWeb = virtualWebStore.getOrCreate(url).vdomStore.getOrCreate(url)
+    const { htmlStructure } = await virtualWeb.getOrGenerateSnapshot()
     res.json({
         htmlStructure
     })

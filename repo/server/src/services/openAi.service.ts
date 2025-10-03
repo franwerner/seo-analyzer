@@ -19,6 +19,18 @@ class OpenAi {
     }
   }
 
+  async createBasicResponse(input: string, instructions: string) {
+    const response = await this.openAI.responses.create({
+      model: "gpt-5-mini",
+      instructions,
+      input,
+    })
+    return {
+      response: response.output_text,
+      tokens: OpenAi.getTokenUsage(response)
+    }
+  }
+
   async generateIssueWords(input: string, instructions: string) {
     const response = await this.openAI.responses.create({
       model: "gpt-5-mini",

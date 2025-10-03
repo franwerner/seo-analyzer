@@ -1,6 +1,7 @@
 import { Issue } from "@/schemas/issue.schema";
 import type { Attributes, BaseComponentProps } from "./base.component";
 import BaseValidatableComponent from "./baseValidatable.component";
+import BaseComponent from "./base.component";
 
 const notValidText = ["read more", "learn more", "see more"]
 
@@ -10,10 +11,12 @@ class AnchorComponent extends BaseValidatableComponent {
         isValidHttpUrl: boolean
         isGenericText: boolean
         hasBlackHoleHref: boolean
+        containImage: boolean
     } = {
             isValidHttpUrl: false,
             isGenericText: false,
-            hasBlackHoleHref: false
+            hasBlackHoleHref: false,
+            containImage: false
         }
 
     static readonly pattern = /^(https?:\/\/)(([a-zA-Z0-9-]+\.)+[a-zA-Z]{2,})(:\d+)?(\/[^\s]*)?$/;
@@ -39,8 +42,9 @@ class AnchorComponent extends BaseValidatableComponent {
 
     contextualizeVDom() {
         super.contextualizeVDom()
-        const { isGenericText, hasBlackHoleHref } = this.localContext
-        if (!this.attributes.href || isGenericText || hasBlackHoleHref) return
+        const { isGenericText, hasBlackHoleHref, containImage } = this.localContext
+        const notContextualize = !this.attributes.href || isGenericText || hasBlackHoleHref || containImage
+        if (notContextualize) return
         this.vDomContext.a.push(this)
     }
 
@@ -98,6 +102,7 @@ class AnchorComponent extends BaseValidatableComponent {
         this.localContext.isValidHttpUrl = AnchorComponent.isValidHttpUrl(this.attributes.href)
         this.localContext.isGenericText = AnchorComponent.isGenericText(this.innerText.value)
         this.localContext.hasBlackHoleHref = AnchorComponent.hasBlackHoleHref(this.attributes)
+        this.localContext.containImage = this.getOrThrowChildren().some(child => child instanceof BaseComponent && child.tag == "img")
     }
 
     init(): void {
