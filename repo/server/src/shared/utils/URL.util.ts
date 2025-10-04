@@ -1,4 +1,4 @@
-import { URLInterface } from "@/types/URL.interface"
+import { URLInterface } from "@/shared/types/URL.interface"
 
 export default class URLUtility {
     static normalizePathname(pathname: string) {

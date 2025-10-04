@@ -1,7 +1,8 @@
+import getEnsureEnv from "@/shared/utils/getEnsureEnv.utils"
 import cors from "cors"
 
 const corsConfig = cors({
-    origin: process.env.CLIENT_URL,
+    origin: getEnsureEnv("CLIENT_URL"),
     credentials: true,
 })
 

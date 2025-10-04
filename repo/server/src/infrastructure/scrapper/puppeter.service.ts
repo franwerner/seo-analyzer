@@ -1,5 +1,5 @@
+import ErrorHandler from "@/shared/utils/errorHandler.utils";
 import puppeteer, { Browser } from "puppeteer";
-import ErrorHandler from "../utils/errorHandler.utils";
 
 const MAX_ACTIVE_PAGES = 5
 

@@ -3,7 +3,7 @@ import TextComponent from "@/domain/virtual-dom/components/text.component"
 import VDomContext from "@/domain/virtual-dom/context/vDom.context"
 import { JSDOM, VirtualConsole } from "jsdom"
 import HTMLComponent from "@/domain/virtual-dom/components/html.component"
-import ErrorHandler from "@/utils/errorHandler.utils"
+import ErrorHandler from "@/shared/utils/errorHandler.utils"
 import ComponentFactory from "@/domain/virtual-dom/utils/componentFactory.util"
 
 

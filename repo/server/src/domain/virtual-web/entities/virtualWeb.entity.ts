@@ -1,9 +1,9 @@
 import DomValidator from "@/domain/virtual-dom/services/dom-validator";
-import OpenAi from "@/services/openAi.service";
-import PuppeterService from "@/services/puppeter.service";
-import { Tokens } from "@/types/Tokens.interface";
-import { WebSummary } from "@/types/WebSummary.interface";
+import OpenAi from "@/infrastructure/AI/openAi.service";
+import { Tokens } from "@/shared/types/Tokens.interface";
+import { WebSummary } from "@/shared/types/WebSummary.interface";
 import VirtualDomStore from "../../virtual-dom/store/virtualDom.store";
+import PuppeterService from "@/infrastructure/scrapper/puppeter.service";
 
 /**
  * @note

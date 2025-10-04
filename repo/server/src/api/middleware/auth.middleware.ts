@@ -1,7 +1,7 @@
 import { NextFunction, Request, Response } from "express";
-import AuthService from "../services/auth.service";
-import ErrorHandler from "../utils/errorHandler.utils";
 import errorGlobal from "./errorGlobal.middleware";
+import ErrorHandler from "@/shared/utils/errorHandler.utils";
+import AuthService from "@/infrastructure/auth/auth.service";
 
 const authMiddleware = (req: Request, res: Response, next: NextFunction) => {
     try {

@@ -1,8 +1,8 @@
-import VirtualDom from "../models/virtualDom.model";
-import ErrorHandler from "@/utils/errorHandler.utils";
-import URLUtility from "@/utils/URL.util";
-import PuppeterService from "@/services/puppeter.service";
+import VirtualDom from "../entities/virtualDom.entity";
+import ErrorHandler from "@/shared/utils/errorHandler.utils";
+import URLUtility from "@/shared/utils/URL.util";
 import DomValidator from "@/domain/virtual-dom/services/dom-validator";
+import PuppeterService from "@/infrastructure/scrapper/puppeter.service";
 
 
 interface VirtualDomStoreProps {

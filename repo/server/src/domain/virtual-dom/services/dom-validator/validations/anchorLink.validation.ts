@@ -1,5 +1,5 @@
 import VDomContext from "@/domain/virtual-dom/context/vDom.context";
-import OpenAi from "@/services/openAi.service";
+import OpenAi from "@/infrastructure/AI/openAi.service";
 import ValidationUtility from "@/domain/virtual-dom/utils/validation.util";
 
 

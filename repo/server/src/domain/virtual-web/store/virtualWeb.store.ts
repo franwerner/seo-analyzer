@@ -1,10 +1,10 @@
 
-import URLUtility from "@/utils/URL.util"
-import { WebSummary } from "@/types/WebSummary.interface"
-import PuppeterService from "@/services/puppeter.service"
-import OpenAi from "@/services/openAi.service"
-import ErrorHandler from "@/utils/errorHandler.utils"
-import VirtualWeb, { VirtualWebProps } from "../models/virtualWeb.model"
+import URLUtility from "@/shared/utils/URL.util"
+import { WebSummary } from "@/shared/types/WebSummary.interface"
+import OpenAi from "@/infrastructure/AI/openAi.service"
+import ErrorHandler from "@/shared/utils/errorHandler.utils"
+import VirtualWeb, { VirtualWebProps } from "../entities/virtualWeb.entity"
+import PuppeterService from "@/infrastructure/scrapper/puppeter.service"
 
 const timeoutDuration = 1000 * 60 * 5 // 5M
 const maxVDomDuration = 1000 * 60 * 30 //30M

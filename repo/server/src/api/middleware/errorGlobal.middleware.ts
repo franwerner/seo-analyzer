@@ -1,4 +1,4 @@
-import ErrorHandler from "../utils/errorHandler.utils"
+import ErrorHandler from "@/shared/utils/errorHandler.utils"
 import { Response } from "express"
 
 const errorGlobal = (_: any, res: Response) => {

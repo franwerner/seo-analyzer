@@ -1,13 +1,13 @@
 import cookieParser from "cookie-parser";
 import express from "express";
-import "./config/dotenv.config";
-import corsConfig from "./config/cors.config";
-import authMiddleware from "./middleware/auth.middleware";
-import errorGlobal from "./middleware/errorGlobal.middleware";
-import AuthService from "./services/auth.service";
-import ErrorHandler from "./utils/errorHandler.utils";
-import getEnsureEnv from "./utils/getEnsureEnv.utils";
+import "./infrastructure/config/dotenv.config";
+import corsConfig from "./infrastructure/config/cors.config";
+import AuthService from "./infrastructure/auth/auth.service";
+import ErrorHandler from "./shared/utils/errorHandler.utils";
+import getEnsureEnv from "./shared/utils/getEnsureEnv.utils";
 import VirtualWebStore from "./domain/virtual-web/store/virtualWeb.store";
+import authMiddleware from "./api/middleware/auth.middleware";
+import errorGlobal from "./api/middleware/errorGlobal.middleware";
 
 const app = express()
 

@@ -1,18 +1,18 @@
 import BaseComponent from "@/domain/virtual-dom/components/base.component";
 import VDomContext from "@/domain/virtual-dom/context/vDom.context";
-import { Validation } from "@/types/Validation.interface";
-import ErrorHandler from "@/utils/errorHandler.utils";
+import { Validation } from "@/shared/types/Validation.interface";
+import ErrorHandler from "@/shared/utils/errorHandler.utils";
 import ValidationUtility from "@/domain/virtual-dom/utils/validation.util";
 import ComponentTreeValidation from "./validations/componentTree.validation";
 import HeadingsValidation from "./validations/headings.validation";
 import ScriptSchemasValidation from "./validations/scriptSchemas.validation";
 import { AnchorLinkValidation } from "./validations/anchorLink.validation";
 import SpellingValidation from "./validations/spelling.validation";
-import { VirtualDomSnapshot } from "../../models/virtualDom.model";
+import { VirtualDomSnapshot } from "../../entities/virtualDom.entity";
 import StructureValidation from "./validations/structure.validation";
 import SemanticValidation from "./validations/semantic.validation";
-import { WebSummary } from "@/types/WebSummary.interface";
-import OpenAi from "@/services/openAi.service";
+import { WebSummary } from "@/shared/types/WebSummary.interface";
+import OpenAi from "@/infrastructure/AI/openAi.service";
 
 type ValidationWithTokens = Required<Validation>
 
