@@ -51,7 +51,7 @@ const Content = ({ historyValidations }: ContentProps) => {
 
     const handleFetch = () => {
         setSelectedIndex(-1)
-        fetchData(`/analyze?url=${matches?.url}&analyze_type=${matches?.analyze_type}`, {
+        fetchData(`/analyze?domain=${matches?.domain}&path=${matches?.path}`, {
             onSuccess: ({
                 issues,
                 tokens,

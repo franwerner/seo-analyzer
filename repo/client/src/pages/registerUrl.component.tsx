@@ -9,8 +9,8 @@ export default function RegisterUrl() {
   const [_, nav] = useRouter()
   const { fetchData, response } = useFetch()
   const { onChange, formData } = useForm({
-    url: "",
-    analyze_type: "basic",
+    domain: "",
+    path: ""
   })
 
   const { status } = response
@@ -19,14 +19,15 @@ export default function RegisterUrl() {
     e.preventDefault()
     fetchData(`/create`, {
       body: JSON.stringify({
-        url: formData.url,
+        domain: formData.domain,
+        path: formData.path,
       }),
       headers: {
         "Content-Type": "application/json"
       },
       method: "POST",
       onSuccess() {
-        nav(`/analyze?url=${formData.url}&analyze_type=${formData.analyze_type}`)
+        nav(`/analyze?domain=${formData.domain}&path=${formData.path}&path=${formData.path}`)
       },
     })
   }
@@ -37,40 +38,32 @@ export default function RegisterUrl() {
         <h1 className="text-2xl font-bold text-sky-600 mb-6 text-center">Enviar Información</h1>
         <form className="space-y-5" onSubmit={handleSubmit}>
           <div>
-            <label className="block text-sky-700 font-semibold mb-1" htmlFor="url">URL</label>
+            <label className="block text-sky-700 font-semibold mb-1" htmlFor="domain">Dominio</label>
             <input
-              name="url"
-              value={formData.url}
-              placeholder="https://example.com"
+              name="domain"
+              value={formData.domain}
+              placeholder="example.com"
               className="w-full border border-sky-300 rounded-md px-4 py-2 focus:outline-none focus:ring-2 focus:ring-sky-400"
               onChange={onChange}
             />
           </div>
-
-          <div className="flex items-center gap-2">
+          <div>
+            <label className="block text-sky-700 font-semibold mb-1" htmlFor="path">Ruta principal</label>
             <input
-              type="checkbox"
-              name="analyze_type"
-              id="analyze_type"
-              checked={formData.analyze_type == "full"}
-              onChange={(e) => {
-                const target = e.target as HTMLInputElement
-                onChange({ target: { name: "analyze_type", value: target.checked ? "full" : "basic" } })
-              }}
-              className="w-4 h-4 text-sky-500 border-sky-300 rounded focus:ring-2 focus:ring-sky-400"
+              name="path"
+              value={formData.path}
+              placeholder="Coloca una ruta principal o deja vacio"
+              className="w-full border border-sky-300 rounded-md px-4 py-2 focus:outline-none focus:ring-2 focus:ring-sky-400"
+              onChange={onChange}
             />
-            <label htmlFor="analyze_type" className=" font-semibold select-none">
-              Análisis exhaustivo
-            </label>
           </div>
-
           <button
             disabled={status === "loading"}
             onClick={handleSubmit}
             type="button"
             className="w-full bg-sky-500 hover:bg-sky-600 text-white font-semibold py-2 px-4 rounded-md transition duration-200"
           >
-            {status === "loading" ? <Loading /> : formData.analyze_type == "full" ? "Enviar análisis exhaustivo" : "Enviar análisis"}
+            {status === "loading" ? <Loading /> : "Enviar análisis"}
           </button>
         </form>
 
