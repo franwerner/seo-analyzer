@@ -3,27 +3,22 @@ import ErrorHandler from "@/shared/utils/errorHandler.utils";
 import URLUtility from "@/shared/utils/URL.util";
 import DomValidator from "@/domain/virtual-dom/services/dom-validator";
 import PuppeterService from "@/infrastructure/scrapper/puppeter.service";
-
+import OpenAi from "@/infrastructure/AI/openAi.service";
 
 interface VirtualDomStoreProps {
     host: string
-    domValidator: DomValidator
 }
 
 export default class VirtualDomStore {
     private store: Map<string, VirtualDom> = new Map()
     host: string
-    domValidator: DomValidator
     constructor(
+        private openAi: OpenAi,
         private puppeteer: PuppeterService,
-        { host, domValidator }: VirtualDomStoreProps
+        { host }: VirtualDomStoreProps
     ) {
-        this.puppeteer = puppeteer
         this.host = host
-        this.domValidator = domValidator
     }
-
-
 
     addVirtualDom(virtualDom: VirtualDom) {
         const normalizedPathname = URLUtility.normalizePathname(virtualDom.url.pathname)
@@ -35,7 +30,8 @@ export default class VirtualDomStore {
         const virtualDomExists = this.store.get(URLUtility.normalizePathname(pathname))
         if (virtualDomExists) return virtualDomExists
         const url = URLUtility.createURL({ host: this.host, pathname })
-        const virtualDom = new VirtualDom(this.puppeteer, { url, domValidator: this.domValidator })
+        const domValidator = new DomValidator(this.openAi)
+        const virtualDom = new VirtualDom(this.puppeteer, domValidator, { url })
         this.store.set(URLUtility.normalizePathname(pathname), virtualDom)
         return virtualDom
     }

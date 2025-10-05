@@ -1,7 +1,7 @@
 import jwt from "jsonwebtoken"
 import crypto from "crypto"
 import ErrorHandler from "@/shared/utils/errorHandler.utils"
-import getEnsureEnv from "@/shared/utils/getEnsureEnv.utils"
+import getEnsureEnv from "@/infrastructure/utils/getEnsureEnv.utils"
 
 
 class AuthService {

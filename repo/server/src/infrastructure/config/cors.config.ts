@@ -1,4 +1,4 @@
-import getEnsureEnv from "@/shared/utils/getEnsureEnv.utils"
+import getEnsureEnv from "@/infrastructure/utils/getEnsureEnv.utils"
 import cors from "cors"
 
 const corsConfig = cors({

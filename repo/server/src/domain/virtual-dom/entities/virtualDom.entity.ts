@@ -13,7 +13,6 @@ enum AnalyzeStatus {
 
 interface VirtualDomProps {
     url: URLInterface
-    domValidator: DomValidator
 }
 
 export interface VirtualDomSnapshot {
@@ -27,13 +26,12 @@ class VirtualDom {
     url: URLInterface
     snapshot: Promise<VirtualDomSnapshot> | null = null
     analyzeStatus: AnalyzeStatus = AnalyzeStatus.Idle
-    domValidator: DomValidator
     constructor(
         private puppeteer: PuppeterService,
-        { url, domValidator }: VirtualDomProps
+        public domValidator: DomValidator,
+        { url }: VirtualDomProps
     ) {
         this.url = url
-        this.domValidator = domValidator
     }
 
     private setStatus(status: AnalyzeStatus) {
@@ -48,7 +46,7 @@ class VirtualDom {
             })
     }
 
-    async analyze() {
+    async analyze(context: string) {
 
         this.throwIfAnalyzing()
 
@@ -57,7 +55,7 @@ class VirtualDom {
         const snapshot = await this.getOrGenerateSnapshot()
 
         try {
-            return await this.domValidator.runValidation(snapshot)
+            return await this.domValidator.runValidation({ snapshot, context })
         } catch (error) {
             console.log(`ERROR ANALYZING DOM - ${error}`)
             if (error instanceof ErrorHandler) throw error

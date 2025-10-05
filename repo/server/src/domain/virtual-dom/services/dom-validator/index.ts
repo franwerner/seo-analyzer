@@ -1,26 +1,19 @@
-import BaseComponent from "@/domain/virtual-dom/components/base.component";
-import VDomContext from "@/domain/virtual-dom/context/vDom.context";
+import ValidationUtility from "@/domain/virtual-dom/utils/validation.util";
+import OpenAi from "@/infrastructure/AI/openAi.service";
 import { Validation } from "@/shared/types/Validation.interface";
 import ErrorHandler from "@/shared/utils/errorHandler.utils";
-import ValidationUtility from "@/domain/virtual-dom/utils/validation.util";
-import ComponentTreeValidation from "./validations/componentTree.validation";
-import HeadingsValidation from "./validations/headings.validation";
-import ScriptSchemasValidation from "./validations/scriptSchemas.validation";
-import { AnchorLinkValidation } from "./validations/anchorLink.validation";
-import SpellingValidation from "./validations/spelling.validation";
 import { VirtualDomSnapshot } from "../../entities/virtualDom.entity";
-import StructureValidation from "./validations/structure.validation";
 import SemanticValidation from "./validations/semantic.validation";
-import { WebSummary } from "@/shared/types/WebSummary.interface";
-import OpenAi from "@/infrastructure/AI/openAi.service";
 
 type ValidationWithTokens = Required<Validation>
 
 export default class DomValidator {
     validations: Array<ValidationWithTokens> = []
+    /**
+     * Solo mantiene las validaciones que se realizan, no las que se obtienen tambien de la base de datos.
+     */
     constructor(
         private openAi: OpenAi,
-        private webSummary?: WebSummary | null
     ) { }
 
     getValidations() {
@@ -29,10 +22,6 @@ export default class DomValidator {
             status_code: 404
         })
         return this.validations
-    }
-
-    updateWebSummaryContext(webSummary: WebSummary) {
-        this.webSummary = webSummary
     }
 
     setValidation(validation: ValidationWithTokens) {
@@ -62,10 +51,13 @@ export default class DomValidator {
     }
 
     async runValidation({
-        root,
-        vDomContext,
-        htmlStructure
-    }: VirtualDomSnapshot) {
+        snapshot,
+        context
+    }: {
+        snapshot: VirtualDomSnapshot,
+        context: string
+    }) {
+        const { root, vDomContext, htmlStructure } = snapshot
         const validationInstaces = [
             // new ComponentTreeValidation(root),
             // new HeadingsValidation(vDomContext),

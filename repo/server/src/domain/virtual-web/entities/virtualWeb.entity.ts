@@ -20,7 +20,6 @@ export interface VirtualWebProps {
 export default class VirtualWeb {
 
     vdomStore: VirtualDomStore
-    domValidator: DomValidator
     host: string
     mainPathname: string
     private webSummary?: WebSummary | null = null
@@ -36,16 +35,9 @@ export default class VirtualWeb {
 
         this.webSummary = webSummary
 
-        this.domValidator = new DomValidator(this.openAi, this.webSummary)
-
-        this.vdomStore = new VirtualDomStore(this.puppeteer, { host, domValidator: this.domValidator })
+        this.vdomStore = new VirtualDomStore(this.openAi, this.puppeteer, { host })
     }
 
-
-    setSummary(summary: WebSummary) {
-        this.webSummary = summary
-        this.domValidator.updateWebSummaryContext(summary)
-    }
 
     async generateWebSummary(): Promise<{
         webSummary: WebSummary,

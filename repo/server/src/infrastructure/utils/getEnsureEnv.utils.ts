@@ -1,4 +1,4 @@
-import ErrorHandler from "./errorHandler.utils"
+import ErrorHandler from "@/shared/utils/errorHandler.utils"
 
 interface Env {
     JWT_SECRET: string

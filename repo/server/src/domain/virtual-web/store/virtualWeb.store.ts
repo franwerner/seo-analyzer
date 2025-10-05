@@ -1,6 +1,5 @@
 
 import URLUtility from "@/shared/utils/URL.util"
-import { WebSummary } from "@/shared/types/WebSummary.interface"
 import OpenAi from "@/infrastructure/AI/openAi.service"
 import ErrorHandler from "@/shared/utils/errorHandler.utils"
 import VirtualWeb, { VirtualWebProps } from "../entities/virtualWeb.entity"
@@ -17,24 +16,36 @@ class VirtualWebStore {
     private store: Map<string, VirtualWeb>
     private timeout: NodeJS.Timeout | null = null
     private virtualWebLastTouch = new Map<VirtualWeb, number>()
-    private openAi: OpenAi
-    private puppeteer: PuppeterService
 
-    constructor() {
+    constructor(
+        private openAi: OpenAi,
+        private puppeteer: PuppeterService,
+
+    ) {
         this.store = new Map()
-        this.openAi = new OpenAi()
-        this.puppeteer = new PuppeterService()
     }
 
-    getOrCreate({ host, mainPathname, webSummary }: VirtualWebProps) {
+    private create({ host, mainPathname, webSummary }: VirtualWebProps) {
+        const vdom = new VirtualWeb(this.openAi, this.puppeteer, { host, mainPathname: URLUtility.normalizePathname(mainPathname), webSummary })
+        this.store.set(host, vdom)
+        return vdom
+    }
 
-        const getVDOM = this.store.get(host)
+    createIfNotExists(props: VirtualWebProps) {
+        if (this.store.has(props.host)) throw new ErrorHandler({
+            message: "VirtualWeb already exists",
+            status_code: 400
+        })
+        return this.create(props)
+    }
+
+    getOrCreate(props: VirtualWebProps) {
+
+        const getVDOM = this.store.get(props.host)
 
         if (getVDOM) return getVDOM
 
-        const vdom = new VirtualWeb(this.openAi, this.puppeteer, { host, mainPathname: URLUtility.normalizePathname(mainPathname), webSummary })
-
-        return vdom
+        return this.create(props)
     }
 
     getOrThrow(host: string) {
