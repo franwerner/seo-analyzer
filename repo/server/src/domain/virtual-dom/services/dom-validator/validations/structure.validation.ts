@@ -46,14 +46,14 @@ export default class StructureValidation extends ValidationUtility {
                 message: "The webpage contains more than one h1 element",
                 tag: "H1",
                 traceIds: h1.map(prev => prev.traceId),
-                type: "structure"
+                type: IssueType.STRUCTURE
             })
         } else if (h1.length === 0) {
             this.addIssue({
                 message: "No h1 found",
                 tag: "H1",
                 traceIds: [],
-                type: "structure"
+                type: IssueType.STRUCTURE
             })
         }
     }
@@ -65,7 +65,7 @@ export default class StructureValidation extends ValidationUtility {
                 message: "The webpage contains more than 10 h2 elements",
                 tag: "h2",
                 traceIds: h2.map(prev => prev.traceId),
-                type: "structure"
+                type: IssueType.STRUCTURE
             })
         }
     }
@@ -77,14 +77,14 @@ export default class StructureValidation extends ValidationUtility {
                 message: "No title found",
                 tag: "title",
                 traceIds: [],
-                type: "structure"
+                type: IssueType.STRUCTURE
             })
         } else if (title.length > 1) {
             this.addIssue({
                 message: "The webpage contains more than one title element",
                 tag: "title",
                 traceIds: title.map(prev => prev.traceId),
-                type: "structure"
+                type: IssueType.STRUCTURE
             })
         }
     }
@@ -96,14 +96,14 @@ export default class StructureValidation extends ValidationUtility {
                 message: "No meta description found",
                 tag: "meta",
                 traceIds: [],
-                type: "structure"
+                type: IssueType.STRUCTURE
             })
         } else if (meta.length > 1) {
             this.addIssue({
                 message: "The webpage contains more than one meta description element",
                 tag: "meta",
                 traceIds: meta.map(prev => prev.traceId),
-                type: "structure"
+                type: IssueType.STRUCTURE
             })
         }
     }
