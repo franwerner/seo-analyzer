@@ -1,9 +1,10 @@
 
 import URLUtility from "@/shared/utils/URL.util"
 import OpenAi from "@/infrastructure/AI/openAi.service"
-import ErrorHandler from "@/shared/utils/errorHandler.utils"
 import VirtualWeb, { VirtualWebProps } from "../virtualWeb.entity"
 import PuppeterService from "@/infrastructure/scrapper/puppeter.service"
+import VirtualWebAlreadyExists from "../errors/VirtualWebAlreadyExists.error"
+import VirtualWebNotFound from "../errors/virtualWebNotFount.error"
 
 const timeoutDuration = 1000 * 60 * 5 // 5M
 const maxVDomDuration = 1000 * 60 * 30 //30M
@@ -34,10 +35,7 @@ class VirtualWebStore {
 
     createIfNotExists(props: VirtualWebProps) {
         const normalizedHost = URLUtility.normalizeHost(props.host)
-        if (this.store.has(normalizedHost)) throw new ErrorHandler({
-            message: "VirtualWeb already exists",
-            status_code: 400
-        })
+        if (this.store.has(normalizedHost)) throw new VirtualWebAlreadyExists()
         return this.create(props)
     }
 
@@ -52,10 +50,7 @@ class VirtualWebStore {
 
     getOrThrow(host: string) {
         const virtualWeb = this.store.get(URLUtility.normalizeHost(host))
-        if (!virtualWeb) throw new ErrorHandler({
-            message: "VirtualWeb not found",
-            status_code: 404
-        })
+        if (!virtualWeb) throw new VirtualWebNotFound()
 
         this.touch(virtualWeb)
         return virtualWeb

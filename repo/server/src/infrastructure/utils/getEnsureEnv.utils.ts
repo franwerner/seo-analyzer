@@ -1,4 +1,4 @@
-import ErrorHandler from "@/shared/utils/errorHandler.utils"
+import EnvNotFountError from "@/shared/errors/EnvNotFount.error"
 
 interface Env {
     JWT_SECRET: string
@@ -10,10 +10,7 @@ interface Env {
 
 const getEnsureEnv = (key: keyof Env) => {
     if (!process.env[key]) {
-        throw new ErrorHandler({
-            message: `Missing env variable: ${key}`,
-            status_code: 500
-        })
+        throw new EnvNotFountError()
     }
     return process.env[key]
 }

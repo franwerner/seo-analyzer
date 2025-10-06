@@ -1,10 +1,12 @@
 import VDomContext from "@/domain/virtual-dom/context/vDom.context";
 import PuppeterService from "@/infrastructure/scrapper/puppeter.service";
-import ErrorHandler from "@/shared/utils/errorHandler.utils";
 import { URLInterface } from "@/shared/utils/URL.util";
-import SnapshotGeneratorUtility from "./utils/snapshotGenerator.utils";
-import DomValidator from "./services/dom-validator";
 import HTMLComponent from "./components/html.component";
+import VirtualDomAnalysisError from "./errors/VirtualDomAnalysis.error";
+import VirtualDomAnalysisInProgressError from "./errors/VirtualDomAnalysisInProgress.error";
+import VirtualDomGeneratedSnapshotError from "./errors/VirtualDomGeneratedSnapshot.error";
+import DomValidator from "./services/dom-validator";
+import SnapshotGeneratorUtility from "./utils/snapshotGenerator.utils";
 
 enum AnalyzeStatus {
     Analyzing = "analyzing",
@@ -40,10 +42,7 @@ class VirtualDom {
 
     private throwIfAnalyzing() {
         if (this.analyzeStatus === AnalyzeStatus.Analyzing)
-            throw new ErrorHandler({
-                message: "The virtual dom is being analyzed, one request at a time",
-                status_code: 400
-            })
+            throw new VirtualDomAnalysisInProgressError()
     }
 
     async analyze(pageSummary: string) {
@@ -57,11 +56,7 @@ class VirtualDom {
         try {
             return await this.domValidator.runValidation({ snapshot, pageSummary })
         } catch (error) {
-            if (error instanceof ErrorHandler) throw error
-            throw new ErrorHandler({
-                message: `ERROR ANALYZING DOM - ${error}`,
-                status_code: 500
-            })
+            throw new VirtualDomAnalysisError(error)
         } finally {
             this.setStatus(AnalyzeStatus.Idle)
         }
@@ -108,17 +103,7 @@ class VirtualDom {
             return this.snapshot
         } catch (error) {
             this.snapshot = null
-            if (error instanceof ErrorHandler) {
-                throw error
-            } else {
-                throw new ErrorHandler({
-                    message: `
-                    Unknown error occurred while generating the VirtualDom snapshot -
-                    ${error}
-                    `,
-                    status_code: 500
-                })
-            }
+            throw new VirtualDomGeneratedSnapshotError(error)
         }
     }
 

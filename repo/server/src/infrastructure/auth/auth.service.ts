@@ -1,6 +1,6 @@
 import jwt from "jsonwebtoken"
 import crypto from "crypto"
-import ErrorHandler from "@/shared/utils/errorHandler.utils"
+import HTTPError from "@/shared/errors/HTTP.error"
 import getEnsureEnv from "@/infrastructure/utils/getEnsureEnv.utils"
 
 
@@ -9,9 +9,10 @@ class AuthService {
     private static compareHash(password: string): void {
         const hashPassword = crypto.createHash("sha256").update(password).digest("hex")
         if (hashPassword !== getEnsureEnv("HASH_PASSWORD")) {
-            throw new ErrorHandler({
+            throw new HTTPError({
                 message: "Invalid password",
-                status_code: 401
+                status_code: 401,
+                type: "InvalidPasswordError"
             })
         }
     }
@@ -29,9 +30,10 @@ class AuthService {
         try {
             return jwt.verify(token, getEnsureEnv("JWT_SECRET"))
         } catch (error) {
-            throw new ErrorHandler({
+            throw new HTTPError({
                 message: "Invalid session",
-                status_code: 401
+                status_code: 401,
+                type: "InvalidSessionError"
             })
         }
     }

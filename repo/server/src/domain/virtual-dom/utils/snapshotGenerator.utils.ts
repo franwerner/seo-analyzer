@@ -1,11 +1,11 @@
 import BaseComponent, { Children } from "@/domain/virtual-dom/components/base.component"
+import HTMLComponent from "@/domain/virtual-dom/components/html.component"
 import TextComponent from "@/domain/virtual-dom/components/text.component"
 import VDomContext from "@/domain/virtual-dom/context/vDom.context"
-import { JSDOM, VirtualConsole } from "jsdom"
-import HTMLComponent from "@/domain/virtual-dom/components/html.component"
-import ErrorHandler from "@/shared/utils/errorHandler.utils"
 import ComponentFactory from "@/domain/virtual-dom/utils/componentFactory.util"
 import VirtualDom from "@/domain/virtual-dom/virtualDom.entity"
+import { JSDOM, VirtualConsole } from "jsdom"
+import HTMLNotFountError from "../errors/HTMLNotFount.error"
 
 export default class SnapshotGeneratorUtility {
 
@@ -53,10 +53,7 @@ export default class SnapshotGeneratorUtility {
         const html = dom.window.document.children[0]
 
         if (!html || html.nodeName != "HTML") {
-            throw new ErrorHandler({
-                message: "HTML element not found",
-                status_code: 404
-            })
+            throw new HTMLNotFountError()
         }
 
         return html

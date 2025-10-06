@@ -1,25 +1,22 @@
-import ErrorHandler from "@/shared/utils/errorHandler.utils"
+import HTTPError from "@/shared/errors/HTTP.error"
 import { NextFunction, Request, Response } from "express"
 import { ZodError } from "zod"
 
 const errorGlobal = (err: any, _req: Request, res: Response, _next: NextFunction) => {
 
-    console.log(err)
-    if (err instanceof ErrorHandler) {
-        return err.response(res)
+    if (err instanceof HTTPError) {
+        err.response(res)
     }
     else if (err instanceof ZodError) {
-        return new ErrorHandler({
+        new HTTPError({
             message: "Error validating schema",
-            status_code: 400
+            status_code: 400,
+            type: "ValidationError"
         }).response(res)
+    } else {
+        HTTPError.toHTTPError(err).response(res)
     }
-    else {
-        return new ErrorHandler({
-            message: `Unknown error occurred - ${err}`,
-            status_code: 500
-        }).response(res)
-    }
+
 
 
 }

@@ -3,7 +3,6 @@ import PuppeterService from "@/infrastructure/scrapper/puppeter.service";
 import { Tokens } from "@/domain/virtual-dom/types/Tokens.interface";
 import { WebSummary } from "@/domain/virtual-web/types/WebSummary.interface";
 import VirtualDomStore from "@/domain/virtual-dom/store/virtualDom.store";
-import ErrorHandler from "@/shared/utils/errorHandler.utils";
 
 /**
  * @note
@@ -28,12 +27,6 @@ export default class VirtualWeb {
         private openAi: OpenAi,
         private puppeteer: PuppeterService,
         { host, webSummary, mainPathname }: VirtualWebProps) {
-
-
-        if (!host) throw new ErrorHandler({
-            message: "Host is required",
-            status_code: 400
-        })
 
         this.host = host
 

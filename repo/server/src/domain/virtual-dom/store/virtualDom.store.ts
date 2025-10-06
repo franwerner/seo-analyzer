@@ -1,9 +1,9 @@
-import ErrorHandler from "@/shared/utils/errorHandler.utils";
 import URLUtility from "@/shared/utils/URL.util";
 import DomValidator from "@/domain/virtual-dom/services/dom-validator";
 import PuppeterService from "@/infrastructure/scrapper/puppeter.service";
 import OpenAi from "@/infrastructure/AI/openAi.service";
 import VirtualDom from "../virtualDom.entity";
+import VirtualDomNotFountError from "../errors/VirtualDomNotFount.error";
 
 interface VirtualDomStoreProps {
     host: string
@@ -33,10 +33,7 @@ export default class VirtualDomStore {
 
     getOrThrow(pathname: string) {
         const virtualDomExists = this.store.get(URLUtility.normalizePathname(pathname))
-        if (!virtualDomExists) throw new ErrorHandler({
-            message: "VirtualDom not found",
-            status_code: 404
-        })
+        if (!virtualDomExists) throw new VirtualDomNotFountError()
         return virtualDomExists
     }
 
