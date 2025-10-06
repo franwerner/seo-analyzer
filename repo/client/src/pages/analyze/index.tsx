@@ -80,6 +80,49 @@ export const ValidationTypeSelector = ({ selected, onChange }: ValidationTypeSel
     )
 }
 
+const PathNavigator = () => {
+    const [{ matches }, nav] = useRouter()
+    const [newPath, setNewPath] = useState(matches?.path || "/")
+
+    const handleNavigate = () => {
+        nav(`/analyze/?&host=${matches?.host}&path=${newPath}`)
+    }
+
+    return (
+        <div className="w-full max-w-md bg-white border border-sky-200 rounded-xl shadow-sm p-4 space-y-3">
+            <div>
+                <p className="text-sm text-gray-500">
+                    <span className="font-semibold text-gray-700">Ruta interna:</span>{" "}
+                    {matches?.path || "/"}
+                </p>
+                <span className="text-xs text-gray-500">Indica la ruta interna que deseas analizar</span>
+            </div>
+
+            <input
+                type="text"
+                onKeyUp={(e) => {
+                    if (e.key === "Enter") {
+                        handleNavigate()
+                    }
+                }}
+                value={newPath}
+                onChange={(e) => {
+                    const target = e.target as any
+                    setNewPath(target.value)
+                }}
+                placeholder="Enter a new path (e.g. /about)"
+                className="flex-1 px-3 py-2 text-sm border border-sky-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-sky-400 transition-all"
+            />
+            <button
+                onClick={handleNavigate}
+                className="px-4 py-2 bg-sky-500 mx-3 text-white rounded-lg text-sm font-medium hover:bg-sky-600 active:scale-[0.97] transition-all"
+            >
+                Go
+            </button>
+        </div>
+    )
+}
+
 const Content = ({ historyValidations }: ContentProps) => {
     const [history, setHistory] = useState<Array<SeoDetails>>(historyValidations)
 
@@ -130,7 +173,7 @@ const Content = ({ historyValidations }: ContentProps) => {
 
     return (
         <main className="py-8 max-w-7xl w-full mx-auto px-8 space-y-5 flex flex-col gap-4 h-screen">
-
+            <PathNavigator />
             <div className="space-y-3">
                 <h2 className="text-sky-700 font-semibold text-lg">Select Validation Types</h2>
                 <ValidationTypeSelector
@@ -187,7 +230,7 @@ export default function AnalyzePage() {
                 }
             },
         })
-    }, [])
+    }, [matches?.path])
 
     return status === "loading" ?
         <div className="flex justify-center items-center h-screen">
