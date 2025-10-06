@@ -2,6 +2,7 @@ import TextComponent from "./text.component";
 import crc32 from "crc-32";
 import VDomContext from "@/domain/virtual-dom/context/vDom.context";
 import VirtualDom from "../virtualDom.entity";
+import ScriptComponent from "./script.component";
 
 interface BaseComponentProps {
     tag: string;
@@ -109,7 +110,7 @@ class BaseComponent {
         * Esto se debe a que algunas contextualizacion necesitan acceder al estado de sus hijos para tomar deciciones de contextualizacion.
         * 
         */
-        if (this.innerText.claimedByParent || !this.innerText.value.trim()) return
+        if (this.innerText.claimedByParent || !this.innerText.value.trim() || this instanceof ScriptComponent) return
         this.vDomContext.innerTextChunks.pushComponentText(this)
     }
 
