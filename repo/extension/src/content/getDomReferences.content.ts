@@ -15,9 +15,7 @@ function setIssuesInStore(
 
     const traceIdGeneratedByElement = crc32.str(pathDom)
 
-    if (traceIdGeneratedByElement === 194563239) {
-        console.log("hola")
-    }
+
     for (const issue of issues) {
 
         const match = issue.traceIds.some(traceId => traceId == traceIdGeneratedByElement)

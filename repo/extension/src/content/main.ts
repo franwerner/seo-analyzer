@@ -10,6 +10,11 @@ function onAnalyzeResponse() {
         const groupByTag = groupIssuesByTag(message.res.data)
         const issuesElements = getDomReferences(groupByTag)
         console.log(issuesElements)
+        let sum = 0
+        for (const key in issuesElements) {
+            sum += issuesElements[key].messages.length
+        }
+        console.log(sum)
         injectUi(issuesElements)
     }
     chrome.runtime.onMessage.addListener(handleMessage)

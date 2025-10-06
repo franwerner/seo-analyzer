@@ -28,19 +28,20 @@ function renderAnalysisList(tabsId: number) {
   })
 }
 
-async function fetchAnalysis(url: string): Promise<Array<AnalyzeInterface>> {
-  const res = await fetch(`${BACKEND_URL}/validations?url=${url}`, { credentials: "include" })
+async function fetchAnalysis({ host, path }: { host: string, path: string }): Promise<Array<AnalyzeInterface>> {
+  const res = await fetch(`${BACKEND_URL}/virtual-web/analysis?host=${host}&path=${path}`, { credentials: "include" })
   const json = (await res.json())
   if (!res.ok) throw new Error(json.message || "Error getting analysis")
-  const data = json as { validations: Array<AnalyzeInterface> }
-  return data.validations
+  const data = json as { analysis: Array<AnalyzeInterface> }
+  return data.analysis
 }
 
 analyzeButton.addEventListener("click", () => {
   chrome.tabs.query({ active: true, currentWindow: true }, async (tabs) => {
     const tabId = tabs[0].id!
     try {
-      const data = await fetchAnalysis(tabs[0].url!)
+      const url = new URL(tabs[0].url!)
+      const data = await fetchAnalysis({ host: url.host, path: url.pathname })
       analyzeButton.style.display = "none"
       errorMessage.style.display = "none"
       analysisData = data
