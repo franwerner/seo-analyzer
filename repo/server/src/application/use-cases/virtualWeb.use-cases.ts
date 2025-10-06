@@ -9,7 +9,9 @@ export default class VirtualWebUseCases {
 
     async registerVirtualWeb({ host, mainPathname, webSummary }: VirtualWebProps) {
         const virtualWeb = this.virtualWebStore.createIfNotExists({ host, mainPathname, webSummary })
-        // await virtualWeb.setWebSummary()
+        if (!webSummary) {
+            await virtualWeb.setWebSummary()
+        }
         return virtualWeb
     }
 
