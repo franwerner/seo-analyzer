@@ -17,7 +17,7 @@ export default function RegisterUrl() {
 
   const handleSubmit = (e: Event) => {
     e.preventDefault()
-    fetchData(`/virtual-web/register`, {
+    fetchData<{ message: string, type: string }>(`/virtual-web/register`, {
       body: JSON.stringify({
         host: formData.host,
         path: formData.path,
@@ -29,6 +29,12 @@ export default function RegisterUrl() {
       onSuccess() {
         nav(`/analyze?host=${formData.host}&path=${formData.path}`)
       },
+      onFailed(failedResponse) {
+        if (failedResponse.type === "VirtualWebAlreadyExists") {
+          nav(`/analyze?host=${formData.host}&path=${formData.path}`)
+        }
+      }
+      ,
     })
   }
 
