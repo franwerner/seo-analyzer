@@ -5,7 +5,7 @@ import VirtualWebController from "../controllers/virtualWeb.controller"
 const virtualWebRouter = Router()
 
 virtualWebRouter.post("/register", authMiddleware, VirtualWebController.registerVirtualWeb)
-virtualWebRouter.get("/create-single-analysis", authMiddleware, VirtualWebController.analyzeSinglePage)
+virtualWebRouter.post("/create-single-analysis", authMiddleware, VirtualWebController.createAnalyzeSinglePage)
 virtualWebRouter.get("/analysis", authMiddleware, VirtualWebController.getSinglePageAnalysis)
 virtualWebRouter.get("/page", authMiddleware, VirtualWebController.getPage)
 

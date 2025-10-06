@@ -13,9 +13,9 @@ export default class VirtualWebController {
         res.status(201).json({ message: "VirtualDom created" })
     }
 
-    static async analyzeSinglePage(req: Request, res: Response) {
-        const { path = "", host = "" } = req.query as any
-        const analysis = await virtualWebUseCases.analyzeSinglePage(host, path)
+    static async createAnalyzeSinglePage(req: Request, res: Response) {
+        const { path = "", host = "", validationTypes = [] } = req.body as any
+        const analysis = await virtualWebUseCases.createAnalyzeSinglePage({ path, host, validationTypes })
         res.json({
             analysis
         })
@@ -33,7 +33,6 @@ export default class VirtualWebController {
         const { host = "", path = "" } = req.query as any
         const page = virtualWebUseCases.getPage(host, path)
         const snapshot = await page.getOrGenerateSnapshot()
-        console.log(snapshot)
         res.json({
             html: snapshot?.vDomContext.schemas,
 

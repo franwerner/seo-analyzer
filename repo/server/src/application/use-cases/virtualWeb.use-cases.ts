@@ -1,7 +1,7 @@
-import { VirtualWebProps } from "@/domain/virtual-web/virtualWeb.entity";
 import VirtualWebStore from "@/domain/virtual-web/store/virtualWeb.store";
+import CreateVirtualWebDTO from "../dtos/CreateVirtualWeb.dto";
 import VirtualDomUseCases from "./virtualDom.use-cases";
-import VirtualWebDTO from "../dtos/VirtualWeb.dto";
+import CreateAnalyzeSinglePageDto from "../dtos/CreateAnalyzeSinglePage.dto";
 
 export default class VirtualWebUseCases {
     constructor(
@@ -9,7 +9,7 @@ export default class VirtualWebUseCases {
         private virtualDomUseCases: VirtualDomUseCases
     ) { }
 
-    async registerVirtualWeb(props: VirtualWebDTO) {
+    async registerVirtualWeb(props: CreateVirtualWebDTO) {
         const virtualWeb = this.virtualWebStore.createIfNotExists(props)
         if (!props.webSummary) {
             await virtualWeb.setWebSummary()
@@ -17,11 +17,12 @@ export default class VirtualWebUseCases {
         return virtualWeb
     }
 
-    analyzeSinglePage(host: string, path: string) {
+    createAnalyzeSinglePage({ path, host, validationTypes }: CreateAnalyzeSinglePageDto) {
         const virtualWeb = this.virtualWebStore.getOrThrow(host)
-        return this.virtualDomUseCases.analyzeDom(virtualWeb.vdomStore, {
+        return this.virtualDomUseCases.createAnalyzeDom(virtualWeb.vdomStore, {
             path,
-            pageSummary: virtualWeb.webSummary?.summary || ""
+            pageSummary: virtualWeb.webSummary?.summary || "",
+            validationTypes
         })
     }
 

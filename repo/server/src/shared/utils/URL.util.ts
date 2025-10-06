@@ -3,6 +3,7 @@ export interface URLInterface {
     host: string
     pathname: string
     href: string
+    origin: string
 }
 
 
@@ -41,10 +42,15 @@ export default class URLUtility {
         const normalizedPathname = this.normalizePathname(pathname)
         const normalizedHost = this.normalizeHost(host)
 
+        /**
+         * href, origin y pathname siempre deben devolver un `/` al final.
+         */
+
         return {
             host: normalizedHost,
             pathname: normalizedPathname,
-            href: `https://${normalizedHost}${normalizedPathname}`
+            href: `https://${normalizedHost}${normalizedPathname}`,
+            origin: `https://${normalizedHost}/`
         }
     }
 

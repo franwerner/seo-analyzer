@@ -6,6 +6,7 @@ import VirtualDomAnalysisError from "./errors/VirtualDomAnalysis.error";
 import VirtualDomAnalysisInProgressError from "./errors/VirtualDomAnalysisInProgress.error";
 import VirtualDomGeneratedSnapshotError from "./errors/VirtualDomGeneratedSnapshot.error";
 import DomValidator from "./services/dom-validator";
+import ValidationType from "./types/ValidationType.interface";
 import SnapshotGeneratorUtility from "./utils/snapshotGenerator.utils";
 
 enum AnalyzeStatus {
@@ -45,7 +46,7 @@ class VirtualDom {
             throw new VirtualDomAnalysisInProgressError()
     }
 
-    async analyze(pageSummary: string) {
+    async analyze(pageSummary: string, validationSelected: Array<ValidationType>) {
 
         this.throwIfAnalyzing()
 
@@ -54,7 +55,7 @@ class VirtualDom {
         const snapshot = await this.getOrGenerateSnapshot()
 
         try {
-            return await this.domValidator.runValidation({ snapshot, pageSummary })
+            return await this.domValidator.runValidation({ snapshot, pageSummary, validationSelected })
         } catch (error) {
             throw new VirtualDomAnalysisError(error)
         } finally {

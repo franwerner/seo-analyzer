@@ -5,7 +5,7 @@ import VirtualWeb, { VirtualWebProps } from "../virtualWeb.entity"
 import PuppeterService from "@/infrastructure/scrapper/puppeter.service"
 import VirtualWebAlreadyExists from "../errors/VirtualWebAlreadyExists.error"
 import VirtualWebNotFound from "../errors/VirtualWebNotFount.error"
-import VirtualWebDTO from "@/application/dtos/VirtualWeb.dto"
+import CreateVirtualWebDTO from "@/application/dtos/CreateVirtualWeb.dto"
 
 const timeoutDuration = 1000 * 60 * 5 // 5M
 const maxVDomDuration = 1000 * 60 * 30 //30M
@@ -34,7 +34,7 @@ class VirtualWebStore {
         return vdom
     }
 
-    createIfNotExists(props: VirtualWebDTO) {
+    createIfNotExists(props: CreateVirtualWebDTO) {
         const url = URLUtility.createURL({ host: props.host, pathname: props.pathname })
         if (this.store.has(url.host)) throw new VirtualWebAlreadyExists()
         return this.create({ url, webSummary: props.webSummary })

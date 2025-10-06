@@ -6,6 +6,7 @@ import SemanticValidation from "./validations/semantic.validation";
 import SpellingValidation from "./validations/spelling.validation";
 import StructureValidation from "./validations/structure.validation";
 import ComponentTreeValidation from "./validations/componentTree.validation";
+import ValidationType from "../../types/ValidationType.interface";
 
 type ValidationWithTokens = Required<Validation>
 
@@ -50,21 +51,32 @@ export default class DomValidator {
 
     async runValidation({
         snapshot,
-        pageSummary
+        pageSummary,
+        validationSelected
     }: {
         snapshot: VirtualDomSnapshot,
-        pageSummary: string
+        pageSummary: string,
+        validationSelected: Array<ValidationType>
     }) {
         const { root, vDomContext, htmlStructure, htmlSemantic } = snapshot
 
-        const validationInstaces = [
-            new ComponentTreeValidation(root),
-            // new ScriptSchemasValidation(this.openAi, vDomContext),
-            new StructureValidation(this.openAi, vDomContext, htmlStructure),
-            new SpellingValidation(this.openAi, vDomContext),
-            new SemanticValidation(this.openAi, htmlSemantic, pageSummary, vDomContext)
-        ]
+        const validationMap = {
+            [ValidationType.GENERAL]: () => new ComponentTreeValidation(root),
+            [ValidationType.SEMANTIC]: () => new SemanticValidation(this.openAi, htmlSemantic, pageSummary, vDomContext),
+            [ValidationType.STRUCTURE]: () => new StructureValidation(this.openAi, vDomContext, htmlStructure),
+            [ValidationType.SPELLING]: () => new SpellingValidation(this.openAi, vDomContext),
+        }
 
-        return await this.validationInstaces(validationInstaces)
+        /**
+         * Se procesa con un Set para evitar repeticiones de validaciones.
+         */
+
+        const validationInstances = [...new Set(validationSelected)].map(v => {
+            if (v in validationMap) {
+                return validationMap[v as keyof typeof validationMap]()
+            }
+        }).filter(v => v)
+
+        return await this.validationInstaces(validationInstances)
     }
 }

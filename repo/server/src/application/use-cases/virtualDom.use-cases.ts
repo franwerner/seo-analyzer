@@ -1,13 +1,14 @@
 import VirtualDomStore from "@/domain/virtual-dom/store/virtualDom.store"
+import CreateAnalyzeDomDto from "../dtos/CreateAnalyzeDom.dto"
 
 export default class VirtualDomUseCases {
     constructor(
         //Aca para el repositorio
     ) { }
 
-    analyzeDom(virtualWebStore: VirtualDomStore, { path, pageSummary }: { path: string, pageSummary: string }) {
+    createAnalyzeDom(virtualWebStore: VirtualDomStore, { path, pageSummary, validationTypes }: CreateAnalyzeDomDto) {
         const virtualDom = virtualWebStore.getOrCreate(path)
-        return virtualDom.analyze(pageSummary)
+        return virtualDom.analyze(pageSummary, validationTypes)
     }
 
     getDomAnalysis(virtualWebStore: VirtualDomStore, path: string) {
