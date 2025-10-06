@@ -26,13 +26,15 @@ class VirtualWebStore {
     }
 
     private create({ host, mainPathname, webSummary }: VirtualWebProps) {
-        const vdom = new VirtualWeb(this.openAi, this.puppeteer, { host, mainPathname: URLUtility.normalizePathname(mainPathname), webSummary })
-        this.store.set(host, vdom)
+        const normalizedHost = URLUtility.normalizeHost(host)
+        const vdom = new VirtualWeb(this.openAi, this.puppeteer, { host: normalizedHost, mainPathname: URLUtility.normalizePathname(mainPathname), webSummary })
+        this.store.set(normalizedHost, vdom)
         return vdom
     }
 
     createIfNotExists(props: VirtualWebProps) {
-        if (this.store.has(props.host)) throw new ErrorHandler({
+        const normalizedHost = URLUtility.normalizeHost(props.host)
+        if (this.store.has(normalizedHost)) throw new ErrorHandler({
             message: "VirtualWeb already exists",
             status_code: 400
         })
@@ -41,7 +43,7 @@ class VirtualWebStore {
 
     getOrCreate(props: VirtualWebProps) {
 
-        const getVDOM = this.store.get(props.host)
+        const getVDOM = this.store.get(URLUtility.normalizeHost(props.host))
 
         if (getVDOM) return getVDOM
 
@@ -49,7 +51,7 @@ class VirtualWebStore {
     }
 
     getOrThrow(host: string) {
-        const virtualWeb = this.store.get(host)
+        const virtualWeb = this.store.get(URLUtility.normalizeHost(host))
         if (!virtualWeb) throw new ErrorHandler({
             message: "VirtualWeb not found",
             status_code: 404
@@ -60,7 +62,7 @@ class VirtualWebStore {
     }
 
     remove(host: string) {
-        this.store.delete(host)
+        this.store.delete(URLUtility.normalizeHost(host))
     }
 
     private touch(virtualWeb: VirtualWeb) {

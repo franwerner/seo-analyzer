@@ -1,9 +1,9 @@
-import DomValidator from "@/domain/virtual-dom/services/dom-validator";
 import OpenAi from "@/infrastructure/AI/openAi.service";
-import { Tokens } from "@/shared/types/Tokens.interface";
-import { WebSummary } from "@/shared/types/WebSummary.interface";
-import VirtualDomStore from "../../virtual-dom/store/virtualDom.store";
 import PuppeterService from "@/infrastructure/scrapper/puppeter.service";
+import { Tokens } from "@/domain/virtual-dom/types/Tokens.interface";
+import { WebSummary } from "@/domain/virtual-web/types/WebSummary.interface";
+import VirtualDomStore from "@/domain/virtual-dom/store/virtualDom.store";
+import ErrorHandler from "@/shared/utils/errorHandler.utils";
 
 /**
  * @note
@@ -22,12 +22,18 @@ export default class VirtualWeb {
     vdomStore: VirtualDomStore
     host: string
     mainPathname: string
-    private webSummary?: WebSummary | null = null
+    webSummary?: WebSummary | null = null
 
     constructor(
         private openAi: OpenAi,
         private puppeteer: PuppeterService,
         { host, webSummary, mainPathname }: VirtualWebProps) {
+
+
+        if (!host) throw new ErrorHandler({
+            message: "Host is required",
+            status_code: 400
+        })
 
         this.host = host
 
@@ -39,11 +45,15 @@ export default class VirtualWeb {
     }
 
 
+    async setWebSummary() {
+        const res = await this.generateWebSummary()
+        return this.webSummary = res.webSummary
+    }
+
     async generateWebSummary(): Promise<{
         webSummary: WebSummary,
         tokens: Tokens
     }> {
-
         const snapshot = await this.vdomStore.getOrCreate(this.mainPathname).getOrGenerateSnapshot()
 
         const texts = snapshot.vDomContext.innerTextChunks.chunks.map(chunk => chunk.parts_texts).flat()

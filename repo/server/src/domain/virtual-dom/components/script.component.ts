@@ -1,5 +1,4 @@
 import BaseComponent, { BaseComponentProps } from "./base.component";
-import TextComponent from "./text.component";
 
 
 class ScriptComponent extends BaseComponent {
@@ -23,12 +22,8 @@ class ScriptComponent extends BaseComponent {
 
     private hasSchema(type: "FAQPage" | "LocalBusiness") {
         const isSchema = this.attributes.type === "application/ld+json"
-        const firstChildren = this.getOrThrowChildren()[0]
-        /**
-         * Se accede al primer hijo porque el innerText no se genera para los scripts.
-         */
-        if (isSchema && firstChildren instanceof TextComponent) {
-            const parse = JSON.parse(firstChildren.text)
+        if (isSchema && this.innerText.value) {
+            const parse = JSON.parse(this.innerText.value)
             const schema = parse["@type"]
             return schema == type
         }

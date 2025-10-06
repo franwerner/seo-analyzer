@@ -1,32 +1,35 @@
-import { Issue } from "@/schemas/issue.schema";
-import type { Attributes, BaseComponentProps } from "./base.component";
+import { Issue } from "@/infrastructure/schemas/issue.schema";
+import type { BaseComponentProps } from "./base.component";
 import BaseValidatableComponent from "./baseValidatable.component";
 import BaseComponent from "./base.component";
+import URLUtility from "@/shared/utils/URL.util";
 
 const notValidText = ["read more", "learn more", "see more"]
+
+const pathnamePattern = /^\/[^\s#]*(#\S*)?$/
 
 class AnchorComponent extends BaseValidatableComponent {
 
     private localContext: {
-        isValidHttpUrl: boolean
         isGenericText: boolean
-        hasBlackHoleHref: boolean
         containImage: boolean
+        isValidURL: boolean
     } = {
-            isValidHttpUrl: false,
             isGenericText: false,
-            hasBlackHoleHref: false,
-            containImage: false
+            containImage: false,
+            isValidURL: false
         }
-
-    static readonly pattern = /^(https?:\/\/)(([a-zA-Z0-9-]+\.)+[a-zA-Z]{2,})(:\d+)?(\/[^\s]*)?$/;
 
     constructor(props: BaseComponentProps) {
         super(props)
     }
 
-    private static isValidHttpUrl(url: any) {
-        return AnchorComponent.pattern.test(url);
+    contextualizeVDom() {
+        super.contextualizeVDom()
+        const { isGenericText, containImage, isValidURL } = this.localContext
+        const notContextualize = isGenericText || containImage || !isValidURL
+        if (notContextualize) return
+        this.vDomContext.a.push(this)
     }
 
     private static isGenericText(text: string) {
@@ -34,24 +37,25 @@ class AnchorComponent extends BaseValidatableComponent {
         return containsKeyword
     }
 
-    private static hasBlackHoleHref(attributes: Attributes) {
-        const isBlackHoleHref = attributes.href?.includes("blackhole")
-        return !!isBlackHoleHref
-    }
-
-
-    contextualizeVDom() {
-        super.contextualizeVDom()
-        const { isGenericText, hasBlackHoleHref, containImage } = this.localContext
-        const notContextualize = !this.attributes.href || isGenericText || hasBlackHoleHref || containImage
-        if (notContextualize) return
-        this.vDomContext.a.push(this)
+    private static isValidURL(href: string) {
+        //Blackhole generalmente son detectores de bots, no se deben considerar un URL valida para evitar bloqueos.
+        return URLUtility.isValidURL(href) && !href.includes("blackhole")
     }
 
     private async validateHref() {
         const href = this.attributes.href
-        const { isValidHttpUrl, hasBlackHoleHref } = this.localContext
-        if (!isValidHttpUrl || hasBlackHoleHref || !href) return
+
+        if (!href) return {
+            message: "Anchor without href",
+            traceIds: [this.traceId],
+            tag: this.tag,
+            type: "semantic"
+        } satisfies Issue
+
+        const { isValidURL } = this.localContext
+
+        if (!isValidURL) return
+
         try {
             const res = await fetch(href, { method: "HEAD" })
             if ([404, 500, 504].includes(res.status)) throw ""
@@ -80,13 +84,6 @@ class AnchorComponent extends BaseValidatableComponent {
 
     async validate() {
 
-        if (!this.attributes.href) return {
-            message: "Anchor without href",
-            traceIds: [this.traceId],
-            tag: this.tag,
-            type: "semantic"
-        } satisfies Issue
-
         const validations = await Promise.all([
             this.validateHref(),
             this.validateText()
@@ -99,14 +96,24 @@ class AnchorComponent extends BaseValidatableComponent {
         /**
          * Nos ayuda a cachear algunas verificaciones internas que se repitan en varios metodos internos del componente.
          */
-        this.localContext.isValidHttpUrl = AnchorComponent.isValidHttpUrl(this.attributes.href)
+        const href = this.attributes.href || ""
         this.localContext.isGenericText = AnchorComponent.isGenericText(this.innerText.value)
-        this.localContext.hasBlackHoleHref = AnchorComponent.hasBlackHoleHref(this.attributes)
+        this.localContext.isValidURL = AnchorComponent.isValidURL(href)
         this.localContext.containImage = this.getOrThrowChildren().some(child => child instanceof BaseComponent && child.tag == "img")
+    }
+
+    completeHrefWithBase() {
+        const href = this.attributes.href
+        if (href && pathnamePattern.test(href)) {
+            const removeFirstSlash = href.startsWith("/") ? href.slice(1) : href
+            //El href siempre termina con /
+            this.attributes.href = this.document.url.href + removeFirstSlash
+        }
     }
 
     init(): void {
         super.init()
+        this.completeHrefWithBase()
         this.setLocalContext()
     }
 

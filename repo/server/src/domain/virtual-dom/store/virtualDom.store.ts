@@ -20,19 +20,14 @@ export default class VirtualDomStore {
         this.host = host
     }
 
-    addVirtualDom(virtualDom: VirtualDom) {
-        const normalizedPathname = URLUtility.normalizePathname(virtualDom.url.pathname)
-        if (this.store.has(normalizedPathname)) return
-        this.store.set(normalizedPathname, virtualDom)
-    }
-
     getOrCreate(pathname: string) {
-        const virtualDomExists = this.store.get(URLUtility.normalizePathname(pathname))
+        const normalizedPathname = URLUtility.normalizePathname(pathname)
+        const virtualDomExists = this.store.get(normalizedPathname)
         if (virtualDomExists) return virtualDomExists
         const url = URLUtility.createURL({ host: this.host, pathname })
         const domValidator = new DomValidator(this.openAi)
         const virtualDom = new VirtualDom(this.puppeteer, domValidator, { url })
-        this.store.set(URLUtility.normalizePathname(pathname), virtualDom)
+        this.store.set(normalizedPathname, virtualDom)
         return virtualDom
     }
 

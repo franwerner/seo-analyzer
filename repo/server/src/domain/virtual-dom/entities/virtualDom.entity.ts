@@ -1,10 +1,10 @@
 import VDomContext from "@/domain/virtual-dom/context/vDom.context";
+import PuppeterService from "@/infrastructure/scrapper/puppeter.service";
+import ErrorHandler from "@/shared/utils/errorHandler.utils";
 import type HTMLComponent from "../components/html.component";
 import DomValidator from "../services/dom-validator";
-import { URLInterface } from "@/shared/types/URL.interface";
-import VirtualDomGeneratorUtility from "../utils/virtualDomGenerator.utils";
-import ErrorHandler from "@/shared/utils/errorHandler.utils";
-import PuppeterService from "@/infrastructure/scrapper/puppeter.service";
+import SnapshotGeneratorUtility from "../utils/snapshotGenerator.utils";
+import { URLInterface } from "@/shared/utils/URL.util";
 
 enum AnalyzeStatus {
     Analyzing = "analyzing",
@@ -46,7 +46,7 @@ class VirtualDom {
             })
     }
 
-    async analyze(context: string) {
+    async analyze(pageSummary: string) {
 
         this.throwIfAnalyzing()
 
@@ -55,9 +55,8 @@ class VirtualDom {
         const snapshot = await this.getOrGenerateSnapshot()
 
         try {
-            return await this.domValidator.runValidation({ snapshot, context })
+            return await this.domValidator.runValidation({ snapshot, pageSummary })
         } catch (error) {
-            console.log(`ERROR ANALYZING DOM - ${error}`)
             if (error instanceof ErrorHandler) throw error
             throw new ErrorHandler({
                 message: `ERROR ANALYZING DOM - ${error}`,
@@ -82,7 +81,10 @@ class VirtualDom {
         const url = this.url.href
         const htmlString = await to(url)
 
-        const { root, vDomContext, htmlStructure, htmlSemantic } = await VirtualDomGeneratorUtility.generateRoot(htmlString)
+        const { root, vDomContext, htmlStructure, htmlSemantic } = await SnapshotGeneratorUtility.generate({
+            htmlString,
+            document: this
+        })
 
         return {
             root,
@@ -103,9 +105,8 @@ class VirtualDom {
             if (!this.snapshot) {
                 this.snapshot = this.createSnapshot()
             }
-            return await this.snapshot
+            return this.snapshot
         } catch (error) {
-            console.log(`ERROR GENERATING SNAPSHOT => ${this.url.href} , ${error}`)
             this.snapshot = null
             if (error instanceof ErrorHandler) {
                 throw error

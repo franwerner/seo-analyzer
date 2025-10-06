@@ -1,4 +1,4 @@
-import { Issue } from "@/schemas/issue.schema";
+import { Issue } from "@/infrastructure/schemas/issue.schema";
 import BaseComponent from "./base.component";
 
 export default abstract class BaseValidatableComponent extends BaseComponent {

@@ -1,6 +1,7 @@
 import TextComponent from "./text.component";
 import crc32 from "crc-32";
 import VDomContext from "@/domain/virtual-dom/context/vDom.context";
+import VirtualDom from "../entities/virtualDom.entity";
 
 interface BaseComponentProps {
     tag: string;
@@ -9,6 +10,7 @@ interface BaseComponentProps {
     pathDom: string,
     vDomContext: VDomContext
     parent: Parent
+    document: VirtualDom
 }
 
 export type Children = BaseComponent | TextComponent
@@ -25,7 +27,6 @@ export type Attributes = Record<string, string>
 
 const notPickableAttributesExp = /^(class|id|style|data-.*|aria-.*)$/
 
-const notPickInnertTextTags = ["script"]
 
 const selfClosingTags = [
     "area", "base", "br", "col", "embed", "hr", "img",
@@ -62,6 +63,7 @@ class BaseComponent {
     needsClosingTag: boolean
     vDomContext: VDomContext
     parent: Parent
+    document: VirtualDom
     innerText: {
         value: string,
         claimedByParent: boolean
@@ -71,7 +73,7 @@ class BaseComponent {
         }
     private isInlineTextSeparator: boolean = false
 
-    constructor({ tag, children, attributes, pathDom, vDomContext, parent }: BaseComponentProps) {
+    constructor({ tag, children, attributes, pathDom, vDomContext, parent, document }: BaseComponentProps) {
         const tagToLowerCase = tag.toLowerCase()
         this.tag = tagToLowerCase
         this.parent = parent
@@ -81,6 +83,7 @@ class BaseComponent {
         this.traceId = BaseComponent.generateTraceIdHash(pathDom)
         this.needsClosingTag = !selfClosingTags.includes(tagToLowerCase)
         this.vDomContext = vDomContext
+        this.document = document
     }
 
     getParentIfNotNull() {
@@ -183,8 +186,6 @@ class BaseComponent {
         }, "")
     }
     private setInnerText() {
-
-        if (notPickInnertTextTags.includes(this.tag)) return
 
         this.innerText.value = this.generateInnerText()
     }

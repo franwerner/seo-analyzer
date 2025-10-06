@@ -1,6 +1,7 @@
-import { IssueType } from "@/schemas/issueType.schema";
+import { IssueType } from "@/infrastructure/schemas/issueType.schema";
 import OpenAi from "@/infrastructure/AI/openAi.service";
 import ValidationUtility from "@/domain/virtual-dom/utils/validation.util";
+import VDomContext from "@/domain/virtual-dom/context/vDom.context";
 
 const prompt = `
                 #RESPONDE EN INGLES
@@ -30,13 +31,85 @@ const prompt = `
 export default class StructureValidation extends ValidationUtility {
     constructor(
         private openAI: OpenAi,
+        private context: VDomContext,
         private htmlStructure: string
     ) {
         super()
     }
 
-    async validate() {
 
+    private validateH1() {
+        const h1 = this.context.headings.h1
+
+        if (h1.length > 1) {
+            this.addIssue({
+                message: "The webpage contains more than one h1 element",
+                tag: "H1",
+                traceIds: h1.map(prev => prev.traceId),
+                type: "structure"
+            })
+        } else if (h1.length === 0) {
+            this.addIssue({
+                message: "No h1 found",
+                tag: "H1",
+                traceIds: [],
+                type: "structure"
+            })
+        }
+    }
+
+    private validateH2() {
+        const h2 = this.context.headings.h2
+        if (h2.length > 10) {
+            this.addIssue({
+                message: "The webpage contains more than 10 h2 elements",
+                tag: "h2",
+                traceIds: h2.map(prev => prev.traceId),
+                type: "structure"
+            })
+        }
+    }
+
+    private validateTitle() {
+        const title = this.context.title
+        if (title.length === 0) {
+            this.addIssue({
+                message: "No title found",
+                tag: "title",
+                traceIds: [],
+                type: "structure"
+            })
+        } else if (title.length > 1) {
+            this.addIssue({
+                message: "The webpage contains more than one title element",
+                tag: "title",
+                traceIds: title.map(prev => prev.traceId),
+                type: "structure"
+            })
+        }
+    }
+
+    private validateMeta() {
+        const meta = this.context.metaDescription
+        if (meta.length === 0) {
+            this.addIssue({
+                message: "No meta description found",
+                tag: "meta",
+                traceIds: [],
+                type: "structure"
+            })
+        } else if (meta.length > 1) {
+            this.addIssue({
+                message: "The webpage contains more than one meta description element",
+                tag: "meta",
+                traceIds: meta.map(prev => prev.traceId),
+                type: "structure"
+            })
+        }
+    }
+
+
+    private async validateWithAI() {
         const response = await this.openAI.generateIssuesAsType(
             this.htmlStructure,
             prompt,
@@ -46,5 +119,15 @@ export default class StructureValidation extends ValidationUtility {
         this.addTokens(response.tokens)
         this.addIssue(response.issues)
 
+    }
+
+    async validate() {
+
+        this.validateH1()
+        this.validateH2()
+        this.validateTitle()
+        this.validateMeta()
+
+        await this.validateWithAI()
     }
 }

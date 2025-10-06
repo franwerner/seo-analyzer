@@ -5,9 +5,9 @@ import { JSDOM, VirtualConsole } from "jsdom"
 import HTMLComponent from "@/domain/virtual-dom/components/html.component"
 import ErrorHandler from "@/shared/utils/errorHandler.utils"
 import ComponentFactory from "@/domain/virtual-dom/utils/componentFactory.util"
+import VirtualDom from "../entities/virtualDom.entity"
 
-
-export default class VirtualDomGeneratorUtility {
+export default class SnapshotGeneratorUtility {
 
     private static readonly virtualConsole = new VirtualConsole()
     private static readonly ignoreTags = ["STYLE", "#comment", "svg", "NOSCRIPT"]
@@ -38,14 +38,13 @@ export default class VirtualDomGeneratorUtility {
         const titleFirst = context.title.at(0)
         const h1First = context.headings.h1.at(0)
 
-        const anchor = context.a.map(i => i.generateInnerHTML({ includeAttributes: false }))
         const meta = metaFirst ? `<meta t-id=${metaFirst.traceId} name="description" content="${metaFirst.attributes.content}"/>` : ""
         const title = titleFirst ? `<title t-id=${titleFirst.traceId}>${titleFirst.innerText.value}</title>` : ""
         const h1 = h1First ? `<h1 t-id=${h1First.traceId}>${h1First.innerText.value}</h1>` : ""
         const h2s = context.headings.h2.map(i => `<h2 t-id=${i.traceId}>${i.innerText.value}</h2>`)
         const h3s = context.headings.h3.map(i => `<h3 t-id=${i.traceId}>${i.innerText.value}</h3>`)
 
-        return [...anchor, meta, title, h1, ...h2s, ...h3s].filter(i => i != "")
+        return [meta, title, h1, ...h2s, ...h3s].filter(i => i != "")
     }
 
     private static createJSDOM(htmlString: string) {
@@ -63,12 +62,17 @@ export default class VirtualDomGeneratorUtility {
         return html
     }
 
-    private static createContext() {
-        return new VDomContext()
-    }
-
-
-    private static generateChildren(parent: BaseComponent, elem: Element, parentPathDom: string) {
+    private static generateChildren({
+        parent,
+        elem,
+        parentPathDom,
+        document
+    }: {
+        parent: BaseComponent,
+        elem: Element,
+        parentPathDom: string,
+        document: VirtualDom
+    }) {
 
         const childrens: Array<Children> = []
 
@@ -82,7 +86,7 @@ export default class VirtualDomGeneratorUtility {
                     parent
                 }))
             }
-            else if (!this.ignoreTags.includes(child.nodeName) && child.nodeName != "HTML") {
+            else if (!this.ignoreTags.includes(child.nodeName)) {
                 const nextPathDom = parentPathDom + "/" + child.nodeName + "/" + i
                 const Component = ComponentFactory.getComponent(child.nodeName)
                 const componentInstance = new Component({
@@ -91,8 +95,14 @@ export default class VirtualDomGeneratorUtility {
                     vDomContext: parent.vDomContext,
                     pathDom: nextPathDom,
                     parent,
+                    document
                 })
-                componentInstance.children = this.generateChildren(componentInstance, child, nextPathDom)
+                componentInstance.children = this.generateChildren({
+                    parent: componentInstance,
+                    elem: child,
+                    parentPathDom: nextPathDom,
+                    document
+                })
                 componentInstance.init()
                 childrens.push(componentInstance)
             }
@@ -113,16 +123,21 @@ export default class VirtualDomGeneratorUtility {
 
     }
 
-    static async generateRoot(htmlString: string) {
+    static async generate({
+        htmlString,
+        document
+    }: {
+        htmlString: string,
+        document: VirtualDom
+    }) {
 
         const html = this.createJSDOM(htmlString)
 
-        const vDomContext = this.createContext()
+        const vDomContext = new VDomContext()
 
         const HTMLComponent = ComponentFactory.getComponent("HTML")
 
         const htmlPathDom = "HTML"
-
 
         const htmlInstance = new HTMLComponent({
             tag: "HTML",
@@ -130,14 +145,21 @@ export default class VirtualDomGeneratorUtility {
             vDomContext,
             pathDom: htmlPathDom,
             parent: null,
+            document
         })
 
 
-        htmlInstance.children = this.generateChildren(htmlInstance, html, htmlPathDom)
+        htmlInstance.children = this.generateChildren({
+            parent: htmlInstance,
+            elem: html,
+            parentPathDom: htmlPathDom,
+            document
+        })
         htmlInstance.init()
 
 
         this.contextualizeTree(htmlInstance)
+
         const htmlStructure = this.generateHtmlStructure(htmlInstance)
         const htmlSemantic = this.genenerateHtmlSemantic(vDomContext)
 

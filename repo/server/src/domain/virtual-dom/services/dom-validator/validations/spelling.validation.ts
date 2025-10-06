@@ -4,7 +4,7 @@ import OpenAi from "@/infrastructure/AI/openAi.service";
 import ValidationUtility from "@/domain/virtual-dom/utils/validation.util";
 
 const prompt = `
-Eres un asistente de corrección ortográfica.
+        Eres un asistente de corrección ortográfica.
 
         # Instrucciones:
         1. Analiza el TEXTO proporcionado y detecta únicamente palabras con errores **ortográficos**.
@@ -19,8 +19,8 @@ Eres un asistente de corrección ortográfica.
 
 export default class SpellingValidation extends ValidationUtility {
     constructor(
+        private openAI: OpenAi,
         private context: VDomContext,
-        private openAI: OpenAi
     ) {
         super()
     }
@@ -41,7 +41,6 @@ export default class SpellingValidation extends ValidationUtility {
          */
 
         return results.reduce((acc, query) => {
-            console.log(query)
             query.words.forEach(word => acc.words.add(word))
             acc.tokens.input += query.tokens.input
             acc.tokens.output += query.tokens.output

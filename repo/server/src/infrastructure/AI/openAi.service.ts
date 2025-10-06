@@ -1,6 +1,6 @@
-import { IssueType } from "@/schemas/issueType.schema";
-import { issueOutputSchema, issueOutputWithOutTypeSchema } from "@/schemas/openAiOutput.schema";
-import WordsSchema from "@/schemas/words.schema";
+import { IssueType } from "@/infrastructure/schemas/issueType.schema";
+import { issueOutputSchema, issueOutputWithOutTypeSchema } from "@/infrastructure/schemas/openAiOutput.schema";
+import WordsSchema from "@/infrastructure/schemas/words.schema";
 import OpenAI from "openai";
 import { zodTextFormat } from "openai/helpers/zod";
 

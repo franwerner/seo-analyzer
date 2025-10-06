@@ -50,7 +50,8 @@ export default class VDomContext {
     innerTextChunks: TextChunker = new TextChunker()
     a: Array<AnchorComponent> = []
 
-    constructor() { }
+    constructor() {
+    }
 
 
 }

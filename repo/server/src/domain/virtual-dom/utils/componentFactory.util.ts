@@ -1,4 +1,3 @@
-import LinkComponent from "@/domain/virtual-dom/components/link.component";
 import AnchorComponent from "@/domain/virtual-dom/components/anchor.component";
 import BaseComponent from "@/domain/virtual-dom/components/base.component";
 import H1Component from "@/domain/virtual-dom/components/h1.component";
@@ -18,7 +17,6 @@ const components = {
     IMG: ImgComponent,
     H1: H1Component,
     H3: H3Component,
-    LINK: LinkComponent,
     META: MetaComponent,
     TITLE: TitleComponent
 } as const

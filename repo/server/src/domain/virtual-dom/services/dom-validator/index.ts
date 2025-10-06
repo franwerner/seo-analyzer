@@ -1,9 +1,11 @@
 import ValidationUtility from "@/domain/virtual-dom/utils/validation.util";
 import OpenAi from "@/infrastructure/AI/openAi.service";
-import { Validation } from "@/shared/types/Validation.interface";
-import ErrorHandler from "@/shared/utils/errorHandler.utils";
+import { Validation } from "@/domain/virtual-dom/types/Validation.interface";
 import { VirtualDomSnapshot } from "../../entities/virtualDom.entity";
 import SemanticValidation from "./validations/semantic.validation";
+import SpellingValidation from "./validations/spelling.validation";
+import StructureValidation from "./validations/structure.validation";
+import ComponentTreeValidation from "./validations/componentTree.validation";
 
 type ValidationWithTokens = Required<Validation>
 
@@ -17,10 +19,6 @@ export default class DomValidator {
     ) { }
 
     getValidations() {
-        if (this.validations.length == 0) throw new ErrorHandler({
-            message: "No validations found",
-            status_code: 404
-        })
         return this.validations
     }
 
@@ -52,20 +50,19 @@ export default class DomValidator {
 
     async runValidation({
         snapshot,
-        context
+        pageSummary
     }: {
         snapshot: VirtualDomSnapshot,
-        context: string
+        pageSummary: string
     }) {
-        const { root, vDomContext, htmlStructure } = snapshot
+        const { root, vDomContext, htmlStructure, htmlSemantic } = snapshot
+
         const validationInstaces = [
-            // new ComponentTreeValidation(root),
-            // new HeadingsValidation(vDomContext),
+            new ComponentTreeValidation(root),
             // new ScriptSchemasValidation(this.openAi, vDomContext),
-            // new AnchorLinkValidation(this.openAi, vDomContext)
-            // new StructureValidation(this.openAi, htmlStructure),
-            // new SpellingValidation(vDomContext, this.openAi)
-            new SemanticValidation(this.openAi, vDomContext)
+            new StructureValidation(this.openAi, vDomContext, htmlStructure),
+            new SpellingValidation(this.openAi, vDomContext),
+            new SemanticValidation(this.openAi, htmlSemantic, pageSummary, vDomContext)
         ]
 
         return await this.validationInstaces(validationInstaces)

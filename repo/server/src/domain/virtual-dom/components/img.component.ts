@@ -1,4 +1,4 @@
-import { Issue } from "@/schemas/issue.schema"
+import { Issue } from "@/infrastructure/schemas/issue.schema"
 import { BaseComponentProps } from "./base.component"
 import BaseValidatableComponent from "./baseValidatable.component"
 

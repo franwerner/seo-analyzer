@@ -1,12 +1,13 @@
 import VDomContext from "@/domain/virtual-dom/context/vDom.context";
-import { Issue } from "@/schemas/issue.schema";
+import { Issue } from "@/infrastructure/schemas/issue.schema";
 import OpenAi from "@/infrastructure/AI/openAi.service";
 import ValidationUtility from "@/domain/virtual-dom/utils/validation.util";
 
 export default class ScriptSchemasValidation extends ValidationUtility {
     constructor(
         private openAi: OpenAi,
-        private context: VDomContext
+        private context: VDomContext,
+        private pageSummary: string
     ) {
         super()
     }

@@ -1,6 +1,6 @@
-import { Issue } from "@/schemas/issue.schema"
-import { Tokens } from "@/shared/types/Tokens.interface"
-import { Validation } from "@/shared/types/Validation.interface"
+import { Issue } from "@/infrastructure/schemas/issue.schema"
+import { Validation } from "@/domain/virtual-dom/types/Validation.interface"
+import { Tokens } from "@/infrastructure/schemas/tokens.schema"
 
 /**
  * Esta class se encarga de agrupar los issues y tokens.
