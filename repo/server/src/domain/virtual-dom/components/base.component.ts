@@ -110,7 +110,7 @@ class BaseComponent {
         * Esto se debe a que algunas contextualizacion necesitan acceder al estado de sus hijos para tomar deciciones de contextualizacion.
         * 
         */
-        if (this.innerText.claimedByParent || !this.innerText.value.trim() || this instanceof ScriptComponent) return
+        if (this.innerText.claimedByParent || !this.innerText.value.trim() || this.tag === "script") return
         this.vDomContext.innerTextChunks.pushComponentText(this)
     }
 
