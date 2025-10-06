@@ -6,8 +6,6 @@ import URLUtility from "@/shared/utils/URL.util";
 
 const notValidText = ["read more", "learn more", "see more"]
 
-const pathnamePattern = /^\/[^\s#]*(#\S*)?$/
-
 class AnchorComponent extends BaseValidatableComponent {
 
     private localContext: {
@@ -37,7 +35,7 @@ class AnchorComponent extends BaseValidatableComponent {
         return containsKeyword
     }
 
-    private static isValidURL(href: string) {
+    private static isValidURL(href: any) {
         //Blackhole generalmente son detectores de bots, no se deben considerar un URL valida para evitar bloqueos.
         return URLUtility.isValidURL(href) && !href.includes("blackhole")
     }
@@ -96,19 +94,32 @@ class AnchorComponent extends BaseValidatableComponent {
         /**
          * Nos ayuda a cachear algunas verificaciones internas que se repitan en varios metodos internos del componente.
          */
-        const href = this.attributes.href || ""
+        const href = this.attributes.href
         this.localContext.isGenericText = AnchorComponent.isGenericText(this.innerText.value)
         this.localContext.isValidURL = AnchorComponent.isValidURL(href)
         this.localContext.containImage = this.getOrThrowChildren().some(child => child instanceof BaseComponent && child.tag == "img")
     }
 
     completeHrefWithBase() {
-        const href = this.attributes.href
-        if (href && pathnamePattern.test(href)) {
-            const removeFirstSlash = href.startsWith("/") ? href.slice(1) : href
-            //El href siempre termina con /
-            this.attributes.href = this.document.url.href + removeFirstSlash
+        const componentHref = this.attributes.href
+        if (componentHref === undefined) return // Se evalua si es undefined, si es un string vacio sigue siendo un url valida.
+
+        const documentURL = this.document.url.href // Siempre termina con "/"
+        try {
+            const outputURL = new URL(componentHref, documentURL)
+            /**
+             * Ejemplo: Resuelve hrefs relativas y absolutas.
+             *
+             * @example
+             * const documentURL = "https://example.com/blog/"
+             *
+             * new URL("/about", documentURL).href; // => "https://example.com/about"
+             * new URL("about", documentURL).href;  // => "https://example.com/blog/about"
+             */
+            this.attributes.href = outputURL.href
+        } catch (error) {
         }
+
     }
 
     init(): void {
