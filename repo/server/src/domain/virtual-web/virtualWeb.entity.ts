@@ -3,6 +3,7 @@ import PuppeterService from "@/infrastructure/scrapper/puppeter.service";
 import { Tokens } from "@/domain/virtual-dom/types/Tokens.interface";
 import { WebSummary } from "@/domain/virtual-web/types/WebSummary.interface";
 import VirtualDomStore from "@/domain/virtual-dom/store/virtualDom.store";
+import { URLInterface } from "@/shared/utils/URL.util";
 
 /**
  * @note
@@ -11,30 +12,26 @@ import VirtualDomStore from "@/domain/virtual-dom/store/virtualDom.store";
 
 
 export interface VirtualWebProps {
-    host: string
-    mainPathname: string
+    url: URLInterface
     webSummary?: WebSummary | null
 }
 
 export default class VirtualWeb {
 
     vdomStore: VirtualDomStore
-    host: string
-    mainPathname: string
+    url: URLInterface
     webSummary?: WebSummary | null = null
 
     constructor(
         private openAi: OpenAi,
         private puppeteer: PuppeterService,
-        { host, webSummary, mainPathname }: VirtualWebProps) {
+        { url, webSummary }: VirtualWebProps) {
 
-        this.host = host
-
-        this.mainPathname = mainPathname
+        this.url = url
 
         this.webSummary = webSummary
 
-        this.vdomStore = new VirtualDomStore(this.openAi, this.puppeteer, { host })
+        this.vdomStore = new VirtualDomStore(this.openAi, this.puppeteer, { host: url.host })
     }
 
 
@@ -47,7 +44,7 @@ export default class VirtualWeb {
         webSummary: WebSummary,
         tokens: Tokens
     }> {
-        const snapshot = await this.vdomStore.getOrCreate(this.mainPathname).getOrGenerateSnapshot()
+        const snapshot = await this.vdomStore.getOrCreate(this.url.pathname).getOrGenerateSnapshot()
 
         const texts = snapshot.vDomContext.innerTextChunks.chunks.map(chunk => chunk.parts_texts).flat()
 
@@ -78,7 +75,7 @@ export default class VirtualWeb {
             webSummary: {
                 summary: response,
                 generatedAt: new Date(),
-                pathnameByGeneration: this.mainPathname,
+                pathnameByGeneration: this.url.pathname,
             },
             tokens: tokens
         }

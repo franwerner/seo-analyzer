@@ -7,8 +7,8 @@ import VirtualDomUseCases from "@/application/use-cases/virtualDom.use-cases";
 const IA = new OpenAi()
 const scrapper = new PuppeterService()
 const virtualWebStore = new VirtualWebStore(IA, scrapper)
-const virtualWebUseCases = new VirtualWebUseCases(virtualWebStore)
 const virtualDomUseCases = new VirtualDomUseCases()
+const virtualWebUseCases = new VirtualWebUseCases(virtualWebStore, virtualDomUseCases)
 
 export {
     IA,

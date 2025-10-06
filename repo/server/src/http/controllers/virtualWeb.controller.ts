@@ -8,7 +8,7 @@ export default class VirtualWebController {
         const pathname = req.body.path as string
         await virtualWebUseCases.registerVirtualWeb({
             host,
-            mainPathname: pathname
+            pathname,
         })
         res.status(201).json({ message: "VirtualDom created" })
     }

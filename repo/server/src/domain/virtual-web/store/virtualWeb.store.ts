@@ -5,6 +5,7 @@ import VirtualWeb, { VirtualWebProps } from "../virtualWeb.entity"
 import PuppeterService from "@/infrastructure/scrapper/puppeter.service"
 import VirtualWebAlreadyExists from "../errors/VirtualWebAlreadyExists.error"
 import VirtualWebNotFound from "../errors/VirtualWebNotFount.error"
+import VirtualWebDTO from "@/application/dtos/VirtualWeb.dto"
 
 const timeoutDuration = 1000 * 60 * 5 // 5M
 const maxVDomDuration = 1000 * 60 * 30 //30M
@@ -26,26 +27,17 @@ class VirtualWebStore {
         this.store = new Map()
     }
 
-    private create({ host, mainPathname, webSummary }: VirtualWebProps) {
-        const normalizedHost = URLUtility.normalizeHost(host)
-        const vdom = new VirtualWeb(this.openAi, this.puppeteer, { host: normalizedHost, mainPathname: URLUtility.normalizePathname(mainPathname), webSummary })
-        this.store.set(normalizedHost, vdom)
+    private create({ url, webSummary }: VirtualWebProps) {
+        const vdom = new VirtualWeb(this.openAi, this.puppeteer, { url, webSummary })
+        this.touch(vdom)
+        this.store.set(url.host, vdom)
         return vdom
     }
 
-    createIfNotExists(props: VirtualWebProps) {
-        const normalizedHost = URLUtility.normalizeHost(props.host)
-        if (this.store.has(normalizedHost)) throw new VirtualWebAlreadyExists()
-        return this.create(props)
-    }
-
-    getOrCreate(props: VirtualWebProps) {
-
-        const getVDOM = this.store.get(URLUtility.normalizeHost(props.host))
-
-        if (getVDOM) return getVDOM
-
-        return this.create(props)
+    createIfNotExists(props: VirtualWebDTO) {
+        const url = URLUtility.createURL({ host: props.host, pathname: props.pathname })
+        if (this.store.has(url.host)) throw new VirtualWebAlreadyExists()
+        return this.create({ url, webSummary: props.webSummary })
     }
 
     getOrThrow(host: string) {
@@ -70,24 +62,24 @@ class VirtualWebStore {
     }
 
     private scheduleCleanup() {
-        if (this.timeout !== null) return
-        this.timeout = setTimeout(() => {
-            const now = Date.now()
-            this.virtualWebLastTouch.forEach((lastTouch, vdom) => {
-                if (now - lastTouch >= maxVDomDuration) {
-                    this.virtualWebLastTouch.delete(vdom)
-                    /**
-                     * Aca tendriamos que crear un metood en el VirtualWeb que se encargue de verificar si hay algun virtualDom con un analisis activo.
-                     */
-                    this.store.delete(vdom.host)
-                    console.log(`VirtualWeb ${vdom.host} removed for inactivity`)
-                }
-            })
-            this.timeout = null
-            if (this.virtualWebLastTouch.size > 0) {
-                this.scheduleCleanup()
-            }
-        }, timeoutDuration)
+        // if (this.timeout !== null) return
+        // this.timeout = setTimeout(() => {
+        //     const now = Date.now()
+        //     this.virtualWebLastTouch.forEach((lastTouch, vWeb) => {
+        //         if (now - lastTouch >= maxVDomDuration) {
+        //             this.virtualWebLastTouch.delete(vWeb)
+        //             /**
+        //              * Aca tendriamos que crear un metood en el VirtualWeb que se encargue de verificar si hay algun virtualDom con un analisis activo.
+        //              */
+        //             this.store.delete(vWeb.url.host)
+        //             console.log(`VirtualWeb ${vWeb.url.host} removed for inactivity`)
+        //         }
+        //     })
+        //     this.timeout = null
+        //     if (this.virtualWebLastTouch.size > 0) {
+        //         this.scheduleCleanup()
+        //     }
+        // }, timeoutDuration)
     }
 
 }

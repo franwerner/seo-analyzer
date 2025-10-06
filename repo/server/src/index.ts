@@ -10,7 +10,7 @@ import { webSummaryContext } from "./infrastructure/mocks/webSummaryContext.mock
 
 const v = virtualWebStore.createIfNotExists({
     host: "atticsexpress.com",
-    mainPathname: "/",
+    pathname: "/",
     webSummary: {
         summary: webSummaryContext,
         generatedAt: new Date(),

@@ -1,4 +1,4 @@
-import URLUtility from "@/shared/utils/URL.util";
+import URLUtility, { URLInterface } from "@/shared/utils/URL.util";
 import DomValidator from "@/domain/virtual-dom/services/dom-validator";
 import PuppeterService from "@/infrastructure/scrapper/puppeter.service";
 import OpenAi from "@/infrastructure/AI/openAi.service";
@@ -20,15 +20,18 @@ export default class VirtualDomStore {
         this.host = host
     }
 
-    getOrCreate(pathname: string) {
-        const normalizedPathname = URLUtility.normalizePathname(pathname)
-        const virtualDomExists = this.store.get(normalizedPathname)
-        if (virtualDomExists) return virtualDomExists
-        const url = URLUtility.createURL({ host: this.host, pathname })
+    private create({ url }: { url: URLInterface }) {
         const domValidator = new DomValidator(this.openAi)
         const virtualDom = new VirtualDom(this.puppeteer, domValidator, { url })
-        this.store.set(normalizedPathname, virtualDom)
+        this.store.set(url.pathname, virtualDom)
         return virtualDom
+    }
+
+    getOrCreate(pathname: string) {
+        const url = URLUtility.createURL({ host: this.host, pathname })
+        const virtualDomExists = this.store.get(url.pathname)
+        if (virtualDomExists) return virtualDomExists
+        return this.create({ url })
     }
 
     getOrThrow(pathname: string) {
@@ -37,7 +40,7 @@ export default class VirtualDomStore {
         return virtualDomExists
     }
 
-    deleteVirtualDom(pathname: string) {
+    remove(pathname: string) {
         this.store.delete(URLUtility.normalizePathname(pathname))
     }
 }
