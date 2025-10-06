@@ -4,7 +4,7 @@ import OpenAi from "@/infrastructure/AI/openAi.service"
 import VirtualWeb, { VirtualWebProps } from "../virtualWeb.entity"
 import PuppeterService from "@/infrastructure/scrapper/puppeter.service"
 import VirtualWebAlreadyExists from "../errors/VirtualWebAlreadyExists.error"
-import VirtualWebNotFound from "../errors/virtualWebNotFount.error"
+import VirtualWebNotFound from "../errors/VirtualWebNotFount.error"
 
 const timeoutDuration = 1000 * 60 * 5 // 5M
 const maxVDomDuration = 1000 * 60 * 30 //30M
