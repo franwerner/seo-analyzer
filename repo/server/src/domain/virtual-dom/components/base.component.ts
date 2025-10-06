@@ -1,7 +1,7 @@
 import TextComponent from "./text.component";
 import crc32 from "crc-32";
 import VDomContext from "@/domain/virtual-dom/context/vDom.context";
-import VirtualDom from "../entities/virtualDom.entity";
+import VirtualDom from "../virtualDom.entity";
 
 interface BaseComponentProps {
     tag: string;

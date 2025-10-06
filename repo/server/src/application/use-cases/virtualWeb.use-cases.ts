@@ -1,4 +1,4 @@
-import { VirtualWebProps } from "@/domain/virtual-web/entities/virtualWeb.entity";
+import { VirtualWebProps } from "@/domain/virtual-web/virtualWeb.entity";
 import VirtualWebStore from "@/domain/virtual-web/store/virtualWeb.store";
 import { virtualDomUseCases } from "@/infrastructure/bootstrap";
 

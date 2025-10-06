@@ -1,9 +1,9 @@
-import VirtualDom from "../entities/virtualDom.entity";
 import ErrorHandler from "@/shared/utils/errorHandler.utils";
 import URLUtility from "@/shared/utils/URL.util";
 import DomValidator from "@/domain/virtual-dom/services/dom-validator";
 import PuppeterService from "@/infrastructure/scrapper/puppeter.service";
 import OpenAi from "@/infrastructure/AI/openAi.service";
+import VirtualDom from "../virtualDom.entity";
 
 interface VirtualDomStoreProps {
     host: string

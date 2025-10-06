@@ -1,10 +1,10 @@
 import VDomContext from "@/domain/virtual-dom/context/vDom.context";
 import PuppeterService from "@/infrastructure/scrapper/puppeter.service";
 import ErrorHandler from "@/shared/utils/errorHandler.utils";
-import type HTMLComponent from "../components/html.component";
-import DomValidator from "../services/dom-validator";
-import SnapshotGeneratorUtility from "../utils/snapshotGenerator.utils";
 import { URLInterface } from "@/shared/utils/URL.util";
+import SnapshotGeneratorUtility from "./utils/snapshotGenerator.utils";
+import DomValidator from "./services/dom-validator";
+import HTMLComponent from "./components/html.component";
 
 enum AnalyzeStatus {
     Analyzing = "analyzing",

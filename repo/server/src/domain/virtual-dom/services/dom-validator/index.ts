@@ -1,7 +1,7 @@
 import ValidationUtility from "@/domain/virtual-dom/utils/validation.util";
 import OpenAi from "@/infrastructure/AI/openAi.service";
 import { Validation } from "@/domain/virtual-dom/types/Validation.interface";
-import { VirtualDomSnapshot } from "../../entities/virtualDom.entity";
+import { VirtualDomSnapshot } from "@/domain/virtual-dom/virtualDom.entity";
 import SemanticValidation from "./validations/semantic.validation";
 import SpellingValidation from "./validations/spelling.validation";
 import StructureValidation from "./validations/structure.validation";

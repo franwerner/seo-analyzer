@@ -2,7 +2,7 @@
 import URLUtility from "@/shared/utils/URL.util"
 import OpenAi from "@/infrastructure/AI/openAi.service"
 import ErrorHandler from "@/shared/utils/errorHandler.utils"
-import VirtualWeb, { VirtualWebProps } from "../entities/virtualWeb.entity"
+import VirtualWeb, { VirtualWebProps } from "../virtualWeb.entity"
 import PuppeterService from "@/infrastructure/scrapper/puppeter.service"
 
 const timeoutDuration = 1000 * 60 * 5 // 5M

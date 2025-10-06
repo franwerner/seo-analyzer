@@ -5,7 +5,7 @@ import { JSDOM, VirtualConsole } from "jsdom"
 import HTMLComponent from "@/domain/virtual-dom/components/html.component"
 import ErrorHandler from "@/shared/utils/errorHandler.utils"
 import ComponentFactory from "@/domain/virtual-dom/utils/componentFactory.util"
-import VirtualDom from "../entities/virtualDom.entity"
+import VirtualDom from "@/domain/virtual-dom/virtualDom.entity"
 
 export default class SnapshotGeneratorUtility {
 
