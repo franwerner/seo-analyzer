@@ -25,7 +25,7 @@ export default function LoginPage() {
 
     const login = (e: Event) => {
         e.preventDefault()
-        fetchData("/login", {
+        fetchData("/auth/login", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json"

@@ -37,7 +37,7 @@ const Content = ({ historyValidations }: ContentProps) => {
     const {
         fetchData,
         response
-    } = useFetch<SeoDetails>()
+    } = useFetch<{ analysis: SeoDetails }>()
 
     const {
         status,
@@ -51,11 +51,11 @@ const Content = ({ historyValidations }: ContentProps) => {
 
     const handleFetch = () => {
         setSelectedIndex(-1)
-        fetchData(`/analyze?domain=${matches?.domain}&path=${matches?.path}`, {
+        fetchData(`/virtual-web/create-single-analysis?host=${matches?.host}&path=${matches?.path}`, {
             onSuccess: ({
-                issues,
-                tokens,
+                analysis,
             }) => {
+                const { issues, tokens } = analysis
                 setHistory(prev => [...prev, {
                     issues,
                     tokens,
@@ -101,7 +101,7 @@ export default function AnalyzePage() {
 
     const [{ matches }] = useRouter()
 
-    const { fetchData, response } = useFetch<{ validations: Array<SeoDetails> }>()
+    const { fetchData, response } = useFetch<{ analysis: Array<SeoDetails> }>()
 
     const {
         status,
@@ -109,13 +109,13 @@ export default function AnalyzePage() {
     } = response
 
     useEffect(() => {
-        fetchData(`/validations?url=${matches?.url}`)
+        fetchData(`/virtual-web/analysis/?path=${matches?.path}&host=${matches?.host}`)
     }, [])
 
     return status === "loading" ?
         <div className="flex justify-center items-center h-screen">
             <Loading text="Cargando historial de analisis..." />
         </div>
-        : <Content historyValidations={data?.validations || []} />
+        : <Content historyValidations={data?.analysis || []} />
 }
 

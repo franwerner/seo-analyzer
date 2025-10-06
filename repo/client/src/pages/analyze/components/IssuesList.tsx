@@ -12,7 +12,7 @@ export default function IssuesList({ issues }: { issues: SeoDetails['issues'] })
                     {issues.map((issue, index) => (
                         <div
                             key={index}
-                            className="bg-white shadow rounded-md p-4 border border-sky-200 overflow-hidden break-words"
+                            className="bg-white shadow rounded-2xl p-4 border border-sky-200 overflow-hidden break-words transition hover:shadow-lg"
                         >
                             <div className="flex justify-between items-center">
                                 <span className="text-sm font-semibold text-sky-700 uppercase truncate">
@@ -20,14 +20,14 @@ export default function IssuesList({ issues }: { issues: SeoDetails['issues'] })
                                 </span>
                             </div>
 
-                            <p className="mt-2 text-gray-800 text-sm break-words whitespace-pre-line">
+                            <p className="mt-2 text-gray-700 text-sm break-words whitespace-pre-line">
                                 {issue.message}
                             </p>
 
-                            <div className="mt-3 text-sm text-gray-500 break-words whitespace-pre-wrap">
-                                <strong>ID(s):</strong>{" "}
-                                {issue.traceIds.join(", ")}
-                            </div>
+                            <p className="mt-3 inline-block px-2 py-1 text-xs font-medium text-sky-700 bg-sky-100 rounded-full">
+                                Tipo de análisis: <span className="uppercase">{issue.type}</span>
+                            </p>
+                            <p className="text-xs mt-3 text-black/60">IDS : {issue.traceIds.join(", ")}</p>
                         </div>
                     ))}
                 </div>

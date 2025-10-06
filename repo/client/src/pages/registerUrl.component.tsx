@@ -9,7 +9,7 @@ export default function RegisterUrl() {
   const [_, nav] = useRouter()
   const { fetchData, response } = useFetch()
   const { onChange, formData } = useForm({
-    domain: "",
+    host: "",
     path: ""
   })
 
@@ -17,9 +17,9 @@ export default function RegisterUrl() {
 
   const handleSubmit = (e: Event) => {
     e.preventDefault()
-    fetchData(`/create`, {
+    fetchData(`/virtual-web/register`, {
       body: JSON.stringify({
-        domain: formData.domain,
+        host: formData.host,
         path: formData.path,
       }),
       headers: {
@@ -27,7 +27,7 @@ export default function RegisterUrl() {
       },
       method: "POST",
       onSuccess() {
-        nav(`/analyze?domain=${formData.domain}&path=${formData.path}&path=${formData.path}`)
+        nav(`/analyze?host=${formData.host}&path=${formData.path}`)
       },
     })
   }
@@ -38,10 +38,10 @@ export default function RegisterUrl() {
         <h1 className="text-2xl font-bold text-sky-600 mb-6 text-center">Enviar Información</h1>
         <form className="space-y-5" onSubmit={handleSubmit}>
           <div>
-            <label className="block text-sky-700 font-semibold mb-1" htmlFor="domain">Dominio</label>
+            <label className="block text-sky-700 font-semibold mb-1" htmlFor="host">Host</label>
             <input
-              name="domain"
-              value={formData.domain}
+              name="host"
+              value={formData.host}
               placeholder="example.com"
               className="w-full border border-sky-300 rounded-md px-4 py-2 focus:outline-none focus:ring-2 focus:ring-sky-400"
               onChange={onChange}
@@ -63,7 +63,7 @@ export default function RegisterUrl() {
             type="button"
             className="w-full bg-sky-500 hover:bg-sky-600 text-white font-semibold py-2 px-4 rounded-md transition duration-200"
           >
-            {status === "loading" ? <Loading /> : "Enviar análisis"}
+            {status === "loading" ? <Loading /> : "Registrar Web"}
           </button>
         </form>
 
