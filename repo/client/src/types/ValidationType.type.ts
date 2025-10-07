@@ -1,2 +1,2 @@
 
-export type ValidationType = "schema" | "semantic" | "spelling" | "structure" | "general"
+export type ValidationType = "schema" | "semantic" | "spelling" | "structure" | "resource"

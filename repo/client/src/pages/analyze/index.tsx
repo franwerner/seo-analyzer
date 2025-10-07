@@ -35,11 +35,11 @@ interface ValidationTypeSelectorProps {
 }
 
 const validationOptions: { label: string; value: ValidationType }[] = [
-    // { label: "Schema", value: "schema" },
     { label: "Semantic", value: "semantic" },
     { label: "Spelling", value: "spelling" },
     { label: "Structure", value: "structure" },
-    { label: "General", value: "general" },
+    { label: "Resource", value: "resource" },
+    { label: "Schema", value: "schema" },
 ]
 
 export const ValidationTypeSelector = ({ selected, onChange }: ValidationTypeSelectorProps) => {
@@ -127,7 +127,7 @@ const Content = ({ historyValidations }: ContentProps) => {
     const [history, setHistory] = useState<Array<SeoDetails>>(historyValidations)
 
     const [selectedIndex, setSelectedIndex] = useState<number>(0)
-    const [selectedValidations, setSelectedValidations] = useState<ValidationType[]>(["general"])
+    const [selectedValidations, setSelectedValidations] = useState<ValidationType[]>(["resource"])
 
     const currentHistory = history[selectedIndex]
 
@@ -156,7 +156,10 @@ const Content = ({ historyValidations }: ContentProps) => {
             body: JSON.stringify({
                 host: matches?.host,
                 path: matches?.path,
-                validationTypes: selectedValidations,
+                validationsSelected: selectedValidations.reduce((acc, current) => {
+                    acc[current] = true
+                    return acc
+                }, {} as Record<ValidationType, boolean>),
             }),
             onSuccess: ({
                 analysis,

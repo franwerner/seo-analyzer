@@ -2,12 +2,12 @@ import VDomContext from "@/domain/virtual-dom/context/vDom.context";
 import PuppeterService from "@/infrastructure/scrapper/puppeter.service";
 import { URLInterface } from "@/shared/utils/URL.util";
 import HTMLComponent from "./components/html.component";
+import DomValidator from "./services/dom-validator";
 import VirtualDomAnalysisError from "./services/errors/VirtualDomAnalysis.error";
 import VirtualDomAnalysisInProgressError from "./services/errors/VirtualDomAnalysisInProgress.error";
 import VirtualDomGeneratedSnapshotError from "./services/errors/VirtualDomGeneratedSnapshot.error";
-import DomValidator from "./services/dom-validator";
+import { ValidationsType } from "./types/ValidationType.enum";
 import SnapshotGeneratorUtility from "./utils/snapshotGenerator.utils";
-import ValidationType, { ValidationsType } from "./types/ValidationType.enum";
 
 enum AnalyzeStatus {
     Analyzing = "analyzing",
