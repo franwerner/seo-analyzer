@@ -1,4 +1,4 @@
-import { IssueType } from "@/infrastructure/schemas/issueType.schema";
+import ValidationType from "@/domain/virtual-dom/types/ValidationType.enum";
 import { issueOutputSchema, issueOutputWithOutTypeSchema } from "@/infrastructure/schemas/openAiOutput.schema";
 import WordsSchema from "@/infrastructure/schemas/words.schema";
 import OpenAI from "openai";
@@ -51,7 +51,7 @@ class OpenAi {
   async generateIssuesAsType(
     input: string,
     instructions: string,
-    type: IssueType
+    type: ValidationType
   ) {
 
     const response = await this.openAI.responses.create({

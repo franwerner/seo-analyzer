@@ -1,9 +1,9 @@
-import ValidationType from "@/domain/virtual-dom/types/ValidationType.interface"
+import { ValidationsType } from "@/domain/virtual-dom/types/ValidationType.enum"
 
 interface CreateAnalyzeSinglePageDto {
     path: string
     host: string
-    validationTypes: Array<ValidationType>
+    validationsSelected: ValidationsType
 }
 
 export default CreateAnalyzeSinglePageDto

@@ -3,7 +3,7 @@ import DomValidator from "@/domain/virtual-dom/services/dom-validator";
 import PuppeterService from "@/infrastructure/scrapper/puppeter.service";
 import OpenAi from "@/infrastructure/AI/openAi.service";
 import VirtualDom from "../virtualDom.entity";
-import VirtualDomNotFountError from "../errors/VirtualDomNotFount.error";
+import VirtualDomNotFountError from "../services/errors/VirtualDomNotFount.error";
 
 interface VirtualDomStoreProps {
     host: string

@@ -2,12 +2,12 @@ import VDomContext from "@/domain/virtual-dom/context/vDom.context";
 import PuppeterService from "@/infrastructure/scrapper/puppeter.service";
 import { URLInterface } from "@/shared/utils/URL.util";
 import HTMLComponent from "./components/html.component";
-import VirtualDomAnalysisError from "./errors/VirtualDomAnalysis.error";
-import VirtualDomAnalysisInProgressError from "./errors/VirtualDomAnalysisInProgress.error";
-import VirtualDomGeneratedSnapshotError from "./errors/VirtualDomGeneratedSnapshot.error";
+import VirtualDomAnalysisError from "./services/errors/VirtualDomAnalysis.error";
+import VirtualDomAnalysisInProgressError from "./services/errors/VirtualDomAnalysisInProgress.error";
+import VirtualDomGeneratedSnapshotError from "./services/errors/VirtualDomGeneratedSnapshot.error";
 import DomValidator from "./services/dom-validator";
-import ValidationType from "./types/ValidationType.interface";
 import SnapshotGeneratorUtility from "./utils/snapshotGenerator.utils";
+import ValidationType, { ValidationsType } from "./types/ValidationType.enum";
 
 enum AnalyzeStatus {
     Analyzing = "analyzing",
@@ -46,18 +46,22 @@ class VirtualDom {
             throw new VirtualDomAnalysisInProgressError()
     }
 
-    async analyze(pageSummary: string, validationSelected: Array<ValidationType>) {
+    async analyze(pageSummary: string, validationsSelected: ValidationsType) {
 
         this.throwIfAnalyzing()
 
         this.setStatus(AnalyzeStatus.Analyzing)
 
-        const snapshot = await this.getOrGenerateSnapshot()
 
         try {
-            return await this.domValidator.runValidation({ snapshot, pageSummary, validationSelected })
+            const snapshot = await this.getOrGenerateSnapshot()
+            return await this.domValidator.runValidation({ snapshot, pageSummary, validationsSelected })
         } catch (error) {
-            throw new VirtualDomAnalysisError(error)
+            if (error instanceof VirtualDomGeneratedSnapshotError) {
+                throw error
+            } else {
+                throw new VirtualDomAnalysisError(error)
+            }
         } finally {
             this.setStatus(AnalyzeStatus.Idle)
         }
@@ -101,6 +105,7 @@ class VirtualDom {
             if (!this.snapshot) {
                 this.snapshot = this.createSnapshot()
             }
+            await this.snapshot // Esperar a que se genere el snapshot para que se capture el error.
             return this.snapshot
         } catch (error) {
             this.snapshot = null

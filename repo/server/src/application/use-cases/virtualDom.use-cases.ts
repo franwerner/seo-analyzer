@@ -6,9 +6,9 @@ export default class VirtualDomUseCases {
         //Aca para el repositorio
     ) { }
 
-    createAnalyzeDom(virtualWebStore: VirtualDomStore, { path, pageSummary, validationTypes }: CreateAnalyzeDomDto) {
+    createAnalyzeDom(virtualWebStore: VirtualDomStore, { path, pageSummary, validationsSelected }: CreateAnalyzeDomDto) {
         const virtualDom = virtualWebStore.getOrCreate(path)
-        return virtualDom.analyze(pageSummary, validationTypes)
+        return virtualDom.analyze(pageSummary, validationsSelected)
     }
 
     getDomAnalysis(virtualWebStore: VirtualDomStore, path: string) {

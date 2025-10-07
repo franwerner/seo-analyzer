@@ -1,7 +1,7 @@
 import VDomContext from "@/domain/virtual-dom/context/vDom.context";
+import ValidationType from "@/domain/virtual-dom/types/ValidationType.enum";
 import ValidationUtility from "@/domain/virtual-dom/utils/validation.util";
 import OpenAi from "@/infrastructure/AI/openAi.service";
-import { IssueType } from "@/infrastructure/schemas/issueType.schema";
 
 export default class SemanticValidation extends ValidationUtility {
     constructor(
@@ -48,7 +48,7 @@ export default class SemanticValidation extends ValidationUtility {
                     }
                   ]
                   `,
-            IssueType.SEMANTIC
+            ValidationType.SEMANTIC
         )
 
         this.addIssue(issues)
@@ -93,7 +93,7 @@ export default class SemanticValidation extends ValidationUtility {
         }]
             
             `,
-            IssueType.SEMANTIC
+            ValidationType.SEMANTIC
         )
 
         this.addTokens(tokens)

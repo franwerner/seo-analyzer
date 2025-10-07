@@ -14,8 +14,8 @@ export default class VirtualWebController {
     }
 
     static async createAnalyzeSinglePage(req: Request, res: Response) {
-        const { path = "", host = "", validationTypes = [] } = req.body as any
-        const analysis = await virtualWebUseCases.createAnalyzeSinglePage({ path, host, validationTypes })
+        const { path = "", host = "", validationsSelected = {} } = req.body as any
+        const analysis = await virtualWebUseCases.createAnalyzeSinglePage({ path, host, validationsSelected })
         res.json({
             analysis
         })

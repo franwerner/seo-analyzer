@@ -5,12 +5,14 @@ import { VirtualDomSnapshot } from "@/domain/virtual-dom/virtualDom.entity";
 import SemanticValidation from "./validations/semantic.validation";
 import SpellingValidation from "./validations/spelling.validation";
 import StructureValidation from "./validations/structure.validation";
-import ComponentTreeValidation from "./validations/componentTree.validation";
-import ValidationType from "../../types/ValidationType.interface";
+import ComponentTreeValidation, { ValidationsTypeForComponentTree } from "./validations/componentTree.validation";
+import ValidationType, { ValidationsType } from "../../types/ValidationType.enum";
+import ScriptSchemasValidation from "./validations/scriptSchemas.validation";
 
 type ValidationWithTokens = Required<Validation>
 
 export default class DomValidator {
+    private static readonly VALIDATIONS_FOR_COMPONENT_TREE: Array<ValidationsTypeForComponentTree> = [ValidationType.SEMANTIC, ValidationType.STRUCTURE, ValidationType.RESOURCE]
     validations: Array<ValidationWithTokens> = []
     /**
      * Solo mantiene las validaciones que se realizan, no las que se obtienen tambien de la base de datos.
@@ -52,30 +54,37 @@ export default class DomValidator {
     async runValidation({
         snapshot,
         pageSummary,
-        validationSelected
+        validationsSelected
     }: {
         snapshot: VirtualDomSnapshot,
         pageSummary: string,
-        validationSelected: Array<ValidationType>
+        validationsSelected: ValidationsType
     }) {
         const { root, vDomContext, htmlStructure, htmlSemantic } = snapshot
 
         const validationMap = {
-            [ValidationType.GENERAL]: () => new ComponentTreeValidation(root),
             [ValidationType.SEMANTIC]: () => new SemanticValidation(this.openAi, htmlSemantic, pageSummary, vDomContext),
             [ValidationType.STRUCTURE]: () => new StructureValidation(this.openAi, vDomContext, htmlStructure),
             [ValidationType.SPELLING]: () => new SpellingValidation(this.openAi, vDomContext),
+            [ValidationType.SCHEMA]: () => new ScriptSchemasValidation(this.openAi, vDomContext, pageSummary),
         }
 
-        /**
-         * Se procesa con un Set para evitar repeticiones de validaciones.
-         */
+        const validationInstances: Array<ValidationUtility> = []
 
-        const validationInstances = [...new Set(validationSelected)].map(v => {
-            if (v in validationMap) {
-                return validationMap[v as keyof typeof validationMap]()
+        if (DomValidator.VALIDATIONS_FOR_COMPONENT_TREE.some(v => validationsSelected[v])) {
+            const componentTreeValidation = new ComponentTreeValidation(root, validationsSelected)
+            validationInstances.push(componentTreeValidation)
+        }
+
+        const recolectedValidators = Object.keys(validationsSelected).map(v => {
+            const key = v as keyof typeof validationMap
+            if (!validationsSelected[key]) return
+            if (key in validationMap) {
+                return validationMap[key]()
             }
-        }).filter(v => v)
+        }).filter(v => v !== undefined)
+
+        validationInstances.push(...recolectedValidators)
 
         return await this.validationInstaces(validationInstances)
     }

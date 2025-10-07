@@ -17,12 +17,12 @@ export default class VirtualWebUseCases {
         return virtualWeb
     }
 
-    createAnalyzeSinglePage({ path, host, validationTypes }: CreateAnalyzeSinglePageDto) {
+    createAnalyzeSinglePage({ path, host, validationsSelected }: CreateAnalyzeSinglePageDto) {
         const virtualWeb = this.virtualWebStore.getOrThrow(host)
         return this.virtualDomUseCases.createAnalyzeDom(virtualWeb.vdomStore, {
             path,
             pageSummary: virtualWeb.webSummary?.summary || "",
-            validationTypes
+            validationsSelected
         })
     }
 

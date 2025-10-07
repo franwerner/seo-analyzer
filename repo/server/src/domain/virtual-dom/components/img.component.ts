@@ -1,4 +1,5 @@
 import { Issue } from "@/infrastructure/schemas/issue.schema"
+import ValidationType from "../types/ValidationType.enum"
 import { BaseComponentProps } from "./base.component"
 import BaseValidatableComponent from "./baseValidatable.component"
 
@@ -7,12 +8,15 @@ export default class ImgComponent extends BaseValidatableComponent {
         super(props)
     }
 
-    async validate() {
+    validateSemantic() {
         if (!this.attributes.alt) return {
             message: "Image without alt",
             tag: this.tag,
             traceIds: [this.traceId],
-            type: "semantic",
+            type: ValidationType.SEMANTIC,
         } satisfies Issue
     }
+
+
+
 }

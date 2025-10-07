@@ -2,6 +2,7 @@ import BaseComponent from "@/domain/virtual-dom/components/base.component";
 import VDomContext from "@/domain/virtual-dom/context/vDom.context";
 import OpenAi from "@/infrastructure/AI/openAi.service";
 import ValidationUtility from "@/domain/virtual-dom/utils/validation.util";
+import ValidationType from "@/domain/virtual-dom/types/ValidationType.enum";
 
 const prompt = `
         Eres un asistente de corrección ortográfica.
@@ -101,7 +102,7 @@ export default class SpellingValidation extends ValidationUtility {
             const toArray = Array.from(words)
             this.addIssue({
                 message: `Words [${toArray.join(", ")}] are not correct`,
-                type: "spelling",
+                type: ValidationType.STRUCTURE,
                 tag: part.tag,
                 traceIds: [part.traceId]
             })

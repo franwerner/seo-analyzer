@@ -1,11 +1,10 @@
 import { z } from "zod"
-import issueType, { IssueType } from "./issueType.schema"
 
 const issueSchema = z.object({
     message: z.string(),
     tag: z.string(),
     traceIds: z.array(z.string()),
-    type: issueType.default(IssueType.GENERAL),
+    type: z.enum(["schema", "semantic", "spelling", "general", "resource", "structure"]),
 })
 
 export const issueSchemaWithOutType = issueSchema.omit({ type: true })

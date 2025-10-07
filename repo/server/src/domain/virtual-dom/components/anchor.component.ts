@@ -1,8 +1,9 @@
 import { Issue } from "@/infrastructure/schemas/issue.schema";
 import type { BaseComponentProps } from "./base.component";
-import BaseValidatableComponent from "./baseValidatable.component";
+import BaseValidatableComponent, { ValidateReturn } from "./baseValidatable.component";
 import BaseComponent from "./base.component";
 import URLUtility from "@/shared/utils/URL.util";
+import ValidationType from "../types/ValidationType.enum";
 
 const notValidText = ["read more", "learn more", "see more"]
 
@@ -31,7 +32,8 @@ class AnchorComponent extends BaseValidatableComponent {
     }
 
     private static isGenericText(text: string) {
-        const containsKeyword = notValidText.some(keyword => text.toLowerCase() == keyword)
+        const normalizedText = text.replace(/\s+/g, ' ').trim().toLowerCase()
+        const containsKeyword = notValidText.some(keyword => normalizedText == keyword)
         return containsKeyword
     }
 
@@ -40,19 +42,42 @@ class AnchorComponent extends BaseValidatableComponent {
         return URLUtility.isValidURL(href) && !href.includes("blackhole")
     }
 
-    private async validateHref() {
+
+    private validateText() {
+        const { isGenericText } = this.localContext
+        if (isGenericText) {
+            return {
+                message: `the text "${this.innerText.value}" is not very descriptive`,
+                traceIds: [this.traceId],
+                tag: this.tag,
+                type: ValidationType.SEMANTIC
+            } satisfies Issue
+        }
+    }
+
+    private validateHref() {
         const href = this.attributes.href
 
         if (!href) return {
-            message: "Anchor without href",
+            message: `the anchor does not have a href`,
             traceIds: [this.traceId],
             tag: this.tag,
-            type: "semantic"
+            type: ValidationType.SEMANTIC
         } satisfies Issue
+    }
 
+    validateSemantic() {
+        return [
+            this.validateHref(),
+            this.validateText()
+        ].filter(issue => issue !== undefined)
+    }
+
+    async validateResource() {
+        const href = this.attributes.href
         const { isValidURL } = this.localContext
 
-        if (!isValidURL) return
+        if (!isValidURL || !href) return
 
         try {
             const res = await fetch(href, { method: "HEAD" })
@@ -62,33 +87,11 @@ class AnchorComponent extends BaseValidatableComponent {
                 message: `${href} link broken`,
                 traceIds: [this.traceId],
                 tag: this.tag,
-                type: "resource"
+                type: ValidationType.RESOURCE
             } satisfies Issue
         }
     }
 
-    private async validateText() {
-
-        const { isGenericText } = this.localContext
-        if (isGenericText) {
-            return {
-                message: `the text "${this.innerText}" is not very descriptive`,
-                traceIds: [this.traceId],
-                tag: this.tag,
-                type: "semantic"
-            } satisfies Issue
-        }
-    }
-
-    async validate() {
-
-        const validations = await Promise.all([
-            this.validateHref(),
-            this.validateText()
-        ])
-
-        return validations.filter(issue => issue !== undefined)
-    }
 
     private setLocalContext() {
         /**
