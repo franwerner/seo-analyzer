@@ -10,11 +10,12 @@ const prompt = `
 
                 #Instrucciones:  
                 1. Ignora completamente cualquier etiqueta "<script>", "<link>" y "<meta>".
-                2. Ignore contenido, atributos, text o cualquiera cosa que no sea la jerarquía de las etiquetas.
-                3. Analiza cómo está jerarquizado y construido el HTML.  
-                4. Detecta problemas de estructura como: etiquetas mal anidadas, headings fuera de orden (h1-h6), duplicados importantes, secciones faltantes, etc.  
-                5. Para un mismo tipo de problema, agrupa todas las instancias en un **único objeto**, usando un array de "traceIds".  
-                6. La propiedad "tag" debe contener solo el nombre de una etiqueta en minúscula (ej. "h1", "div").  
+                2. Utiliza el atributo t-id de cada etiqueta como traceIds.
+                3. Ignore contenido, atributos, text o cualquiera cosa que no sea la jerarquía de las etiquetas.
+                4. Analiza cómo está jerarquizado y construido el HTML.  
+                5. Detecta problemas de estructura como: etiquetas mal anidadas, headings fuera de orden (h1-h6), duplicados importantes, secciones faltantes, etc.  
+                6. Para un mismo tipo de problema, agrupa todas las instancias en un **único objeto**, usando un array de "traceIds".  
+                7. La propiedad "tag" debe contener solo el nombre de una etiqueta en minúscula (ej. "h1", "div").  
                 7. La propiedad "message" debe ser breve, clara y explicativa. No incluyas IDs o nombres de etiquetas en el mensaje.  
                 8. Para elementos importantes que falten, usa "traceIds": [] vacio. 
                 9. Solo remarca los problemas que detectes, no algo para verificar que posiblemente sea un error, solo remarca errores detectados. 

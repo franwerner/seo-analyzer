@@ -19,31 +19,36 @@ export default class ComponentTreeValidation extends ValidationUtility {
         private validationSelected: ValidationsType
     ) { super() }
 
+
+    private generateChildrenPromises(component: BaseComponent, traverse: (component: BaseComponent) => Promise<void>) {
+        const childrenPromises = component.getOrThrowChildren()
+            .filter(child => child instanceof BaseComponent)
+            .map(child => traverse(child))
+        return childrenPromises
+    }
+
     async validate() {
         const traverse = async (component: BaseComponent) => {
 
-            if (component instanceof BaseValidatableComponent) {
-                for (const key in validators) {
-                    const k = key as ValidationsTypeForComponentTree
-                    if (this.validationSelected[k] && component[validators[k]]) {
-                        const validatorReturn = component[validators[k]]?.()
-                        if (validatorReturn instanceof Promise) {
-                            const validation = await validatorReturn
-                            if (validation) this.addIssue(validation)
-                        }
-                        else if (validatorReturn) {
-                            this.addIssue(validatorReturn)
-                        }
-                    }
-                }
-            }
+            const childrenPromises = this.generateChildrenPromises(component, traverse)
 
-            await Promise.all(
-                component.getOrThrowChildren()
-                    .filter(child => child instanceof BaseComponent)
-                    .map(child => traverse(child))
-            )
+            if (component instanceof BaseValidatableComponent) {
+                const getValidatorsSelected = Object.keys(validators)
+                    .filter((key) => key in this.validationSelected)
+                const parentPromises = getValidatorsSelected
+                    .map(async key => {
+                        const k = key as ValidationsTypeForComponentTree
+                        const validator = component[validators[k]]
+                        if (!validator) return
+                        const res = await validator.bind(component)()
+                        if (res) this.addIssue(res)
+                    })
+                await Promise.all([...parentPromises, ...childrenPromises])
+            } else {
+                await Promise.all(childrenPromises)
+            }
         }
+
         await traverse(this.root)
     }
 }

@@ -15,6 +15,7 @@ export default abstract class ValidationUtility {
         output: 0
     }
     issues: Array<Issue> = []
+    abstract validate(): Promise<void>
 
     static groupByIssueType(issues: Array<Issue>): Array<Issue> {
         const group = issues.reduce((acc, issue) => {
@@ -66,6 +67,7 @@ export default abstract class ValidationUtility {
             tokens: this.tokens
         }
     }
+
 
     addTokens(tokens: Tokens) {
         this.tokens.input += tokens.input

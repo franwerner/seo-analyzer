@@ -19,6 +19,7 @@ export default class SemanticValidation extends ValidationUtility {
             e.generateInnerHTML({ includeAttributes: true, includeChildrenAtts: false })
         )
 
+        console.log(a)
         const { issues, tokens } = await this.openAI.generateIssuesAsType(
             JSON.stringify(a),
             `
@@ -32,11 +33,12 @@ export default class SemanticValidation extends ValidationUtility {
 
                   ## Instrucciones
                   1. Analiza únicamente los elementos <a> que contengan texto visible en sus hijos.
-                  2. Compara el texto del enlace con su href.
-                  3. Si el texto es **descriptivo, coherente o semánticamente relacionado** con el href, **no generes ningún problema**.
-                  4. La propiedad "tag" debe ser siempre "a" en minúscula.
-                  5. La propiedad "message" debe ser breve, clara y explicativa. No incluyas IDs, rutas completas o texto HTML dentro del mensaje.
-                  6. Agrupa el mismo tipo de error en un único objeto, usando un array de "traceIds".
+                  2. Utiliza el atributo t-id de cada etiqueta <a> para indicar los traceIDS.
+                  3. Compara el texto del enlace con su href.
+                  4. Si el texto es **descriptivo, coherente o semánticamente relacionado** con el href, **no generes ningún problema**.
+                  5. La propiedad "tag" debe ser siempre "a" en minúscula.
+                  6. La propiedad "message" debe ser breve, clara y explicativa. No incluyas IDs, rutas completas o texto HTML dentro del mensaje.
+                  7. Agrupa el mismo tipo de error en un único objeto, usando un array de "traceIds".
                   7. No evalúes ortografía, gramática ni estructura técnica. Solo la relación semántica entre texto y destino.
 
                   ## Ejemplo de salida
@@ -51,6 +53,7 @@ export default class SemanticValidation extends ValidationUtility {
             ValidationType.SEMANTIC
         )
 
+        console.log(issues)
         this.addIssue(issues)
         this.addTokens(tokens)
     }
@@ -74,11 +77,12 @@ export default class SemanticValidation extends ValidationUtility {
        1. Analiza **cada etiqueta de forma individual e independiente**.  
        - No generes errores que involucren o comparen varias etiquetas a la vez.
        - Si detectas un problema entre dos etiquetas (por ejemplo, title y h1 no coinciden), **crea dos errores separados**, uno para cada etiqueta implicada.
-       2. Compara el resumen con el contenido de la etiqueta analizada, no tienes que ser tan estricto con el cumplimiento de ciertas palabrasya que el resumen puede no ser tan descriptivo.
-       3. Identifica incongruencias de tema o intención (por ejemplo: el título habla de "Roof Repair" pero el encabezado trata "Gutters").
-       4. Detecta repeticiones innecesarias o sobreoptimización de palabras clave.
-       5. No analices sintaxis, estructura HTML ni errores ortográficos. Solo el **significado del contenido**.
-       6. Para un mismo tipo de problema, agrupa todas las instancias en un **único objeto**, usando un array de "traceIds".
+       2. Utiliza el atributo t-id de cada etiqueta como traceIds.
+       3. Compara el resumen con el contenido de la etiqueta analizada, no tienes que ser tan estricto con el cumplimiento de ciertas palabrasya que el resumen puede no ser tan descriptivo.
+       4. Identifica incongruencias de tema o intención (por ejemplo: el título habla de "Roof Repair" pero el encabezado trata "Gutters").
+       5. Detecta repeticiones innecesarias o sobreoptimización de palabras clave.
+       6. No analices sintaxis, estructura HTML ni errores ortográficos. Solo el **significado del contenido**.
+       7. Para un mismo tipo de problema, agrupa todas las instancias en un **único objeto**, usando un array de "traceIds".
        7. La propiedad "tag" debe contener **solo una etiqueta** en minúscula (por ejemplo: "h1", "meta").
        8. La propiedad "message" debe ser breve, clara y explicativa. No incluyas IDs, nombres de etiquetas ni relaciones entre elementos en el mensaje.
 

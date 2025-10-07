@@ -76,13 +76,13 @@ class AnchorComponent extends BaseValidatableComponent {
     async validateResource() {
         const href = this.attributes.href
         const { isValidURL } = this.localContext
-
         if (!isValidURL || !href) return
 
         try {
             const res = await fetch(href, { method: "HEAD" })
             if ([404, 500, 504].includes(res.status)) throw ""
         } catch (error) {
+            console.log(error)
             return {
                 message: `${href} link broken`,
                 traceIds: [this.traceId],

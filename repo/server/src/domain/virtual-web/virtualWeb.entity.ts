@@ -46,7 +46,7 @@ export default class VirtualWeb {
     }> {
         const snapshot = await this.vdomStore.getOrCreate(this.url.pathname).getOrGenerateSnapshot()
 
-        const texts = snapshot.vDomContext.innerTextChunks.chunks.map(chunk => chunk.parts_texts).flat()
+        const texts = snapshot.vDomContext.innerTextChunks.getChunksPartsTexts()
 
         const { response, tokens } = await this.openAi.createBasicResponse(
             JSON.stringify(texts),
@@ -55,12 +55,9 @@ export default class VirtualWeb {
         Recibirás un array de strings, cada indice del array representa una parte(oracion) del contenido de un sitio web. 
         Tu tarea es analizar todo el contenido y generar un resumen conciso y extenso que capture la esencia del sitio.
 
-        El resumen debe incluir:
-        De qué trata el sitio web.
-
         Principales características y elementos destacados.
-        A qué se dedica, cuál es su actividad principal o propósito.
-        Qué ofrece y para quién está dirigido.
+        Asegúrate de que el resumen capture la esencia del contenido, especialmente los aspectos más importantes que el schema debe reflejar,
+        como el nombre de la empresa, servicios, productos, ubicación, entre otros.
 
         Requisitos:
 

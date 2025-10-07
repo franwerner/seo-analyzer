@@ -4,8 +4,8 @@ export interface CustomErrorProps {
 }
 
 export class CustomError extends Error {
-    constructor({ name, message }: CustomErrorProps) {
-        super(message)
+    constructor({ name, message }: CustomErrorProps, cause?: unknown) {
+        super(message, { cause })
         this.name = name
     }
 }

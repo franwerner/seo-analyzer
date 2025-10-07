@@ -27,7 +27,7 @@ export default class HTTPError extends CustomError {
     }
 
     static toHTTPError(error: CustomError) {
-        console.log(error)
+        console.log(`Error: ${error.name} - ${error.message}`)
         if (HTTPErrorMap[error.name]) {
             return new HTTPError({
                 status_code: HTTPErrorMap[error.name],

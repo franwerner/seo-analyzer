@@ -38,6 +38,10 @@ export default class TextChunker {
         return (text.match(/\b\w+\b/g) || []).length
     }
 
+    getChunksPartsTexts() {
+        return this.chunks.map(chunk => chunk.parts_texts).flat()
+    }
+
     pushComponentText(component: BaseComponent) {
 
         const text = component.innerText.value

@@ -1,13 +1,13 @@
-import ValidationUtility from "@/domain/virtual-dom/utils/validation.util";
-import OpenAi from "@/infrastructure/AI/openAi.service";
 import { Validation } from "@/domain/virtual-dom/types/Validation.interface";
+import ValidationUtility from "@/domain/virtual-dom/utils/validation.util";
 import { VirtualDomSnapshot } from "@/domain/virtual-dom/virtualDom.entity";
+import OpenAi from "@/infrastructure/AI/openAi.service";
+import ValidationType, { ValidationsType } from "../../types/ValidationType.enum";
+import ComponentTreeValidation, { ValidationsTypeForComponentTree } from "./validations/componentTree.validation";
+import SchemaValidaton from "./validations/schemas.validation";
 import SemanticValidation from "./validations/semantic.validation";
 import SpellingValidation from "./validations/spelling.validation";
 import StructureValidation from "./validations/structure.validation";
-import ComponentTreeValidation, { ValidationsTypeForComponentTree } from "./validations/componentTree.validation";
-import ValidationType, { ValidationsType } from "../../types/ValidationType.enum";
-import ScriptSchemasValidation from "./validations/scriptSchemas.validation";
 
 type ValidationWithTokens = Required<Validation>
 
@@ -32,7 +32,7 @@ export default class DomValidator {
         }
     }
 
-    private async validationInstaces(instances: Array<any>) {//TIPAR DEPUES ACA.
+    private async validationInstaces(instances: Array<ValidationUtility>) {
         /**
          * Cosas a tener en cuenta en un futuro:
          * Los promise.all de cada validador si uno falla la promesa se rechaza por completo.
@@ -66,14 +66,13 @@ export default class DomValidator {
             [ValidationType.SEMANTIC]: () => new SemanticValidation(this.openAi, htmlSemantic, pageSummary, vDomContext),
             [ValidationType.STRUCTURE]: () => new StructureValidation(this.openAi, vDomContext, htmlStructure),
             [ValidationType.SPELLING]: () => new SpellingValidation(this.openAi, vDomContext),
-            [ValidationType.SCHEMA]: () => new ScriptSchemasValidation(this.openAi, vDomContext, pageSummary),
+            [ValidationType.SCHEMA]: () => new SchemaValidaton(this.openAi, vDomContext, pageSummary, root),
         }
 
         const validationInstances: Array<ValidationUtility> = []
 
         if (DomValidator.VALIDATIONS_FOR_COMPONENT_TREE.some(v => validationsSelected[v])) {
-            const componentTreeValidation = new ComponentTreeValidation(root, validationsSelected)
-            validationInstances.push(componentTreeValidation)
+            validationInstances.push(new ComponentTreeValidation(root, validationsSelected))
         }
 
         const recolectedValidators = Object.keys(validationsSelected).map(v => {
