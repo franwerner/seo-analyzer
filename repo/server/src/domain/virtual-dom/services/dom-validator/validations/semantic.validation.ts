@@ -19,7 +19,6 @@ export default class SemanticValidation extends ValidationUtility {
             e.generateInnerHTML({ includeAttributes: true, includeChildrenAtts: false })
         )
 
-        console.log(a)
         const { issues, tokens } = await this.openAI.generateIssuesAsType(
             JSON.stringify(a),
             `
@@ -37,9 +36,9 @@ export default class SemanticValidation extends ValidationUtility {
                   3. Compara el texto del enlace con su href.
                   4. Si el texto es **descriptivo, coherente o semánticamente relacionado** con el href, **no generes ningún problema**.
                   5. La propiedad "tag" debe ser siempre "a" en minúscula.
-                  6. La propiedad "message" debe ser breve, clara y explicativa. No incluyas IDs, rutas completas o texto HTML dentro del mensaje.
+                  6. La propiedad "message" debe ser siemre : "Href and text are not related."
                   7. Agrupa el mismo tipo de error en un único objeto, usando un array de "traceIds".
-                  7. No evalúes ortografía, gramática ni estructura técnica. Solo la relación semántica entre texto y destino.
+                  8. No evalúes ortografía, gramática ni estructura técnica. Solo la relación semántica entre texto y destino.
 
                   ## Ejemplo de salida
                   [
@@ -49,11 +48,11 @@ export default class SemanticValidation extends ValidationUtility {
                       "traceIds": [12, 34, 56]
                     }
                   ]
+                  
                   `,
             ValidationType.SEMANTIC
         )
 
-        console.log(issues)
         this.addIssue(issues)
         this.addTokens(tokens)
     }
