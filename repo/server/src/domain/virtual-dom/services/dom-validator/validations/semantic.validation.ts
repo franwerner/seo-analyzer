@@ -14,31 +14,67 @@ export default class SemanticValidation extends ValidationUtility {
     }
 
 
+    private async validateHrefSemanticChunk(chunk: Array<string>) {
+        const res = await this.openAI.generateIssueTraceIds(
+            JSON.stringify(chunk),
+            `
+                #RESPONDE EN INGLES
+                 Eres un asistente SEO experto en análisis semántico de enlaces (anchor links).  
+                 Tu tarea es revisar un conjunto de elementos <a> y analizar si existe coherencia semántica entre el texto visible del enlace y el destino indicado en el atributo href.
+                 Realiza el analisis minuciosamente  y exahustivamente, no dejes pasar nada.
+                 
+                 ## Instrucciones:
+                 1. Analiza únicamente los elementos <a> que contengan texto visible en sus hijos.
+                 2. Revisa la coherencia semántica entre el texto visible del enlace y el destino indicado en el atributo href.
+                 3. Si el href es un enlace interno (es decir, si comienza con #), asegúrate de que el texto visible sea **coherente y semánticamente relacionado** con el nombre de la sección interna (por ejemplo, #contact, #about).  
+                 - Si el texto no está relacionado con la sección a la que hace referencia el href, **genera un problema**.
+                 4. Utiliza el atributo t-id de cada etiqueta <a> para generar el array de traceIds de los elementos que no cumplen con la coherencia semántica **SOLO COLOCA EL t-id y NADA MAS*.
+                 5. Si el texto del enlace es **descriptivo, coherente o semánticamente relacionado** con el destino indicado en el atributo href, **no generes ningún problema**.
+                 6. No evalúes ortografía, gramática ni estructura técnica, solo la relación semántica entre el texto del enlace y el valor del atributo href.
+
+                 ## Ejemplo de salida:
+                 {
+                 "traceIds": [12343415, -1231412] **SOLO COLOCA LOS t-id y NADA MAS**
+                 }
+                  
+                  `
+        )
+        return res
+    }
+
     async validateHrefSemantic() {
         const a = this.context.a.map(e =>
             e.generateInnerHTML({ includeAttributes: true, includeChildrenAtts: false })
         )
 
-        const { traceIds, tokens } = await this.openAI.generateIssueTraceIds(
-            JSON.stringify(a),
-            `
-                  #RESPONDE EN INGLES
-                 Eres un asistente SEO experto en análisis semántico de enlaces (anchor links).  
-                 Tu tarea es revisar un conjunto de elementos <a> y analizar si existe coherencia semántica entre el texto visible del enlace y el destino indicado en el atributo href.
 
-                 ## Instrucciones:
-                 1. Analiza únicamente los elementos <a> que contengan texto visible en sus hijos.
-                 2. Utiliza el atributo t-id de cada etiqueta <a> para generar el array de traceIds de los elementos que no cumplen con la coherencia semántica.
-                 3. Si el texto del enlace es **descriptivo, coherente o semánticamente relacionado** con el destino indicado en el atributo href, **no generes ningún problema**.
-                 4. No evalúes ortografía, gramática ni estructura técnica, solo la relación semántica entre el texto del enlace y el valor del atributo href.
+        const chunks = []
+        const chunkSize = 25
+        const chunksCount = Math.ceil(a.length / chunkSize)
+        for (let i = 0; i < chunksCount; i++) {
+            const nextIndex = i * chunkSize
+            chunks.push(a.slice(nextIndex, nextIndex + chunkSize))
+        }
 
-                 ## Ejemplo de salida:
-                 {
-                 "traceIds": [12343415, -1231412]
-                 }
-                  
-                  `
-        )
+        chunks.forEach(chunk => console.log(chunk, chunk.length))
+
+        const res = await Promise.all(chunks.map(chunk => this.validateHrefSemanticChunk(chunk)))
+
+        const {
+            tokens,
+            traceIds
+        } = res.reduce((acc, { traceIds, tokens }) => {
+            acc.traceIds.push(...traceIds)
+            acc.tokens.input += tokens.input
+            acc.tokens.output += tokens.output
+            return acc
+        }, {
+            traceIds: [],
+            tokens: {
+                input: 0,
+                output: 0
+            }
+        })
 
         if (traceIds.length > 0) {
             this.addIssue({
@@ -49,6 +85,7 @@ export default class SemanticValidation extends ValidationUtility {
             })
         }
         this.addTokens(tokens)
+
     }
 
     async validateHtmlSemantic() {
