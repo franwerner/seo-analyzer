@@ -100,7 +100,7 @@ export default class SemanticValidation extends ValidationUtility {
     async validate() {
 
         await Promise.all([
-            // this.validateHtmlSemantic(),
+            this.validateHtmlSemantic(),
             this.validateHrefSemantic()
         ])
 
