@@ -9,7 +9,6 @@ class HTMLComponent extends BaseValidatableComponent {
     }
 
     validateSemantic() {
-        console.log(this.attributes)
         if (!this.attributes.lang) {
             return {
                 message: "No lang attribute found",

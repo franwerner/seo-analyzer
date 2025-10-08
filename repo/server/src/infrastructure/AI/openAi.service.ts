@@ -3,6 +3,7 @@ import { issueOutputSchema, issueOutputWithOutTypeSchema } from "@/infrastructur
 import WordsSchema from "@/infrastructure/schemas/words.schema";
 import OpenAI from "openai";
 import { zodTextFormat } from "openai/helpers/zod";
+import traceIdsSchema from "../schemas/traceIds.schema";
 
 class OpenAi {
   openAI: OpenAI
@@ -27,6 +28,23 @@ class OpenAi {
     })
     return {
       response: response.output_text,
+      tokens: OpenAi.getTokenUsage(response)
+    }
+  }
+
+
+  async generateIssueTraceIds(input: string, instructions: string) {
+    const response = await this.openAI.responses.create({
+      model: "gpt-5-mini",
+      instructions,
+      input,
+      text: {
+        format: zodTextFormat(traceIdsSchema, "traceIds")
+      }
+    })
+
+    return {
+      traceIds: traceIdsSchema.parse(JSON.parse(response.output_text)).traceIds,
       tokens: OpenAi.getTokenUsage(response)
     }
   }

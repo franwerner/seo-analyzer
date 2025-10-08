@@ -3,9 +3,9 @@ import PuppeterService from "@/infrastructure/scrapper/puppeter.service";
 import { URLInterface } from "@/shared/utils/URL.util";
 import HTMLComponent from "./components/html.component";
 import DomValidator from "./services/dom-validator";
-import VirtualDomAnalysisError from "./services/errors/VirtualDomAnalysis.error";
-import VirtualDomAnalysisInProgressError from "./services/errors/VirtualDomAnalysisInProgress.error";
-import VirtualDomGeneratedSnapshotError from "./services/errors/VirtualDomGeneratedSnapshot.error";
+import VirtualDomAnalysisError from "./errors/VirtualDomAnalysis.error";
+import VirtualDomAnalysisInProgressError from "./errors/VirtualDomAnalysisInProgress.error";
+import VirtualDomGeneratedSnapshotError from "./errors/VirtualDomGeneratedSnapshot.error";
 import { ValidationsType } from "./types/ValidationType.enum";
 import SnapshotGeneratorUtility from "./utils/snapshotGenerator.utils";
 

@@ -5,7 +5,7 @@ import VDomContext from "@/domain/virtual-dom/context/vDom.context"
 import ComponentFactory from "@/domain/virtual-dom/utils/componentFactory.util"
 import VirtualDom from "@/domain/virtual-dom/virtualDom.entity"
 import { JSDOM, VirtualConsole } from "jsdom"
-import HTMLNotFountError from "../services/errors/HTMLNotFount.error"
+import HTMLNotFountError from "../errors/HTMLNotFount.error"
 
 export default class SnapshotGeneratorUtility {
 
@@ -143,7 +143,7 @@ export default class SnapshotGeneratorUtility {
             pathDom: htmlPathDom,
             parent: null,
             document
-        })
+        }) as HTMLComponent
 
 
         htmlInstance.children = this.generateChildren({

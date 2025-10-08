@@ -19,41 +19,35 @@ export default class SemanticValidation extends ValidationUtility {
             e.generateInnerHTML({ includeAttributes: true, includeChildrenAtts: false })
         )
 
-        const { issues, tokens } = await this.openAI.generateIssuesAsType(
+        const { traceIds, tokens } = await this.openAI.generateIssueTraceIds(
             JSON.stringify(a),
             `
                   #RESPONDE EN INGLES
+                 Eres un asistente SEO experto en análisis semántico de enlaces (anchor links).  
+                 Tu tarea es revisar un conjunto de elementos <a> y analizar si existe coherencia semántica entre el texto visible del enlace y el destino indicado en el atributo href.
 
-                  Eres un asistente SEO experto en análisis semántico de enlaces (anchor links).
-                  Tu tarea es revisar un conjunto de elementos <a> y analizar si existe coherencia semántica entre el texto visible del enlace y el destino indicado en el atributo href.
+                 ## Instrucciones:
+                 1. Analiza únicamente los elementos <a> que contengan texto visible en sus hijos.
+                 2. Utiliza el atributo t-id de cada etiqueta <a> para generar el array de traceIds de los elementos que no cumplen con la coherencia semántica.
+                 3. Si el texto del enlace es **descriptivo, coherente o semánticamente relacionado** con el destino indicado en el atributo href, **no generes ningún problema**.
+                 4. No evalúes ortografía, gramática ni estructura técnica, solo la relación semántica entre el texto del enlace y el valor del atributo href.
 
-                  ## Objetivo
-                  Detectar enlaces cuyo texto (anchor text) **no refleje o no se relacione** con el contenido al que apuntan.
-
-                  ## Instrucciones
-                  1. Analiza únicamente los elementos <a> que contengan texto visible en sus hijos.
-                  2. Utiliza el atributo t-id de cada etiqueta <a> para indicar los traceIDS.
-                  3. Compara el texto del enlace con su href.
-                  4. Si el texto es **descriptivo, coherente o semánticamente relacionado** con el href, **no generes ningún problema**.
-                  5. La propiedad "tag" debe ser siempre "a" en minúscula.
-                  6. La propiedad "message" debe ser siemre : "Href and text are not related."
-                  7. Agrupa el mismo tipo de error en un único objeto, usando un array de "traceIds".
-                  8. No evalúes ortografía, gramática ni estructura técnica. Solo la relación semántica entre texto y destino.
-
-                  ## Ejemplo de salida
-                  [
-                    {
-                      "tag": "a",
-                      "message": "Href and text are not related.",
-                      "traceIds": [12, 34, 56]
-                    }
-                  ]
+                 ## Ejemplo de salida:
+                 {
+                 "traceIds": [12343415, -1231412]
+                 }
                   
-                  `,
-            ValidationType.SEMANTIC
+                  `
         )
 
-        this.addIssue(issues)
+        if (traceIds.length > 0) {
+            this.addIssue({
+                type: ValidationType.SEMANTIC,
+                message: "href and text are not semantically related",
+                tag: "a",
+                traceIds
+            })
+        }
         this.addTokens(tokens)
     }
 
@@ -106,7 +100,7 @@ export default class SemanticValidation extends ValidationUtility {
     async validate() {
 
         await Promise.all([
-            this.validateHtmlSemantic(),
+            // this.validateHtmlSemantic(),
             this.validateHrefSemantic()
         ])
 

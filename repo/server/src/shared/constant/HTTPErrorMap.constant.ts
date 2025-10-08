@@ -1,4 +1,4 @@
-import { HTMLNotFountError, VirtualDomAnalysisError, VirtualDomAnalysisInProgressError, VirtualDomGeneratedSnapshotError, VirtualDomNotFountError } from "@/domain/virtual-dom/services/errors"
+import { HTMLNotFountError, VirtualDomAnalysisError, VirtualDomAnalysisInProgressError, VirtualDomGeneratedSnapshotError, VirtualDomNotFountError } from "@/domain/virtual-dom/errors"
 import { VirtualWebAlreadyExistsError, VirtualWebNotFountError } from "@/domain/virtual-web/errors"
 
 const HTTPErrorMap = {
