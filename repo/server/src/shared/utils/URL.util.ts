@@ -12,7 +12,7 @@ export default class URLUtility {
 
     static normalizePathname(pathname: string) {
 
-        let normalizedPathname = pathname
+        let normalizedPathname = pathname.trim()
 
         if (!pathname.startsWith("/")) normalizedPathname = `/${pathname}`
 
@@ -35,7 +35,7 @@ export default class URLUtility {
     }
 
     static normalizeHost(host: string): string {
-        return host.replaceAll("/", "");
+        return host.trim().replaceAll("/", "");
     }
 
     static createURL({ host, pathname }: { host: string, pathname: string }): URLInterface {
