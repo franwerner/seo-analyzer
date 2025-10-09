@@ -1,0 +1,105 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum ValidationType {
+  SCHEMA
+  SEMANTIC
+  SPELLING
+  RESOURCE
+  STRUCTURE
+}
+
+model VirtualWeb {
+  id           Int                 @id @default(autoincrement())
+  host         String              @unique
+  mainPathname String
+  createdAt    DateTime            @default(now())
+  summaries    VirtualWebSummary[]
+  virtualDoms  VirtualDom[]
+}
+
+model ResourceUsage {
+  id                      Int                       @id @default(autoincrement())
+  input                   Int
+  output                  Int
+  source                  String
+  VirtualDomAnalysisUsage VirtualDomAnalysisUsage[]
+  VirtualWebSummaryUsage  VirtualWebSummaryUsage[]
+}
+
+model VirtualWebSummary {
+  id                     Int                      @id @default(autoincrement())
+  virtualWebId           Int
+  summary                String
+  sourcePathname         String
+  createdAt              DateTime                 @default(now())
+  virtualWeb             VirtualWeb               @relation(fields: [virtualWebId], references: [id])
+  VirtualWebSummaryUsage VirtualWebSummaryUsage[]
+}
+
+model VirtualWebSummaryUsage {
+  id                  Int               @id @default(autoincrement())
+  virtualWebSummaryId Int               @unique
+  resourceUsageId     Int               @unique
+  virtualWebSummary   VirtualWebSummary @relation(fields: [virtualWebSummaryId], references: [id])
+  resourceUsage       ResourceUsage     @relation(fields: [resourceUsageId], references: [id])
+}
+
+model VirtualDom {
+  id           Int                  @id @default(autoincrement())
+  virtualWebId Int
+  pathname     String
+  createdAt    DateTime             @default(now())
+  virtualWeb   VirtualWeb           @relation(fields: [virtualWebId], references: [id])
+  analyses     VirtualDomAnalysis[]
+
+  @@unique([virtualWebId, pathname])
+}
+
+model VirtualDomAnalysis {
+  id                      Int                       @id @default(autoincrement())
+  virtualDomId            Int
+  createdAt               DateTime                  @default(now())
+  virtualDom              VirtualDom                @relation(fields: [virtualDomId], references: [id])
+  AnalysisIssue           AnalysisIssue[]
+  VirtualDomAnalysisUsage VirtualDomAnalysisUsage[]
+}
+
+model VirtualDomAnalysisUsage {
+  id                   Int                @id @default(autoincrement())
+  virtualDomAnalysisId Int                @unique
+  resourceUsageId      Int                @unique
+  virtualDomAnalysis   VirtualDomAnalysis @relation(fields: [virtualDomAnalysisId], references: [id])
+  resourceUsage        ResourceUsage      @relation(fields: [resourceUsageId], references: [id])
+}
+
+model AnalysisIssue {
+  id                   Int                @id @default(autoincrement())
+  virtualDomAnalysisId Int
+  tag                  String
+  message              String
+  type                 ValidationType
+  virtualDomAnalysis   VirtualDomAnalysis @relation(fields: [virtualDomAnalysisId], references: [id])
+  issueTraceId         IssueTraceId[]
+}
+
+model IssueTraceId {
+  id            Int           @id @default(autoincrement())
+  issueId       Int
+  traceId       String
+  analysisIssue AnalysisIssue @relation(fields: [issueId], references: [id])
+
+  @@unique([issueId, traceId])
+}
