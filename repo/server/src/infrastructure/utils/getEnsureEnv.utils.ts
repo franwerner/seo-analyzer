@@ -1,4 +1,4 @@
-import EnvNotFountError from "@/shared/errors/EnvNotFount.error"
+import EnvNotFountError from "../errors/EnvNotFount.error"
 
 interface Env {
     JWT_SECRET: string

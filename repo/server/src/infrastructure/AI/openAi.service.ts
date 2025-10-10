@@ -1,9 +1,9 @@
 import ValidationType from "@/domain/virtual-dom/types/ValidationType.enum";
-import { issueOutputSchema, issueOutputWithOutTypeSchema } from "@/infrastructure/schemas/openAiOutput.schema";
-import WordsSchema from "@/infrastructure/schemas/words.schema";
+import WordsSchema from "@/infrastructure/AI/schemas/words.schema";
 import OpenAI from "openai";
 import { zodTextFormat } from "openai/helpers/zod";
-import traceIdsSchema from "../schemas/traceIds.schema";
+import traceIdsSchema from "./schemas/traceIds.schema";
+import { issuesWithOutTypeSchema } from "./schemas/issue.schema";
 
 class OpenAi {
   openAI: OpenAI
@@ -77,11 +77,11 @@ class OpenAi {
       instructions,
       input,
       text: {
-        format: zodTextFormat(issueOutputWithOutTypeSchema, "issues")
+        format: zodTextFormat(issuesWithOutTypeSchema, "issues")
       }
     })
 
-    const outputIssues = issueOutputWithOutTypeSchema.parse(JSON.parse(response.output_text)).issues
+    const outputIssues = issuesWithOutTypeSchema.parse(JSON.parse(response.output_text)).issues
     const issues = outputIssues.map(issue => ({ ...issue, type }))
 
     return {
@@ -90,26 +90,6 @@ class OpenAi {
     }
 
   }
-
-
-  async generateIssues(input: string, instructions: string) {
-
-    const response = await this.openAI.responses.create({
-      model: "gpt-5-mini",
-      text: {
-        format: zodTextFormat(issueOutputSchema, "issues")
-      },
-      instructions,
-      input,
-    })
-
-    return {
-      issues: issueOutputSchema.parse(JSON.parse(response.output_text)).issues,
-      tokens: OpenAi.getTokenUsage(response)
-    }
-  }
-
-
 
 }
 

@@ -1,5 +1,5 @@
-import HTTPError from "@/shared/errors/HTTP.error";
 import puppeteer, { Browser } from "puppeteer";
+import MaxPageActiveError from "../errors/MaxPageActive.error";
 
 const MAX_ACTIVE_PAGES = 5
 
@@ -43,10 +43,7 @@ class PuppeterService {
 
     private setIncrementPageIfAvailable() {
         if (this.pages_count >= MAX_ACTIVE_PAGES) {
-            throw new HTTPError({
-                message: `Max active pages reached. ${this.pages_count}/${MAX_ACTIVE_PAGES}`,
-                status_code: 503
-            })
+            throw new MaxPageActiveError()
         }
         this.pages_count++
     }
