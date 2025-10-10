@@ -1,10 +1,10 @@
 import VDomContext from "@/domain/virtual-dom/context/vDom.context";
-import { Issue } from "@/infrastructure/schemas/issue.schema";
 import OpenAi from "@/infrastructure/AI/openAi.service";
 import ValidationUtility from "@/domain/virtual-dom/utils/validation.util";
 import ValidationType from "@/domain/virtual-dom/types/ValidationType.enum";
 import ScriptComponent from "@/domain/virtual-dom/components/script.component";
 import HTMLComponent from "@/domain/virtual-dom/components/html.component";
+import { Issue } from "@/domain/virtual-dom/types/Issue.interface";
 
 const prompt = `
 #RESPONDE EN INGLES
@@ -28,7 +28,7 @@ El schema está bien estructurado en su mayoría, pero se encontraron algunos de
 `
 
 
-export default class SchemaValidaton extends ValidationUtility {
+export default class SchemeValidaton extends ValidationUtility {
     constructor(
         private openAi: OpenAi,
         private context: VDomContext,
@@ -43,7 +43,7 @@ export default class SchemaValidaton extends ValidationUtility {
             message: `Not found ${name} schema`,
             tag: "script",
             traceIds: [],
-            type: ValidationType.SCHEMA
+            type: ValidationType.SCHEME
         }
     }
 
@@ -51,7 +51,7 @@ export default class SchemaValidaton extends ValidationUtility {
     private validateLocalBusiness() {
         const { localBusiness } = this.context.schemas
         if (!localBusiness) {
-            this.addIssue(SchemaValidaton.getIssueForSchema("LocalBusiness"))
+            this.addIssue(SchemeValidaton.getIssueForSchema("LocalBusiness"))
             return
         }
         return this.validateWithAi(localBusiness)
@@ -60,7 +60,7 @@ export default class SchemaValidaton extends ValidationUtility {
     private validateFaqPage() {
         const { faqPage } = this.context.schemas
         if (!faqPage) {
-            this.addIssue(SchemaValidaton.getIssueForSchema("FAQPage"))
+            this.addIssue(SchemeValidaton.getIssueForSchema("FAQPage"))
             return
         }
 
@@ -87,7 +87,7 @@ export default class SchemaValidaton extends ValidationUtility {
             message: response,
             tag: "script",
             traceIds: [script.traceId],
-            type: ValidationType.SCHEMA
+            type: ValidationType.SCHEME
         })
         this.addTokens(tokens)
 
