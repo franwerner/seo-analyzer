@@ -1,4 +1,4 @@
-import { Issue } from "@/infrastructure/schemas/issue.schema"
+import { Issue } from "../types/Issue.interface"
 import ValidationType from "../types/ValidationType.enum"
 import { BaseComponentProps } from "./base.component"
 import BaseValidatableComponent from "./baseValidatable.component"

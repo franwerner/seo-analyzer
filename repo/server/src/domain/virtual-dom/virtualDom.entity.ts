@@ -1,6 +1,6 @@
 import VDomContext from "@/domain/virtual-dom/context/vDom.context";
 import PuppeterService from "@/infrastructure/scrapper/puppeter.service";
-import { URLInterface } from "@/shared/utils/URL.util";
+import { URLInterface } from "@/domain/shared/utils/URL.util";
 import HTMLComponent from "./components/html.component";
 import DomValidator from "./services/dom-validator";
 import VirtualDomAnalysisError from "./errors/VirtualDomAnalysis.error";
@@ -14,7 +14,7 @@ enum AnalyzeStatus {
     Idle = "idle"
 }
 
-interface VirtualDomProps {
+export interface VirtualDomEntityProps {
     url: URLInterface
 }
 
@@ -25,14 +25,14 @@ export interface VirtualDomSnapshot {
     htmlSemantic: Array<string>
 }
 
-class VirtualDom {
+class VirtualDomEntity {
     url: URLInterface
     snapshot: Promise<VirtualDomSnapshot> | null = null
     analyzeStatus: AnalyzeStatus = AnalyzeStatus.Idle
     constructor(
         private puppeteer: PuppeterService,
         public domValidator: DomValidator,
-        { url }: VirtualDomProps
+        { url }: VirtualDomEntityProps
     ) {
         this.url = url
     }
@@ -115,4 +115,4 @@ class VirtualDom {
 
 }
 
-export default VirtualDom
+export default VirtualDomEntity

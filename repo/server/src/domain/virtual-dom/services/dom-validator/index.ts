@@ -4,7 +4,7 @@ import { VirtualDomSnapshot } from "@/domain/virtual-dom/virtualDom.entity";
 import OpenAi from "@/infrastructure/AI/openAi.service";
 import ValidationType, { ValidationsType } from "../../types/ValidationType.enum";
 import ComponentTreeValidation, { ValidationsTypeForComponentTree } from "./validations/componentTree.validation";
-import SchemaValidaton from "./validations/schemas.validation";
+import SchemeValidaton from "./validations/schemes.validation";
 import SemanticValidation from "./validations/semantic.validation";
 import SpellingValidation from "./validations/spelling.validation";
 import StructureValidation from "./validations/structure.validation";
@@ -66,7 +66,7 @@ export default class DomValidator {
             [ValidationType.SEMANTIC]: () => new SemanticValidation(this.openAi, htmlSemantic, pageSummary, vDomContext),
             [ValidationType.STRUCTURE]: () => new StructureValidation(this.openAi, vDomContext, htmlStructure),
             [ValidationType.SPELLING]: () => new SpellingValidation(this.openAi, vDomContext),
-            [ValidationType.SCHEMA]: () => new SchemaValidaton(this.openAi, vDomContext, pageSummary, root),
+            [ValidationType.SCHEME]: () => new SchemeValidaton(this.openAi, vDomContext, pageSummary, root),
         }
 
         const validationInstances: Array<ValidationUtility> = []

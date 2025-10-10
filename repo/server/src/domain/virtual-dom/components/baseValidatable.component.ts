@@ -1,5 +1,5 @@
-import { Issue } from "@/infrastructure/schemas/issue.schema";
 import BaseComponent from "./base.component";
+import { Issue } from "../types/Issue.interface"
 
 export type ValidateReturn = Issue | Array<Issue> | undefined
 

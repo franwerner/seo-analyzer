@@ -1,5 +1,5 @@
 enum ValidationType {
-    SCHEMA = "schema",
+    SCHEME = "scheme",
     SEMANTIC = "semantic",
     SPELLING = "spelling",
     RESOURCE = "resource",

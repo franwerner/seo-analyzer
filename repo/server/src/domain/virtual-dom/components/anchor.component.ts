@@ -1,9 +1,9 @@
-import { Issue } from "@/infrastructure/schemas/issue.schema";
-import type { BaseComponentProps } from "./base.component";
-import BaseValidatableComponent, { ValidateReturn } from "./baseValidatable.component";
-import BaseComponent from "./base.component";
-import URLUtility from "@/shared/utils/URL.util";
+import URLUtility from "@/domain/shared/utils/URL.util";
 import ValidationType from "../types/ValidationType.enum";
+import type { BaseComponentProps } from "./base.component";
+import BaseComponent from "./base.component";
+import BaseValidatableComponent from "./baseValidatable.component";
+import { Issue } from "../types/Issue.interface";
 
 const notValidText = ["read more", "learn more", "see more"]
 
@@ -82,7 +82,6 @@ class AnchorComponent extends BaseValidatableComponent {
             const res = await fetch(href, { method: "HEAD" })
             if ([404, 500, 504].includes(res.status)) throw ""
         } catch (error) {
-            console.log(error)
             return {
                 message: `${href} link broken`,
                 traceIds: [this.traceId],

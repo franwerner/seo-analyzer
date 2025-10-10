@@ -1,4 +1,4 @@
-import URLUtility, { URLInterface } from "@/shared/utils/URL.util";
+import URLUtility, { URLInterface } from "@/domain/shared/utils/URL.util";
 import DomValidator from "@/domain/virtual-dom/services/dom-validator";
 import PuppeterService from "@/infrastructure/scrapper/puppeter.service";
 import OpenAi from "@/infrastructure/AI/openAi.service";
