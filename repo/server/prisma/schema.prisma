@@ -14,11 +14,11 @@ datasource db {
 }
 
 enum ValidationType {
-  SCHEMA
-  SEMANTIC
-  SPELLING
-  RESOURCE
-  STRUCTURE
+  schema
+  semantic
+  spelling
+  resource
+  structure
 }
 
 model VirtualWeb {
@@ -30,15 +30,6 @@ model VirtualWeb {
   virtualDoms  VirtualDom[]
 }
 
-model ResourceUsage {
-  id                      Int                       @id @default(autoincrement())
-  input                   Int
-  output                  Int
-  source                  String
-  VirtualDomAnalysisUsage VirtualDomAnalysisUsage[]
-  VirtualWebSummaryUsage  VirtualWebSummaryUsage[]
-}
-
 model VirtualWebSummary {
   id                     Int                      @id @default(autoincrement())
   virtualWebId           Int
@@ -47,6 +38,15 @@ model VirtualWebSummary {
   createdAt              DateTime                 @default(now())
   virtualWeb             VirtualWeb               @relation(fields: [virtualWebId], references: [id])
   VirtualWebSummaryUsage VirtualWebSummaryUsage[]
+}
+
+model ResourceUsage {
+  id                      Int                       @id @default(autoincrement())
+  input                   Int
+  output                  Int
+  source                  String
+  VirtualDomAnalysisUsage VirtualDomAnalysisUsage[]
+  VirtualWebSummaryUsage  VirtualWebSummaryUsage[]
 }
 
 model VirtualWebSummaryUsage {

@@ -1,5 +1,5 @@
 -- CreateEnum
-CREATE TYPE "ValidationType" AS ENUM ('SCHEMA', 'SEMANTIC', 'SPELLING', 'RESOURCE', 'STRUCTURE');
+CREATE TYPE "ValidationType" AS ENUM ('schema', 'semantic', 'spelling', 'resource', 'structure');
 
 -- CreateTable
 CREATE TABLE "VirtualWeb" (
@@ -12,16 +12,6 @@ CREATE TABLE "VirtualWeb" (
 );
 
 -- CreateTable
-CREATE TABLE "ResourceUsage" (
-    "id" SERIAL NOT NULL,
-    "input" INTEGER NOT NULL,
-    "output" INTEGER NOT NULL,
-    "source" TEXT NOT NULL,
-
-    CONSTRAINT "ResourceUsage_pkey" PRIMARY KEY ("id")
-);
-
--- CreateTable
 CREATE TABLE "VirtualWebSummary" (
     "id" SERIAL NOT NULL,
     "virtualWebId" INTEGER NOT NULL,
@@ -30,6 +20,16 @@ CREATE TABLE "VirtualWebSummary" (
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
     CONSTRAINT "VirtualWebSummary_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "ResourceUsage" (
+    "id" SERIAL NOT NULL,
+    "input" INTEGER NOT NULL,
+    "output" INTEGER NOT NULL,
+    "source" TEXT NOT NULL,
+
+    CONSTRAINT "ResourceUsage_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
