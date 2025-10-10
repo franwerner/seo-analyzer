@@ -1,6 +1,6 @@
-import HTTPError from "@/shared/errors/HTTP.error"
 import { NextFunction, Request, Response } from "express"
 import { ZodError } from "zod"
+import HTTPError from "../shared/errors/HTTP.error"
 
 const errorGlobal = (err: any, _req: Request, res: Response, _next: NextFunction) => {
 
