@@ -1,4 +1,4 @@
-import { CustomError } from "@/shared/errors/Custom.error";
+import { CustomError } from "@/global-shared/errors/Custom.error";
 
 export default class VirtualDomNotFountError extends CustomError {
     constructor() {
