@@ -22,31 +22,53 @@ enum ValidationType {
 }
 
 model VirtualWeb {
-  id           Int                 @id @default(autoincrement())
-  host         String              @unique
-  mainPathname String
-  createdAt    DateTime            @default(now())
-  summaries    VirtualWebSummary[]
-  virtualDoms  VirtualDom[]
+  id                Int                 @id @default(autoincrement())
+  host              String              @unique
+  createdAt         DateTime            @default(now())
+  virtualWebSummary VirtualWebSummary[]
+  virtualDom        VirtualDom[]
+  virtualWebConfig  VirtualWebConfig?
+}
+
+model VirtualWebConfig {
+  id               Int        @id @default(autoincrement())
+  virtualWebId     Int        @unique
+  mainVirtualDomId Int        @unique
+  virtualWeb       VirtualWeb @relation(fields: [virtualWebId], references: [id])
+  virtualDom       VirtualDom @relation(fields: [mainVirtualDomId], references: [id])
 }
 
 model VirtualWebSummary {
-  id                     Int                      @id @default(autoincrement())
+  id                     Int                     @id @default(autoincrement())
   virtualWebId           Int
-  summary                String
-  sourcePathname         String
-  createdAt              DateTime                 @default(now())
-  virtualWeb             VirtualWeb               @relation(fields: [virtualWebId], references: [id])
-  VirtualWebSummaryUsage VirtualWebSummaryUsage[]
+  content                String
+  sourceVirtualDomId     Int
+  createdAt              DateTime                @default(now())
+  virtualWeb             VirtualWeb              @relation(fields: [virtualWebId], references: [id])
+  virtualDom             VirtualDom              @relation(fields: [sourceVirtualDomId], references: [id])
+  virtualWebSummaryUsage VirtualWebSummaryUsage?
+}
+
+model VirtualDom {
+  id                Int                  @id @default(autoincrement())
+  virtualWebId      Int
+  pathname          String
+  createdAt         DateTime             @default(now())
+  virtualWeb        VirtualWeb           @relation(fields: [virtualWebId], references: [id])
+  analyses          VirtualDomAnalysis[]
+  virtualWebSummary VirtualWebSummary[]
+  virtualWebConfig  VirtualWebConfig?
+
+  @@unique([virtualWebId, pathname])
 }
 
 model ResourceUsage {
-  id                      Int                       @id @default(autoincrement())
+  id                      Int                      @id @default(autoincrement())
   input                   Int
   output                  Int
   source                  String
-  VirtualDomAnalysisUsage VirtualDomAnalysisUsage[]
-  VirtualWebSummaryUsage  VirtualWebSummaryUsage[]
+  virtualDomAnalysisUsage VirtualDomAnalysisUsage?
+  virtualWebSummaryUsage  VirtualWebSummaryUsage?
 }
 
 model VirtualWebSummaryUsage {
@@ -57,24 +79,13 @@ model VirtualWebSummaryUsage {
   resourceUsage       ResourceUsage     @relation(fields: [resourceUsageId], references: [id])
 }
 
-model VirtualDom {
-  id           Int                  @id @default(autoincrement())
-  virtualWebId Int
-  pathname     String
-  createdAt    DateTime             @default(now())
-  virtualWeb   VirtualWeb           @relation(fields: [virtualWebId], references: [id])
-  analyses     VirtualDomAnalysis[]
-
-  @@unique([virtualWebId, pathname])
-}
-
 model VirtualDomAnalysis {
-  id                      Int                       @id @default(autoincrement())
+  id                      Int                      @id @default(autoincrement())
   virtualDomId            Int
-  createdAt               DateTime                  @default(now())
-  virtualDom              VirtualDom                @relation(fields: [virtualDomId], references: [id])
-  AnalysisIssue           AnalysisIssue[]
-  VirtualDomAnalysisUsage VirtualDomAnalysisUsage[]
+  createdAt               DateTime                 @default(now())
+  virtualDom              VirtualDom               @relation(fields: [virtualDomId], references: [id])
+  analysisIssue           AnalysisIssue[]
+  virtualDomAnalysisUsage VirtualDomAnalysisUsage?
 }
 
 model VirtualDomAnalysisUsage {
