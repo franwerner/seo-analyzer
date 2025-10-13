@@ -7,6 +7,7 @@ import { issuesWithOutTypeSchema } from "./schemas/issue.schema";
 
 class OpenAi {
   openAI: OpenAI
+  model: string = "gpt-5-mini"
   constructor() {
     this.openAI = new OpenAI({
       apiKey: process.env.OPENAI_KEY,
@@ -22,20 +23,21 @@ class OpenAi {
 
   async createBasicResponse(input: string, instructions: string) {
     const response = await this.openAI.responses.create({
-      model: "gpt-5-mini",
+      model: this.model,
       instructions,
       input,
     })
     return {
       response: response.output_text,
-      tokens: OpenAi.getTokenUsage(response)
+      tokens: OpenAi.getTokenUsage(response),
+      model: this.model
     }
   }
 
 
   async generateIssueTraceIds(input: string, instructions: string) {
     const response = await this.openAI.responses.create({
-      model: "gpt-5-mini",
+      model: this.model,
       instructions,
       input,
       text: {
@@ -45,13 +47,14 @@ class OpenAi {
 
     return {
       traceIds: traceIdsSchema.parse(JSON.parse(response.output_text)).traceIds,
-      tokens: OpenAi.getTokenUsage(response)
+      tokens: OpenAi.getTokenUsage(response),
+      model: this.model
     }
   }
 
   async generateIssueWords(input: string, instructions: string) {
     const response = await this.openAI.responses.create({
-      model: "gpt-5-mini",
+      model: this.model,
       instructions,
       input,
       text: {
@@ -61,7 +64,8 @@ class OpenAi {
 
     return {
       words: WordsSchema.parse(JSON.parse(response.output_text)).words,
-      tokens: OpenAi.getTokenUsage(response)
+      tokens: OpenAi.getTokenUsage(response),
+      model: this.model
     }
   }
 
@@ -73,7 +77,7 @@ class OpenAi {
   ) {
 
     const response = await this.openAI.responses.create({
-      model: "gpt-5-mini",
+      model: this.model,
       instructions,
       input,
       text: {
@@ -86,7 +90,8 @@ class OpenAi {
 
     return {
       issues,
-      tokens: OpenAi.getTokenUsage(response)
+      tokens: OpenAi.getTokenUsage(response),
+      model: this.model
     }
 
   }
