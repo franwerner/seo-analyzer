@@ -69,7 +69,7 @@ export default class SemanticValidation extends ValidationUtility {
             acc.tokens.output += tokens.output
             return acc
         }, {
-            traceIds: [],
+            traceIds: [] as Array<string>,
             tokens: {
                 input: 0,
                 output: 0

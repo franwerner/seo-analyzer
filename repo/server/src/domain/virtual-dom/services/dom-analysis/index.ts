@@ -1,4 +1,3 @@
-import { Validation } from "@/domain/virtual-dom/types/Validation.interface";
 import ValidationUtility from "@/domain/virtual-dom/utils/validation.util";
 import { VirtualDomSnapshot } from "@/domain/virtual-dom/virtualDom.entity";
 import OpenAi from "@/infrastructure/AI/openAi.service";
@@ -8,31 +7,35 @@ import SchemeValidaton from "./validations/schemes.validation";
 import SemanticValidation from "./validations/semantic.validation";
 import SpellingValidation from "./validations/spelling.validation";
 import StructureValidation from "./validations/structure.validation";
+import { VirtualDomAnalysisError, VirtualDomAnalysisInProgressError } from "../../errors";
 
-type ValidationWithTokens = Required<Validation>
+export enum AnalyzeStatus {
+    Analyzing = "analyzing",
+    Idle = "idle"
+}
 
-export default class DomValidator {
+export default class DomAnalysis {
+
     private static readonly VALIDATIONS_FOR_COMPONENT_TREE: Array<ValidationsTypeForComponentTree> = [ValidationType.SEMANTIC, ValidationType.STRUCTURE, ValidationType.RESOURCE]
-    validations: Array<ValidationWithTokens> = []
-    /**
-     * Solo mantiene las validaciones que se realizan, no las que se obtienen tambien de la base de datos.
-     */
+
+    analyzeStatus: AnalyzeStatus = AnalyzeStatus.Idle
+
+
     constructor(
-        private openAi: OpenAi,
+        private openAi: OpenAi
     ) { }
 
-    getValidations() {
-        return this.validations
+    setStatus(status: AnalyzeStatus) {
+        this.analyzeStatus = status
     }
 
-    setValidation(validation: ValidationWithTokens) {
-        this.validations.push(validation)
-        if (this.validations.length > 10) {
-            this.validations.shift()
-        }
+    throwIfAnalyzing() {
+        if (this.analyzeStatus === AnalyzeStatus.Analyzing)
+            throw new VirtualDomAnalysisInProgressError()
     }
 
-    private async validationInstaces(instances: Array<ValidationUtility>) {
+
+    private static async validationInstances(instances: Array<ValidationUtility>) {
         /**
          * Cosas a tener en cuenta en un futuro:
          * Los promise.all de cada validador si uno falla la promesa se rechaza por completo.
@@ -46,20 +49,23 @@ export default class DomValidator {
             issues: groupByErrorType,
             tokens: mergedValidation.tokens
         }
-        this.setValidation(validation)
-
         return validation
     }
 
-    async runValidation({
+    async runAnalysis({
         snapshot,
         pageSummary,
-        validationsSelected
+        validationsSelected,
     }: {
         snapshot: VirtualDomSnapshot,
         pageSummary: string,
-        validationsSelected: ValidationsType
+        validationsSelected: ValidationsType,
     }) {
+
+        this.throwIfAnalyzing()
+
+        this.setStatus(AnalyzeStatus.Analyzing)
+
         const { root, vDomContext, htmlStructure, htmlSemantic } = snapshot
 
         const validationMap = {
@@ -69,22 +75,28 @@ export default class DomValidator {
             [ValidationType.SCHEME]: () => new SchemeValidaton(this.openAi, vDomContext, pageSummary, root),
         }
 
-        const validationInstances: Array<ValidationUtility> = []
+        try {
+            const validationInstances: Array<ValidationUtility> = []
 
-        if (DomValidator.VALIDATIONS_FOR_COMPONENT_TREE.some(v => validationsSelected[v])) {
-            validationInstances.push(new ComponentTreeValidation(root, validationsSelected))
-        }
-
-        const recolectedValidators = Object.keys(validationsSelected).map(v => {
-            const key = v as keyof typeof validationMap
-            if (!validationsSelected[key]) return
-            if (key in validationMap) {
-                return validationMap[key]()
+            if (DomAnalysis.VALIDATIONS_FOR_COMPONENT_TREE.some(v => validationsSelected[v])) {
+                validationInstances.push(new ComponentTreeValidation(root, validationsSelected))
             }
-        }).filter(v => v !== undefined)
 
-        validationInstances.push(...recolectedValidators)
+            const recolectedValidators = Object.keys(validationsSelected).map(v => {
+                const key = v as keyof typeof validationMap
+                if (!validationsSelected[key]) return
+                if (key in validationMap) {
+                    return validationMap[key]()
+                }
+            }).filter(v => v !== undefined)
 
-        return await this.validationInstaces(validationInstances)
+            validationInstances.push(...recolectedValidators)
+
+            return await DomAnalysis.validationInstances(validationInstances)
+        } catch (error) {
+            throw new VirtualDomAnalysisError(error)
+        } finally {
+            this.setStatus(AnalyzeStatus.Idle)
+        }
     }
 }
