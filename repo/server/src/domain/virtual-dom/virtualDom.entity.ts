@@ -1,21 +1,16 @@
+import { URLInterface } from "@/domain/shared/utils/URL.util";
 import VDomContext from "@/domain/virtual-dom/context/vDom.context";
 import PuppeterService from "@/infrastructure/scrapper/puppeter.service";
-import { URLInterface } from "@/domain/shared/utils/URL.util";
 import HTMLComponent from "./components/html.component";
-import DomValidator from "./services/dom-validator";
-import VirtualDomAnalysisError from "./errors/VirtualDomAnalysis.error";
-import VirtualDomAnalysisInProgressError from "./errors/VirtualDomAnalysisInProgress.error";
 import VirtualDomGeneratedSnapshotError from "./errors/VirtualDomGeneratedSnapshot.error";
+import DomAnalysis from "./services/dom-analysis";
 import { ValidationsType } from "./types/ValidationType.enum";
 import SnapshotGeneratorUtility from "./utils/snapshotGenerator.utils";
 
-enum AnalyzeStatus {
-    Analyzing = "analyzing",
-    Idle = "idle"
-}
 
 export interface VirtualDomEntityProps {
     url: URLInterface
+    id: number
 }
 
 export interface VirtualDomSnapshot {
@@ -27,44 +22,27 @@ export interface VirtualDomSnapshot {
 
 class VirtualDomEntity {
     url: URLInterface
+    id: number
     snapshot: Promise<VirtualDomSnapshot> | null = null
-    analyzeStatus: AnalyzeStatus = AnalyzeStatus.Idle
     constructor(
-        private puppeteer: PuppeterService,
-        public domValidator: DomValidator,
-        { url }: VirtualDomEntityProps
+        private scrapperService: PuppeterService,
+        private domAnalysis: DomAnalysis,
+        { url, id }: VirtualDomEntityProps
     ) {
+        this.id = id
         this.url = url
-    }
-
-    private setStatus(status: AnalyzeStatus) {
-        this.analyzeStatus = status
-    }
-
-    private throwIfAnalyzing() {
-        if (this.analyzeStatus === AnalyzeStatus.Analyzing)
-            throw new VirtualDomAnalysisInProgressError()
     }
 
     async analyze(pageSummary: string, validationsSelected: ValidationsType) {
 
-        this.throwIfAnalyzing()
 
-        this.setStatus(AnalyzeStatus.Analyzing)
+        const snapshot = await this.getOrGenerateSnapshot()
 
-
-        try {
-            const snapshot = await this.getOrGenerateSnapshot()
-            return await this.domValidator.runValidation({ snapshot, pageSummary, validationsSelected })
-        } catch (error) {
-            if (error instanceof VirtualDomGeneratedSnapshotError) {
-                throw error
-            } else {
-                throw new VirtualDomAnalysisError(error)
-            }
-        } finally {
-            this.setStatus(AnalyzeStatus.Idle)
-        }
+        return await this.domAnalysis.runAnalysis({
+            snapshot,
+            pageSummary,
+            validationsSelected,
+        })
 
     }
 
@@ -77,7 +55,7 @@ class VirtualDomEntity {
         /**
          * Solo se debe utilizar para la primera generación del snapshot internamente en `getOrGenerateSnapshot`
          */
-        const to = await this.puppeteer.newPageIfAvailable()
+        const to = await this.scrapperService.newPageIfAvailable()
         const url = this.url.href
         const htmlString = await to(url)
 
@@ -105,8 +83,7 @@ class VirtualDomEntity {
             if (!this.snapshot) {
                 this.snapshot = this.createSnapshot()
             }
-            await this.snapshot // Esperar a que se genere el snapshot para que se capture el error.
-            return this.snapshot
+            return await this.snapshot
         } catch (error) {
             this.snapshot = null
             throw new VirtualDomGeneratedSnapshotError(error)
