@@ -9,10 +9,11 @@ export default class VirtualDomRepository {
         return this.client.virtualDom.create({ data, select: { id: true, pathname: true } })
     }
 
-    findUnique(virtualDomId: number) {
+    findByVirtualWebAndDom({ virtualDomId, virtualWebId }: { virtualDomId: number, virtualWebId: number }) {
         return this.client.virtualDom.findUnique({
             where: {
                 id: virtualDomId,
+                virtualWebId: virtualWebId
             },
             select: {
                 id: true,

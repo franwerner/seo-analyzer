@@ -7,7 +7,7 @@ export default class SemanticValidation extends ValidationUtility {
     constructor(
         private openAI: OpenAi,
         private htmlSemantic: Array<string>,
-        private pageSummary: string,
+        private domSummary: string,
         private context: VDomContext
     ) {
         super()
@@ -43,20 +43,28 @@ export default class SemanticValidation extends ValidationUtility {
     }
 
     async validateHrefSemantic() {
+
         const a = this.context.a.map(e =>
             e.generateInnerHTML({ includeAttributes: true, includeChildrenAtts: false })
         )
 
-
         const chunks = []
-        const chunkSize = 25
+        const chunkSizeDefault = 25
+        const maxParts = 6
+        const isExceeded = a.length > 150
+        /**
+         * Se verifica si se excede para evitar enviar muchas solicitudes a la IA con diferentes chunks.
+         * Esto podria generar un gasto significativo si se execede por mucho.
+         * Al pasarle un limitado numero de chunks a la IA el costo por salida total es menor.
+         */
+        const chunkSize = isExceeded ? Math.floor((a.length / maxParts)) : chunkSizeDefault
         const chunksCount = Math.ceil(a.length / chunkSize)
+
+
         for (let i = 0; i < chunksCount; i++) {
             const nextIndex = i * chunkSize
             chunks.push(a.slice(nextIndex, nextIndex + chunkSize))
         }
-
-        chunks.forEach(chunk => console.log(chunk, chunk.length))
 
         const res = await Promise.all(chunks.map(chunk => this.validateHrefSemanticChunk(chunk)))
 
@@ -117,7 +125,7 @@ export default class SemanticValidation extends ValidationUtility {
        8. La propiedad "message" debe ser breve, clara y explicativa. No incluyas IDs, nombres de etiquetas ni relaciones entre elementos en el mensaje.
 
         ### Entrada:
-        - Resumen del contenido: ${this.pageSummary}
+        - Resumen del contenido: ${this.domSummary}
 
         ### Ejemplo de salida:
         [{

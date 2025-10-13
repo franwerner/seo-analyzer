@@ -1,17 +1,17 @@
-import { PrismaClient, ResourceUsage, VirtualWebSummary } from "@prisma/client";
+import { PrismaClient, ResourceUsage, VirtualDomSummary } from "@prisma/client";
 
-export default class VirtualWebSummaryRepository {
+export default class VirtualDomSummaryRepository {
     constructor(private client: PrismaClient) { }
 
 
-    createAggregate({
+    createSummaryAggregate({
         resourceUsage,
         ...data
-    }: Omit<VirtualWebSummary, "id" | "createdAt"> & { resourceUsage: Omit<ResourceUsage, "id" | "createdAt"> }) {
-        return this.client.virtualWebSummary.create({
+    }: Omit<VirtualDomSummary, "id" | "createdAt"> & { resourceUsage: Omit<ResourceUsage, "id" | "createdAt"> }) {
+        return this.client.virtualDomSummary.create({
             data: {
                 ...data,
-                virtualWebSummaryUsage: {
+                virtualDomSummaryUsage: {
                     create: {
                         resourceUsage: {
                             create: resourceUsage
@@ -20,16 +20,15 @@ export default class VirtualWebSummaryRepository {
                 },
             },
             select: {
-                createdAt: true,
-                sourceVirtualDomId: true
+                id: true,
             }
         })
     }
 
-    findUniqueBySourceVirtualDomId(sourceVirtualDomId: number) {
-        return this.client.virtualWebSummary.findFirst({
+    findLastByVirtualDomId(virtualDomId: number) {
+        return this.client.virtualDomSummary.findFirst({
             where: {
-                sourceVirtualDomId,
+                virtualDomId,
             },
             orderBy: {
                 id: 'desc'

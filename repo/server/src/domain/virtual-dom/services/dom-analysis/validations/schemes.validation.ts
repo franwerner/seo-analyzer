@@ -32,7 +32,7 @@ export default class SchemeValidaton extends ValidationUtility {
     constructor(
         private openAi: OpenAi,
         private context: VDomContext,
-        private pageSummary: string,
+        private domSummary: string,
         private root: HTMLComponent
     ) {
         super()
@@ -74,7 +74,7 @@ export default class SchemeValidaton extends ValidationUtility {
         ${prompt}
 
         Contexto de la página WEB: 
-        Resumen de la web : ${this.pageSummary} 
+        Resumen de la web : ${this.domSummary} 
         Lenguaje: ${this.root.attributes.lang || "Sin especificar"}
         `;
 

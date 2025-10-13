@@ -1,10 +1,10 @@
 import { VirtualWebNotFountError } from "@/domain/virtual-web/errors"
 import VirtualWebRepository from "../repositories/VirtualWeb.repository"
-import VirtualWebSummaryRepository from "../repositories/VirtualWebSummary.repository"
 import VirtualWebStore from "../../domain/virtual-web/store/virtualWeb.store"
 import VirtualWebConfigNotFountError from "@/domain/virtual-web/errors/VirtualWebConfigNotFount.error"
 import createVirtualWebScheme, { CreateVirtualWebDTO } from "../dtos/CreateVirtualWeb.dto"
-import ValidateDTO from "../decorators/ValidateDTO.decorator"
+import ValidateDTO from "../shared/decorators/ValidateDTO.decorator"
+import VirtualDomSummaryRepository from "../repositories/VirtualDomSummary.repository"
 
 export default class VirtualWebManagerUsecase {
 
@@ -12,26 +12,40 @@ export default class VirtualWebManagerUsecase {
         private virtualWebStore: VirtualWebStore,
         private repositories: {
             virtualWebRepository: VirtualWebRepository,
-            virtualWebSummaryRepository: VirtualWebSummaryRepository,
+            virtualDomSummaryRepository: VirtualDomSummaryRepository,
         }
     ) { }
 
-    async getVirtualWebOrThrow(virtualWebId: number) {
-
-        return await this.virtualWebStore.getOrCreate(virtualWebId, async (create) => {
+    getVirtualWebOrThrow(virtualWebId: number) {
+        return this.virtualWebStore.getOrCreate(virtualWebId, async (create) => {
             const repoVirtualWeb = await this.repositories.virtualWebRepository.findUniqueWithConfig(virtualWebId)
             if (!repoVirtualWeb) throw new VirtualWebNotFountError()
             else if (!repoVirtualWeb.virtualWebConfig) throw new VirtualWebConfigNotFountError()
             const { virtualWebConfig, virtualWeb } = repoVirtualWeb
-            const webSummary = await this.repositories.virtualWebSummaryRepository.findUniqueBySourceVirtualDomId(virtualWebConfig.mainVirtualDomId)
+            const mainDomSummary = await this.repositories.virtualDomSummaryRepository.findLastByVirtualDomId(virtualWebConfig.mainVirtualDomId)
             return create({
                 id: virtualWeb.id,
                 host: virtualWeb.host,
                 webConfig: virtualWebConfig,
-                webSummary: webSummary
+                mainDomSummary
             })
         })
     }
+
+    async createMainPageSummary(virtualWebId: number) {
+        const virtualWeb = await this.getVirtualWebOrThrow(virtualWebId)
+        const { summary, model, tokens } = await virtualWeb.generateMainDomSummary()
+        const { id: summaryId } = await this.repositories.virtualDomSummaryRepository.createSummaryAggregate({
+            virtualDomId: virtualWeb.webConfig.mainVirtualDomId,
+            content: summary,
+            resourceUsage: {
+                ...tokens,
+                source: model
+            }
+        })
+        virtualWeb.setMainDomSummary({ content: summary, id: summaryId })
+    }
+
 
     @ValidateDTO(createVirtualWebScheme)
     async registerVirtualWeb({
@@ -45,14 +59,13 @@ export default class VirtualWebManagerUsecase {
             host,
             mainPathname
         })
-
         return this.virtualWebStore.getOrCreate(virtualWeb.id, async (create) => {
             return create({
                 id: virtualWeb.id,
-                host: virtualWeb.host,
+                host,
                 webConfig: {
                     mainVirtualDomId: virtualWebConfig.mainVirtualDomId,
-                    mainPathname: virtualWebConfig.mainPathname
+                    mainPathname
                 }
             })
         })

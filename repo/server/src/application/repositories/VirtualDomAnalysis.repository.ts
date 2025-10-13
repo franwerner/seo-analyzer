@@ -1,5 +1,7 @@
 import { AnalysisIssue, PrismaClient, ResourceUsage } from "@prisma/client";
 
+
+
 interface CreateAggregate {
     virtualDomId: number,
     analysisIssues: Array<Omit<AnalysisIssue, 'id' | 'virtualDomAnalysisId'> & { traceIds: Array<string> }>
@@ -14,7 +16,7 @@ export default class VirtualDomAnalysisRepository {
     }
 
 
-    createAggreate({
+    createAnalysisAggreate({
         analysisIssues,
         resourceUsage,
         ...data

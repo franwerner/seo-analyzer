@@ -1,12 +1,11 @@
-import { virtualWebUseCases } from "@/infrastructure/bootstrap"
+import { virtualPageManagerUseCase, virtualWebManagerUseCase } from "@/infrastructure/bootstrap"
 import { Request, Response } from "express"
 
 export default class VirtualWebController {
 
     static async registerVirtualWeb(req: Request, res: Response) {
-        const host = req.body.host as string
-        const mainPathname = req.body.mainPathname as string
-        await virtualWebUseCases.registerVirtualWeb({
+        const { host, mainPathname } = req.body
+        await virtualWebManagerUseCase.registerVirtualWeb({
             host,
             mainPathname: mainPathname
         })
@@ -14,29 +13,28 @@ export default class VirtualWebController {
     }
 
     static async createAnalyzeSinglePage(req: Request, res: Response) {
-        const { pathname = "", host = "", validationsSelected = {} } = req.body as any
-        const analysis = await virtualWebUseCases.createAnalyzeSinglePage({ pathname, host, validationsSelected })
+        const { virtualWebId, virtualDomId, validationsSelected = {} } = req.body
+        const analysis = await virtualPageManagerUseCase.createSinglePageAnalyze({ virtualWebId, virtualDomId, validationsSelected })
         res.json({
-            analysis
+            analysis: analysis
         })
     }
 
     static async getSinglePageAnalysis(req: Request, res: Response) {
-        const { host = "", pathname = "" } = req.query as any
-        const analysis = virtualWebUseCases.getSinglePageAnalysis(host, pathname)
+        const { host = "", pathname = "" } = req.query
         res.json({
-            analysis
+            analysis: {}
         })
     }
 
     static async getPage(req: Request, res: Response) {
-        const { host = "", pathname = "" } = req.query as any
-        const page = virtualWebUseCases.getPage(host, pathname)
-        const snapshot = await page.getOrGenerateSnapshot()
-        res.json({
-            html: snapshot?.vDomContext.schemas,
+        // const { host = "", pathname = "" } = req.query as any
+        // const page = virtualWebUseCases.getPage(host, pathname)
+        // const snapshot = await page.getOrGenerateSnapshot()
+        // res.json({
+        //     html: snapshot?.vDomContext.schemas,
 
-        })
+        // })
     }
 
 }

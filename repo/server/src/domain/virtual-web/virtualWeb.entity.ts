@@ -1,54 +1,84 @@
+import URLUtility from "@/domain/shared/utils/URL.util";
+import VirtualDomStore from "@/domain/virtual-dom/store/virtualDom.store";
 import OpenAi from "@/infrastructure/AI/openAi.service";
 import PuppeterService from "@/infrastructure/scrapper/puppeter.service";
-import { Tokens } from "@/domain/virtual-dom/types/Tokens.interface";
-import { WebSummary } from "@/domain/virtual-web/types/WebSummary.interface";
-import VirtualDomStore from "@/domain/virtual-dom/store/virtualDom.store";
-import { URLInterface } from "@/shared/utils/URL.util";
+import VirtualDomSummaryNotFound from "../virtual-dom/errors/VirtualDomSummaryNotFound.error";
+import mainDomSummaryMock from "./mocks/mainDomSummary.mock";
 
 /**
  * @note
  *   Se encarga de orquestar los VirtualDom, decide que responsabildades tienen cada uno, crea los resumenes etc.
  */
 
-
-export interface VirtualWebProps {
-    url: URLInterface
-    webSummary?: WebSummary | null
+interface VirtualWebConfig {
+    mainVirtualDomId: number,
+    mainPathname: string
 }
 
-export default class VirtualWeb {
+
+interface MainDomSummary {
+    content: string,
+    id: number
+}
+
+export interface VirtualWebEntityProps {
+    host: string
+    mainDomSummary?: MainDomSummary | null
+    webConfig: VirtualWebConfig
+    id: number
+}
+
+export default class VirtualWebEntity {
 
     vdomStore: VirtualDomStore
-    url: URLInterface
-    webSummary?: WebSummary | null = null
+    host: string
+    webConfig: VirtualWebConfig
+    mainDomSummary?: MainDomSummary | null = null
+    id: number
 
     constructor(
         private openAi: OpenAi,
         private puppeteer: PuppeterService,
-        { url, webSummary }: VirtualWebProps) {
+        { host, mainDomSummary, webConfig, id }: VirtualWebEntityProps) {
 
-        this.url = url
+        this.host = URLUtility.normalizeHost(host)
 
-        this.webSummary = webSummary
+        this.webConfig = webConfig
 
-        this.vdomStore = new VirtualDomStore(this.openAi, this.puppeteer, { host: url.host })
+        this.id = id
+
+        this.mainDomSummary = mainDomSummary
+
+        this.vdomStore = new VirtualDomStore(this.openAi, this.puppeteer, { host })
     }
 
 
-    async setWebSummary() {
-        const res = await this.generateWebSummary()
-        return this.webSummary = res.webSummary
+    async setMainDomSummary(summary: MainDomSummary) {
+        return this.mainDomSummary = summary
     }
 
-    async generateWebSummary(): Promise<{
-        webSummary: WebSummary,
-        tokens: Tokens
-    }> {
-        const snapshot = await this.vdomStore.getOrCreate(this.url.pathname).getOrGenerateSnapshot()
+    getOrThrowMainDomSummary() {
+        if (!this.mainDomSummary) throw new VirtualDomSummaryNotFound()
+        return this.mainDomSummary
+    }
 
-        const texts = snapshot.vDomContext.innerTextChunks.getChunksPartsTexts()
+    async generateMainDomSummary() {
 
-        const { response, tokens } = await this.openAi.createBasicResponse(
+        return mainDomSummaryMock
+
+        const snapshot = await this.vdomStore.getOrCreate(this.webConfig.mainVirtualDomId, async (create) => {
+            return create({
+                pathname: this.webConfig.mainPathname,
+                id: this.webConfig.mainVirtualDomId
+            })
+        })
+
+        const generatedSnapshot = await snapshot.getOrGenerateSnapshot()
+
+
+        const texts = generatedSnapshot.vDomContext.innerTextChunks.getChunksPartsTexts()
+
+        const { response, ...rest } = await this.openAi.createBasicResponse(
             JSON.stringify(texts),
             `
         Instrucciones:
@@ -69,14 +99,9 @@ export default class VirtualWeb {
         )
 
         return {
-            webSummary: {
-                summary: response,
-                generatedAt: new Date(),
-                pathnameByGeneration: this.url.pathname,
-            },
-            tokens: tokens
+            summary: response,
+            ...rest
         }
-
 
     }
 

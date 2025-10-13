@@ -13,8 +13,9 @@ const validationSelectedScheme = z.object(validationKeys.reduce((acc, key) => {
 const createAnalyzeSinglePageScheme = z.object({
     virtualDomId: z.number(),
     virtualWebId: z.number(),
-    validationsSelected: validationSelectedScheme
+    validationsSelected: validationSelectedScheme.strip()
 })
+
 
 export default createAnalyzeSinglePageScheme
 

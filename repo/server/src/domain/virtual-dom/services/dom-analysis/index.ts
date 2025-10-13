@@ -8,11 +8,8 @@ import SemanticValidation from "./validations/semantic.validation";
 import SpellingValidation from "./validations/spelling.validation";
 import StructureValidation from "./validations/structure.validation";
 import { VirtualDomAnalysisError, VirtualDomAnalysisInProgressError } from "../../errors";
+import { AnalyzeStatus } from "../../types/AnalyzeStatuss";
 
-export enum AnalyzeStatus {
-    Analyzing = "analyzing",
-    Idle = "idle"
-}
 
 export default class DomAnalysis {
 
@@ -25,11 +22,12 @@ export default class DomAnalysis {
         private openAi: OpenAi
     ) { }
 
-    setStatus(status: AnalyzeStatus) {
+    private setStatus(status: AnalyzeStatus) {
         this.analyzeStatus = status
     }
 
-    throwIfAnalyzing() {
+
+    private throwIfAnalyzing() {
         if (this.analyzeStatus === AnalyzeStatus.Analyzing)
             throw new VirtualDomAnalysisInProgressError()
     }
@@ -47,18 +45,18 @@ export default class DomAnalysis {
         const groupByErrorType = ValidationUtility.groupByIssueType(mergedValidation.issues)
         const validation = {
             issues: groupByErrorType,
-            tokens: mergedValidation.tokens
+            tokens: mergedValidation.tokens,
         }
         return validation
     }
 
     async runAnalysis({
         snapshot,
-        pageSummary,
+        domSummary,
         validationsSelected,
     }: {
         snapshot: VirtualDomSnapshot,
-        pageSummary: string,
+        domSummary: string,
         validationsSelected: ValidationsType,
     }) {
 
@@ -69,10 +67,10 @@ export default class DomAnalysis {
         const { root, vDomContext, htmlStructure, htmlSemantic } = snapshot
 
         const validationMap = {
-            [ValidationType.SEMANTIC]: () => new SemanticValidation(this.openAi, htmlSemantic, pageSummary, vDomContext),
+            [ValidationType.SEMANTIC]: () => new SemanticValidation(this.openAi, htmlSemantic, domSummary, vDomContext),
             [ValidationType.STRUCTURE]: () => new StructureValidation(this.openAi, vDomContext, htmlStructure),
             [ValidationType.SPELLING]: () => new SpellingValidation(this.openAi, vDomContext),
-            [ValidationType.SCHEME]: () => new SchemeValidaton(this.openAi, vDomContext, pageSummary, root),
+            [ValidationType.SCHEME]: () => new SchemeValidaton(this.openAi, vDomContext, domSummary, root),
         }
 
         try {
@@ -84,15 +82,19 @@ export default class DomAnalysis {
 
             const recolectedValidators = Object.keys(validationsSelected).map(v => {
                 const key = v as keyof typeof validationMap
-                if (!validationsSelected[key]) return
-                if (key in validationMap) {
+                const value = validationsSelected[key]
+                if (key in validationMap && value) {
                     return validationMap[key]()
                 }
             }).filter(v => v !== undefined)
 
             validationInstances.push(...recolectedValidators)
 
-            return await DomAnalysis.validationInstances(validationInstances)
+            const resourceUsage = await DomAnalysis.validationInstances(validationInstances)
+            return {
+                ...resourceUsage,
+                model: this.openAi.model
+            }
         } catch (error) {
             throw new VirtualDomAnalysisError(error)
         } finally {

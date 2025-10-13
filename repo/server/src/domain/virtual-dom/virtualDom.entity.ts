@@ -3,6 +3,7 @@ import VDomContext from "@/domain/virtual-dom/context/vDom.context";
 import PuppeterService from "@/infrastructure/scrapper/puppeter.service";
 import HTMLComponent from "./components/html.component";
 import VirtualDomGeneratedSnapshotError from "./errors/VirtualDomGeneratedSnapshot.error";
+import analysisMock from "./mock/analysis.mock";
 import DomAnalysis from "./services/dom-analysis";
 import { ValidationsType } from "./types/ValidationType.enum";
 import SnapshotGeneratorUtility from "./utils/snapshotGenerator.utils";
@@ -33,17 +34,18 @@ class VirtualDomEntity {
         this.url = url
     }
 
-    async analyze(pageSummary: string, validationsSelected: ValidationsType) {
+    async analyze(domSummary: string, validationsSelected: ValidationsType) {
 
+
+        return analysisMock
 
         const snapshot = await this.getOrGenerateSnapshot()
 
         return await this.domAnalysis.runAnalysis({
             snapshot,
-            pageSummary,
+            domSummary,
             validationsSelected,
         })
-
     }
 
     clearSnapshot() {
