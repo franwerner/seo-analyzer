@@ -14,7 +14,7 @@ datasource db {
 }
 
 enum ValidationType {
-  schema
+  scheme
   semantic
   spelling
   resource
@@ -22,12 +22,11 @@ enum ValidationType {
 }
 
 model VirtualWeb {
-  id                Int                 @id @default(autoincrement())
-  host              String              @unique
-  createdAt         DateTime            @default(now())
-  virtualWebSummary VirtualWebSummary[]
-  virtualDom        VirtualDom[]
-  virtualWebConfig  VirtualWebConfig?
+  id               Int               @id @default(autoincrement())
+  host             String            @unique
+  createdAt        DateTime          @default(now())
+  virtualDom       VirtualDom[]
+  virtualWebConfig VirtualWebConfig?
 }
 
 model VirtualWebConfig {
@@ -38,15 +37,13 @@ model VirtualWebConfig {
   virtualDom       VirtualDom @relation(fields: [mainVirtualDomId], references: [id])
 }
 
-model VirtualWebSummary {
+model VirtualDomSummary {
   id                     Int                     @id @default(autoincrement())
-  virtualWebId           Int
   content                String
-  sourceVirtualDomId     Int
+  virtualDomId           Int
   createdAt              DateTime                @default(now())
-  virtualWeb             VirtualWeb              @relation(fields: [virtualWebId], references: [id])
-  virtualDom             VirtualDom              @relation(fields: [sourceVirtualDomId], references: [id])
-  virtualWebSummaryUsage VirtualWebSummaryUsage?
+  virtualDom             VirtualDom              @relation(fields: [virtualDomId], references: [id])
+  virtualDomSummaryUsage VirtualDomSummaryUsage?
 }
 
 model VirtualDom {
@@ -56,7 +53,7 @@ model VirtualDom {
   createdAt         DateTime             @default(now())
   virtualWeb        VirtualWeb           @relation(fields: [virtualWebId], references: [id])
   analyses          VirtualDomAnalysis[]
-  virtualWebSummary VirtualWebSummary[]
+  virtualDomSummary VirtualDomSummary[]
   virtualWebConfig  VirtualWebConfig?
 
   @@unique([virtualWebId, pathname])
@@ -68,14 +65,14 @@ model ResourceUsage {
   output                  Int
   source                  String
   virtualDomAnalysisUsage VirtualDomAnalysisUsage?
-  virtualWebSummaryUsage  VirtualWebSummaryUsage?
+  virtualDomSummaryUsage  VirtualDomSummaryUsage?
 }
 
-model VirtualWebSummaryUsage {
+model VirtualDomSummaryUsage {
   id                  Int               @id @default(autoincrement())
   virtualWebSummaryId Int               @unique
   resourceUsageId     Int               @unique
-  virtualWebSummary   VirtualWebSummary @relation(fields: [virtualWebSummaryId], references: [id])
+  virtualWebSummary   VirtualDomSummary @relation(fields: [virtualWebSummaryId], references: [id])
   resourceUsage       ResourceUsage     @relation(fields: [resourceUsageId], references: [id])
 }
 
