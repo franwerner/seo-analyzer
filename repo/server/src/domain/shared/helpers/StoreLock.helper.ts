@@ -11,14 +11,21 @@
  */
 
 export default class StoreLockHelper<T> {
-    private locked: Map<number, Promise<T>> = new Map()
+    locked: Map<number, Promise<T>> = new Map()
 
-    lock(id: number, fn: () => Promise<T>) {
+    async lock(id: number, fn: () => Promise<T>) {
         const getLocked = this.locked.get(id)
         if (getLocked) return getLocked
         const promise = fn()
         this.locked.set(id, promise)
-        promise.finally(() => this.unlock(id))
+        try {
+            await promise
+        } catch (error) {
+            throw error
+        }
+        finally {
+            this.unlock(id)
+        }
         return promise
     }
 
