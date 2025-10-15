@@ -11,8 +11,10 @@ import mainDomSummaryMock from "./mocks/mainDomSummary.mock";
  */
 
 interface VirtualWebConfig {
-    mainVirtualDomId: number,
-    mainPathname: string
+    virtualDom: {
+        id: number,
+        pathname: string
+    }
 }
 
 
@@ -24,7 +26,7 @@ interface MainDomSummary {
 export interface VirtualWebEntityProps {
     host: string
     mainDomSummary?: MainDomSummary | null
-    webConfig: VirtualWebConfig
+    virtualWebConfig: VirtualWebConfig
     id: number
 }
 
@@ -32,18 +34,18 @@ export default class VirtualWebEntity {
 
     vdomStore: VirtualDomStore
     host: string
-    webConfig: VirtualWebConfig
+    virtualWebConfig: VirtualWebConfig
     mainDomSummary?: MainDomSummary | null = null
     id: number
 
     constructor(
         private openAi: OpenAi,
         private puppeteer: PuppeterService,
-        { host, mainDomSummary, webConfig, id }: VirtualWebEntityProps) {
+        { host, mainDomSummary, virtualWebConfig, id }: VirtualWebEntityProps) {
 
         this.host = URLUtility.normalizeHost(host)
 
-        this.webConfig = webConfig
+        this.virtualWebConfig = virtualWebConfig
 
         this.id = id
 
@@ -52,6 +54,9 @@ export default class VirtualWebEntity {
         this.vdomStore = new VirtualDomStore(this.openAi, this.puppeteer, { host })
     }
 
+    setHost(host: string) {
+        this.host = URLUtility.normalizeHost(host)
+    }
 
     async setMainDomSummary(summary: MainDomSummary) {
         return this.mainDomSummary = summary
@@ -66,10 +71,10 @@ export default class VirtualWebEntity {
 
         return mainDomSummaryMock
 
-        const snapshot = await this.vdomStore.getOrCreate(this.webConfig.mainVirtualDomId, async (create) => {
+        const snapshot = await this.vdomStore.getOrCreate(this.virtualWebConfig.virtualDom.id, async (create) => {
             return create({
-                pathname: this.webConfig.mainPathname,
-                id: this.webConfig.mainVirtualDomId
+                pathname: this.virtualWebConfig.virtualDom.pathname,
+                id: this.virtualWebConfig.virtualDom.id
             })
         })
 
