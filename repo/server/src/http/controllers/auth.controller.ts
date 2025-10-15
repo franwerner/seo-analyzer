@@ -5,7 +5,8 @@ import { Request, Response } from "express"
 export default class AuthController {
 
     static async login(req: Request, res: Response) {
-        const password = req.body.password as string
+
+        const { password } = req.body
         const {
             token,
             expires_in
@@ -20,5 +21,9 @@ export default class AuthController {
             maxAge: expires_in
         })
         res.json({ message: "Login successful" })
+    }
+
+    static async ping(_req: Request, res: Response) {
+        res.json({ message: "session valid" })
     }
 }
