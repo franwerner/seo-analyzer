@@ -46,13 +46,16 @@ class VirtualWebStore {
         return this.lockStore.lock(id, () => fn(this.create.bind(this)))
     }
 
-    getOrThrow(id: number) {
-        const virtualWeb = this.get(id)
+    async getOrThrow(id: number) {
+        const virtualWeb = await this.get(id)
         if (!virtualWeb) throw new VirtualWebNotFound()
         return virtualWeb
     }
 
+
     get(id: number) {
+        const locked = this.lockStore.locked.get(id)
+        if (locked) return locked
         const virtualWeb = this.store.get(id)
         virtualWeb && this.touch(virtualWeb)
         return virtualWeb

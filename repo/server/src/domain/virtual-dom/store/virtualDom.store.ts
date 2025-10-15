@@ -42,11 +42,13 @@ export default class VirtualDomStore {
     }
 
     get(id: number) {
+        const locked = this.lockStore.getLock(id)
+        if (locked) return locked
         return this.store.get(id)
     }
 
-    getOrThrow(id: number) {
-        const virtualDomExists = this.store.get(id)
+    async getOrThrow(id: number) {
+        const virtualDomExists = await this.get(id)
         if (!virtualDomExists) throw new VirtualDomNotFountError()
         return virtualDomExists
     }
