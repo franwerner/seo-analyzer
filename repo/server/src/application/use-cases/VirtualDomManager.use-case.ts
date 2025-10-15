@@ -1,12 +1,12 @@
 import VirtualDomRepository from "@/application/repositories/VirtualDom.repository"
 import { VirtualDomNotFountError } from "@/domain/virtual-dom/errors"
-import createVirtualPageScheme, { CreateVirtualPageDTO } from "../dtos/CreateVirtualPage.dto"
+import createAnalyzeSinglePageScheme, { CreateAnalyzeSinglePageDto } from "../dtos/CreateAnalyzeSingleDom.dto"
+import createVirtualDomScheme, { CreateVirtualDomDTO } from "../dtos/CreateVirtualDom.dto"
+import VirtualDomAnalysisRepository from "../repositories/VirtualDomAnalysis.repository"
 import ValidateDTO from "../shared/decorators/ValidateDTO.decorator"
 import VirtualWebManagerService from "./VirtualWebManager.use-case"
-import createAnalyzeSinglePageScheme, { CreateAnalyzeSinglePageDto } from "../dtos/CreateAnalyzeSinglePage.dto"
-import VirtualDomAnalysisRepository from "../repositories/VirtualDomAnalysis.repository"
 
-export default class VirtualPageManagerUseCase {
+export default class VirtualDomManagerUseCase {
     constructor(
         private virtualWebManagerService: VirtualWebManagerService,
         private repositories: {
@@ -15,10 +15,10 @@ export default class VirtualPageManagerUseCase {
         }
     ) { }
 
-    async getVirtualPageOrThrow(props: { virtualWebId: number, virtualDomId: number }) {
+    async getVirtualDomOrThrow(props: { virtualWebId: number, virtualDomId: number }) {
         const { virtualWebId, virtualDomId } = props
         const virtualWeb = await this.virtualWebManagerService.getVirtualWebOrThrow(virtualWebId)
-        const virtualPage = await virtualWeb.vdomStore.getOrCreate(virtualDomId, async (create) => {
+        const virtualDom = await virtualWeb.vdomStore.getOrCreate(virtualDomId, async (create) => {
             const virtualDom = await this.repositories.virtualDomRepository.findByVirtualWebAndDom(props)
             if (!virtualDom) throw new VirtualDomNotFountError()
             return create({
@@ -28,28 +28,28 @@ export default class VirtualPageManagerUseCase {
         })
         return {
             virtualWeb,
-            virtualPage
+            virtualDom
         }
     }
 
     @ValidateDTO(createAnalyzeSinglePageScheme)
-    async createSinglePageAnalyze({
+    async createSingleDomAnalyze({
         virtualWebId,
         virtualDomId,
         validationsSelected
     }: CreateAnalyzeSinglePageDto) {
 
         const {
-            virtualPage,
+            virtualDom,
             virtualWeb
-        } = await this.getVirtualPageOrThrow({
+        } = await this.getVirtualDomOrThrow({
             virtualWebId,
             virtualDomId
         })
 
         const summary = virtualWeb.getOrThrowMainDomSummary()
 
-        const { issues, tokens, model } = await virtualPage.analyze(summary.content, validationsSelected)
+        const { issues, tokens, model } = await virtualDom.analyze(summary.content, validationsSelected)
 
         await this.repositories.virtualDomAnalysisRepository.createAnalysisAggreate({
             virtualDomId,
@@ -66,11 +66,12 @@ export default class VirtualPageManagerUseCase {
         }
     }
 
-    @ValidateDTO(createVirtualPageScheme)
-    async registerVirtualPage({
+    @ValidateDTO(createVirtualDomScheme)
+    async registerVirtualDom({
         virtualWebId,
         pathname
-    }: CreateVirtualPageDTO) {
+    }: CreateVirtualDomDTO) {
+
         const virtualDom = await this.repositories.virtualDomRepository.create({
             virtualWebId,
             pathname,
