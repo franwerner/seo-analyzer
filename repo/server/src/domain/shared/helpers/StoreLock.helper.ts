@@ -8,6 +8,7 @@
  * la misma promesa/resultado. Se libera el lock cuando la promesa termina.
  * Basicamente resuleve problemas de condicion de carrera asociada a un mismo recurso.
  *
+ * 
  */
 
 export default class StoreLockHelper<T> {
@@ -29,6 +30,9 @@ export default class StoreLockHelper<T> {
         return promise
     }
 
+    getLock(id: number) {
+        return this.locked.get(id)
+    }
 
     private unlock(id: number) {
         this.locked.delete(id)
