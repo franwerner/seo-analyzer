@@ -1,4 +1,4 @@
-import { ApiErrorResponse, ApiSuccessResponse } from "@/src/common/types/ApiResponse.interface"
+import { ApiSuccessResponse } from "@/src/common/types/ApiResponse.interface"
 
 
 export class ErrorResponse extends Error {
@@ -6,7 +6,7 @@ export class ErrorResponse extends Error {
 
 }
 
-export default async function getApiResponse<T>(response: Response): Promise<ApiSuccessResponse<T> | ApiErrorResponse> {
+export default async function getApiResponse<T>(response: Response): Promise<ApiSuccessResponse<T>> {
     const isJson = response.headers.get('Content-Type')?.includes('application/json')
 
     const json = await response.json()

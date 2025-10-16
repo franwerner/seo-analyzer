@@ -1,7 +1,5 @@
-export default function WebPanel() {
-    return (
-        <div>
-            <h1>Web Panel</h1>
-        </div>
-    )
+import VirtualWeb from "@/src/features/virtualWeb/containers/virtualWeb.container";
+
+export default function VirtualWebPanel() {
+    return <VirtualWeb />
 }

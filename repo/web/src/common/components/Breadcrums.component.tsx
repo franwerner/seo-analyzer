@@ -2,7 +2,6 @@
 import { BreadcrumbItem, Breadcrumbs as HerouiBreadcrumbs } from "@heroui/breadcrumbs";
 import { usePathname } from "next/navigation";
 
-
 export default function Breadcrumbs() {
     const pathname = usePathname()
     if (pathname === "/") {

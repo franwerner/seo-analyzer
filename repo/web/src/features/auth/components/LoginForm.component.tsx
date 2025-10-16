@@ -6,10 +6,7 @@ import { Form } from "@heroui/form";
 import { Input } from "@heroui/input";
 import useLogin from "../hooks/useLogin.hook";
 
-
-
 export default function LoginForm() {
-
     const { isPending, mutate } = useLogin()
 
     function handleSubmit(form: NormalizedFormDataType) {
