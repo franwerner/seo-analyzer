@@ -1,4 +1,4 @@
-import { Usage } from "@packages/common";
+import { Usage } from "@seo-analyzer/common";
 export default function mergeUsage(...usages: (Usage | undefined)[]) {
 
     return usages.reduce<Usage>((acc, usage) => {

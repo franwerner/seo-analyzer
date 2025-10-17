@@ -1,6 +1,6 @@
 import { ApiErrorResponse, ApiSuccessResponse } from "@/src/common/types/ApiResponse.interface"
 import getApiResponse from "@/src/common/utils/getApiResponse.util"
-import { GetVirtualDomsResponseDto } from "@packages/common"
+import { GetVirtualDomsResponseDto } from "@seo-analyzer/common"
 import { useInfiniteQuery } from "@tanstack/react-query"
 
 export default function useGetVirtualDoms(virtualWebId: number) {

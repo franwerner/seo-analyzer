@@ -2,7 +2,7 @@
 import Container from "@/src/common/components/Container.component"
 import { Button } from "@heroui/button"
 import { Spinner } from "@heroui/spinner"
-import { VirtualDom } from "@packages/common"
+import { VirtualDom } from "@seo-analyzer/common"
 import Link from "next/link"
 import { useParams } from "next/navigation"
 import { memo, useState } from "react"

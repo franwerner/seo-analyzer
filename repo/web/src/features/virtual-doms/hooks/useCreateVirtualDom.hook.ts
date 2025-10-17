@@ -1,6 +1,6 @@
 import { ApiErrorResponse, ApiSuccessResponse } from "@/src/common/types/ApiResponse.interface";
 import getApiResponse from "@/src/common/utils/getApiResponse.util";
-import { CreateVirtualDomDTO, CreateVirtualDomResponseDTO, GetVirtualDomsResponseDto } from "@packages/common";
+import { CreateVirtualDomDTO, CreateVirtualDomResponseDTO, GetVirtualDomsResponseDto } from "@seo-analyzer/common";
 import { InfiniteData, useMutation, useQueryClient } from "@tanstack/react-query";
 
 export default function useCreateVirtualDom() {

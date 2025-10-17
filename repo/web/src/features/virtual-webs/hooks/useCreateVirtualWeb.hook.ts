@@ -2,7 +2,7 @@
 import { ApiErrorResponse, ApiSuccessResponse } from "@/src/common/types/ApiResponse.interface"
 import getApiResponse from "@/src/common/utils/getApiResponse.util"
 import { InfiniteData, useMutation, useQueryClient } from "@tanstack/react-query"
-import { CreateVirtualWebDTO, GetVirtualWebsResponseDTO } from "@packages/common";
+import { CreateVirtualWebDTO, GetVirtualWebsResponseDTO } from "@seo-analyzer/common";
 
 
 export default function useCreateVirtualWeb() {

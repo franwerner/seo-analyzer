@@ -1,7 +1,7 @@
 import { ApiErrorResponse, ApiSuccessResponse } from "@/src/common/types/ApiResponse.interface";
 import getApiResponse from "@/src/common/utils/getApiResponse.util";
 import mergeUsage from "@/src/common/utils/mergeUsage.util";
-import { CreateVirtualWebSummaryResponseDTO, GetVirtualWebDetailsResponseDTO } from "@packages/common";
+import { CreateVirtualWebSummaryResponseDTO, GetVirtualWebDetailsResponseDTO } from "@seo-analyzer/common";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 export default function useCreateVirtualWebSummary(virtualWebId: number) {

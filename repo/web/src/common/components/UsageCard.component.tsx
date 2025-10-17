@@ -1,4 +1,4 @@
-import { Usage } from "@packages/common";
+import { Usage } from "@seo-analyzer/common";
 import formatUSD from "../utils/formatUSD.util";
 
 

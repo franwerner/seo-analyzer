@@ -1,6 +1,6 @@
 import { useMutation } from "@tanstack/react-query"
 import getApiResponse from "@/src/common/utils/getApiResponse.util"
-import { UpdateVirtualWebDTO } from "@packages/common"
+import { UpdateVirtualWebDTO } from "@seo-analyzer/common"
 
 export default function useUpdateVirtualWeb() {
 

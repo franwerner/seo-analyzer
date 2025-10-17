@@ -4,7 +4,7 @@ import { Modal, ModalBody, ModalContent, ModalHeader } from "@heroui/modal";
 import useCreateVirtualDom from "../hooks/useCreateVirtualDom.hook";
 import { Input } from "@heroui/input";
 import { useState } from "react";
-import { createVirtualDomScheme } from "@packages/common";
+import { createVirtualDomScheme } from "@seo-analyzer/common";
 import normalizeFormData, { NormalizedFormDataType } from "@/src/common/utils/normalizedFormData.util";
 import InputErrorList from "@/src/common/components/InputErrorList.component";
 import { useParams } from "next/navigation";

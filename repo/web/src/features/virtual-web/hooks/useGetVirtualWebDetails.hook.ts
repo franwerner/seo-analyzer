@@ -1,6 +1,6 @@
 import { ApiErrorResponse, ApiSuccessResponse } from "@/src/common/types/ApiResponse.interface";
 import getApiResponse from "@/src/common/utils/getApiResponse.util";
-import { GetVirtualWebDetailsResponseDTO } from "@packages/common";
+import { GetVirtualWebDetailsResponseDTO } from "@seo-analyzer/common";
 import { useQuery } from "@tanstack/react-query";
 
 export default function useGetVirtualWebDetails(virtualWebId: number) {

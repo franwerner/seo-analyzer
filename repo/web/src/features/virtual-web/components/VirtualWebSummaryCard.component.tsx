@@ -1,6 +1,6 @@
 "use client"
 import { Button } from "@heroui/button";
-import { VirtualWebSummary } from "@packages/common";
+import { VirtualWebSummary } from "@seo-analyzer/common";
 import useCreateVirtualWebSummary from "../hooks/useCreateVirtualWebSummary.hook";
 import { useParams } from "next/navigation";
 

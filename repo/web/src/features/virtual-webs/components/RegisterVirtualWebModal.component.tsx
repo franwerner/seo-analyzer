@@ -5,7 +5,7 @@ import { Button } from "@heroui/button"
 import { Form } from "@heroui/form"
 import { Input } from "@heroui/input"
 import { Modal, ModalBody, ModalContent, ModalHeader } from "@heroui/modal"
-import { CreateVirtualWebDTO, createVirtualWebScheme } from "@packages/common"
+import { CreateVirtualWebDTO, createVirtualWebScheme } from "@seo-analyzer/common"
 import { useState } from "react"
 import useCreateVirtualWeb from "../hooks/useCreateVirtualWeb.hook"
 

@@ -3,12 +3,11 @@ import Container from "@/src/common/components/Container.component";
 import { Button } from "@heroui/button";
 import { Link as HLink } from "@heroui/link";
 import { Spinner } from "@heroui/spinner";
-import { VirtualWeb } from "@packages/common";
+import { usageScheme, VirtualWeb } from "@seo-analyzer/common";
 import Link from "next/link";
 import { memo, useState } from "react";
 import RegisterVirtualWebModal from "./components/RegisterVirtualWebModal.component";
 import useGetVirtualWebs from "./hooks/useGetWebs.hook";
-
 
 const VirtualWebItem = memo(({ web }: { web: VirtualWeb }) => {
     return (

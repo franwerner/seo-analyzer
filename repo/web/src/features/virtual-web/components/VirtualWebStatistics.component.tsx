@@ -1,6 +1,6 @@
 import UsageCard from "@/src/common/components/UsageCard.component";
 import { Button } from "@heroui/button";
-import { GetVirtualWebDetailsResponseDTO } from "@packages/common";
+import { GetVirtualWebDetailsResponseDTO } from "@seo-analyzer/common";
 import Link from "next/link";
 import { useParams } from "next/navigation";
 
