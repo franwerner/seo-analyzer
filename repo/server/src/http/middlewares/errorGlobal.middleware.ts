@@ -11,7 +11,7 @@ const errorGlobal = (err: any, _req: Request, res: Response, _next: NextFunction
         new HTTPError({
             message: "Error validating schema",
             status_code: 400,
-            type: "ValidationError"
+            error_type: "ValidationError"
         }).response(res)
     } else {
         HTTPError.toHTTPError(err).response(res)

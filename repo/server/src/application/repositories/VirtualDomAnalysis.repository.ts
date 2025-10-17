@@ -1,11 +1,11 @@
-import { AnalysisIssue, PrismaClient, ResourceUsage } from "@prisma/client";
+import { AIUsage, AnalysisIssue, PrismaClient } from "@prisma/client";
 
 
 
 interface CreateAggregate {
     virtualDomId: number,
     analysisIssues: Array<Omit<AnalysisIssue, 'id' | 'virtualDomAnalysisId'> & { traceIds: Array<string> }>
-    resourceUsage: Omit<ResourceUsage, 'id'>
+    AIUsage: Omit<AIUsage, 'id'>
 }
 
 export default class VirtualDomAnalysisRepository {
@@ -18,7 +18,7 @@ export default class VirtualDomAnalysisRepository {
 
     createAnalysisAggreate({
         analysisIssues,
-        resourceUsage,
+        AIUsage,
         ...data
     }: CreateAggregate) {
 
@@ -29,8 +29,8 @@ export default class VirtualDomAnalysisRepository {
                     ...data,
                     virtualDomAnalysisUsage: {
                         create: {
-                            resourceUsage: {
-                                create: resourceUsage
+                            AIUsage: {
+                                create: AIUsage
                             }
                         }
                     },

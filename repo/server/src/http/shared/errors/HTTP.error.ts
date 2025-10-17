@@ -4,25 +4,25 @@ import HTTPErrorMap from "../constant/HTTPErrorMap.constant"
 
 export interface HTTPErrorProps extends Omit<CustomErrorProps, 'name' | 'type'> {
     status_code?: number
-    type?: string
+    error_type?: string
 }
 
 export default class HTTPError extends CustomError {
     status_code: number
-    type: string
-    constructor({ status_code = 500, type = "HTTPError", ...props }: HTTPErrorProps) {
+    error_type: string
+    constructor({ status_code = 500, error_type = "HTTPError", ...props }: HTTPErrorProps) {
         super({
             ...props,
             name: "HTTPError",
         })
         this.status_code = status_code
-        this.type = type
+        this.error_type = error_type
     }
 
     response(res: Response) {
         res.status(this.status_code).json({
             message: this.message,
-            type: this.type
+            error_type: this.error_type
         })
     }
 
@@ -31,14 +31,14 @@ export default class HTTPError extends CustomError {
         if (HTTPErrorMap[error.name]) {
             return new HTTPError({
                 status_code: HTTPErrorMap[error.name],
-                type: error.name,
+                error_type: error.name,
                 message: error.message,
             })
         } else {
             return new HTTPError({
                 message: `Unknown error occurred - ${error}`,
                 status_code: 500,
-                type: "UnknownError"
+                error_type: "UnknownError"
             })
         }
 

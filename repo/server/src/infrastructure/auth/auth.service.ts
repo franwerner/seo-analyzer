@@ -12,7 +12,7 @@ class AuthService {
             throw new HTTPError({
                 message: "Invalid password",
                 status_code: 401,
-                type: "InvalidPasswordError"
+                error_type: "InvalidPasswordError"
             })
         }
     }
@@ -33,7 +33,7 @@ class AuthService {
             throw new HTTPError({
                 message: "Invalid session",
                 status_code: 401,
-                type: "InvalidSessionError"
+                error_type: "InvalidSessionError"
             })
         }
     }

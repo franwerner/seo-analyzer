@@ -4,9 +4,7 @@ import VirtualWebController from "../controllers/virtualWeb.controller"
 
 const virtualWebRouter = Router()
 
-virtualWebRouter.post("/register", authMiddleware, VirtualWebController.registerVirtualWeb)
-virtualWebRouter.post("/create-single-analysis", authMiddleware, VirtualWebController.createAnalyzeSinglePage)
-virtualWebRouter.get("/analysis", authMiddleware, VirtualWebController.getSinglePageAnalysis)
-virtualWebRouter.get("/page", authMiddleware, VirtualWebController.getPage)
+virtualWebRouter.post("/create-summary/:virtualWebId", authMiddleware, VirtualWebController.createVirtualWebSummary)
+virtualWebRouter.put("/update", authMiddleware, VirtualWebController.updateVirtualWeb)
 
 export default virtualWebRouter

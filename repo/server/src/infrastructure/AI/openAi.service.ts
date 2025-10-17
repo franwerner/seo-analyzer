@@ -1,20 +1,38 @@
 import ValidationType from "@/domain/virtual-dom/types/ValidationType.enum";
 import WordsSchema from "@/infrastructure/AI/schemas/words.schema";
+import { Usage } from "@packages/common";
 import OpenAI from "openai";
 import { zodTextFormat } from "openai/helpers/zod";
-import traceIdsSchema from "./schemas/traceIds.schema";
+import { GPT5MiniModel, Model } from "./constant/models.constant";
 import { issuesWithOutTypeSchema } from "./schemas/issue.schema";
+import traceIdsSchema from "./schemas/traceIds.schema";
 
-class OpenAi {
+interface TokenUsage {
+  input: number,
+  output: number
+}
+
+
+class OpenAiService {
   openAI: OpenAI
-  model: string = "gpt-5-mini"
-  constructor() {
+  constructor(public model: Model = new GPT5MiniModel()) {
     this.openAI = new OpenAI({
       apiKey: process.env.OPENAI_KEY,
     })
   }
 
-  static getTokenUsage(response: OpenAI.Responses.Response) {
+  calculateUsageTokens(usageTokens: TokenUsage): Usage {
+    const { pricing } = this.model
+    const priceInput = (usageTokens.input / 1_000_000) * pricing.input
+    const priceOutput = (usageTokens.output / 1_000_000) * pricing.output
+    return {
+      input: priceInput,
+      output: priceOutput,
+      total: priceInput + priceOutput
+    }
+  }
+
+  static getTokenUsage(response: OpenAI.Responses.Response): TokenUsage {
     return {
       input: response.usage?.input_tokens || 0,
       output: response.usage?.output_tokens || 0
@@ -23,21 +41,20 @@ class OpenAi {
 
   async createBasicResponse(input: string, instructions: string) {
     const response = await this.openAI.responses.create({
-      model: this.model,
+      model: this.model.name,
       instructions,
       input,
     })
     return {
       response: response.output_text,
-      tokens: OpenAi.getTokenUsage(response),
-      model: this.model
+      tokens: OpenAiService.getTokenUsage(response),
     }
   }
 
 
   async generateIssueTraceIds(input: string, instructions: string) {
     const response = await this.openAI.responses.create({
-      model: this.model,
+      model: this.model.name,
       instructions,
       input,
       text: {
@@ -47,14 +64,13 @@ class OpenAi {
 
     return {
       traceIds: traceIdsSchema.parse(JSON.parse(response.output_text)).traceIds,
-      tokens: OpenAi.getTokenUsage(response),
-      model: this.model
+      tokens: OpenAiService.getTokenUsage(response),
     }
   }
 
   async generateIssueWords(input: string, instructions: string) {
     const response = await this.openAI.responses.create({
-      model: this.model,
+      model: this.model.name,
       instructions,
       input,
       text: {
@@ -64,8 +80,7 @@ class OpenAi {
 
     return {
       words: WordsSchema.parse(JSON.parse(response.output_text)).words,
-      tokens: OpenAi.getTokenUsage(response),
-      model: this.model
+      tokens: OpenAiService.getTokenUsage(response),
     }
   }
 
@@ -77,7 +92,7 @@ class OpenAi {
   ) {
 
     const response = await this.openAI.responses.create({
-      model: this.model,
+      model: this.model.name,
       instructions,
       input,
       text: {
@@ -90,12 +105,11 @@ class OpenAi {
 
     return {
       issues,
-      tokens: OpenAi.getTokenUsage(response),
-      model: this.model
+      tokens: OpenAiService.getTokenUsage(response),
     }
 
   }
 
 }
 
-export default OpenAi
+export default OpenAiService

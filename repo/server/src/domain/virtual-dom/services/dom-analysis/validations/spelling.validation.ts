@@ -102,7 +102,7 @@ export default class SpellingValidation extends ValidationUtility {
             const toArray = Array.from(words)
             this.addIssue({
                 message: `Words [${toArray.join(", ")}] are not correct`,
-                type: ValidationType.STRUCTURE,
+                type: ValidationType.SPELLING,
                 tag: part.tag,
                 traceIds: [part.traceId]
             })

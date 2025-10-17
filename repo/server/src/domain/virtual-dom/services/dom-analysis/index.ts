@@ -93,7 +93,7 @@ export default class DomAnalysis {
             const resourceUsage = await DomAnalysis.validationInstances(validationInstances)
             return {
                 ...resourceUsage,
-                model: this.openAi.model
+                model: this.openAi.model.name
             }
         } catch (error) {
             throw new VirtualDomAnalysisError(error)

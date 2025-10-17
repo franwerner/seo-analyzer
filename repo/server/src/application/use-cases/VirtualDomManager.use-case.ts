@@ -1,7 +1,6 @@
 import VirtualDomRepository from "@/application/repositories/VirtualDom.repository"
 import { VirtualDomNotFountError } from "@/domain/virtual-dom/errors"
-import createAnalyzeSinglePageScheme, { CreateAnalyzeSinglePageDto } from "../dtos/CreateAnalyzeSingleDom.dto"
-import createVirtualDomScheme, { CreateVirtualDomDTO } from "../dtos/CreateVirtualDom.dto"
+import { CreateAnalyzeSinglePageDto, createAnalyzeSinglePageScheme, CreateVirtualDomDTO, createVirtualDomScheme } from "@packages/common"
 import VirtualDomAnalysisRepository from "../repositories/VirtualDomAnalysis.repository"
 import ValidateDTO from "../shared/decorators/ValidateDTO.decorator"
 import VirtualWebManagerService from "./VirtualWebManager.use-case"
@@ -47,42 +46,24 @@ export default class VirtualDomManagerUseCase {
             virtualDomId
         })
 
-        const summary = virtualWeb.getOrThrowMainDomSummary()
+        const summary = virtualWeb.getOrThrowVirtualWebSummary()
 
         const { issues, tokens, model } = await virtualDom.analyze(summary.content, validationsSelected)
 
         await this.repositories.virtualDomAnalysisRepository.createAnalysisAggreate({
             virtualDomId,
             analysisIssues: issues,
-            resourceUsage: {
+            AIUsage: {
                 ...tokens,
-                source: model
+                model: model
             }
         })
 
+        //Falta DTO de respueta
         return {
             issues,
             tokens
         }
-    }
-
-    @ValidateDTO(createVirtualDomScheme)
-    async registerVirtualDom({
-        virtualWebId,
-        pathname
-    }: CreateVirtualDomDTO) {
-
-        const virtualDom = await this.repositories.virtualDomRepository.create({
-            virtualWebId,
-            pathname,
-        })
-        const virtualWeb = await this.virtualWebManagerService.getVirtualWebOrThrow(virtualWebId)
-        return virtualWeb.vdomStore.getOrCreate(virtualDom.id, async (create) => {
-            return create({
-                id: virtualDom.id,
-                pathname: virtualDom.pathname
-            })
-        })
     }
 
 }

@@ -18,6 +18,7 @@
   "license": "ISC",
   "description": "",
   "dependencies": {
+    "@packages/common": "file:../../packages/common",
     "@prisma/client": "^6.17.0",
     "cookie-parser": "^1.4.7",
     "cors": "^2.8.5",

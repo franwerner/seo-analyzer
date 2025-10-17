@@ -18,7 +18,7 @@ export class Chunk {
 }
 
 /**
- * @Funcionalidad futura:
+ * @edge_case :
  * Actualmente, el chunk almacena correctamente hasta el límite de palabras.
  * Sin embargo, si un texto tiene más de 500 palabras, se almacena en un único chunk sin fragmentarse.
  * Esto sucede porque al verificar si el último chunk + las palabras del nuevo texto supera el límite,

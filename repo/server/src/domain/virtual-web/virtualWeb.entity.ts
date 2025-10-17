@@ -1,7 +1,8 @@
 import URLUtility from "@/domain/shared/utils/URL.util";
 import VirtualDomStore from "@/domain/virtual-dom/store/virtualDom.store";
-import OpenAi from "@/infrastructure/AI/openAi.service";
+import OpenAiService from "@/infrastructure/AI/openAi.service";
 import PuppeterService from "@/infrastructure/scrapper/puppeter.service";
+import { VirtualWebSummary } from "@packages/common";
 import VirtualDomSummaryNotFound from "../virtual-dom/errors/VirtualDomSummaryNotFound.error";
 import mainDomSummaryMock from "./mocks/mainDomSummary.mock";
 
@@ -18,14 +19,9 @@ interface VirtualWebConfig {
 }
 
 
-interface MainDomSummary {
-    content: string,
-    id: number
-}
-
 export interface VirtualWebEntityProps {
     host: string
-    mainDomSummary?: MainDomSummary | null
+    virtualWebSummary?: VirtualWebSummary | null
     virtualWebConfig: VirtualWebConfig
     id: number
 }
@@ -35,13 +31,13 @@ export default class VirtualWebEntity {
     vdomStore: VirtualDomStore
     host: string
     virtualWebConfig: VirtualWebConfig
-    mainDomSummary?: MainDomSummary | null = null
+    virtualWebSummary?: VirtualWebSummary | null = null
     id: number
 
     constructor(
-        private openAi: OpenAi,
+        private AiService: OpenAiService,
         private puppeteer: PuppeterService,
-        { host, mainDomSummary, virtualWebConfig, id }: VirtualWebEntityProps) {
+        { host, virtualWebSummary, virtualWebConfig, id }: VirtualWebEntityProps) {
 
         this.host = URLUtility.normalizeHost(host)
 
@@ -49,25 +45,25 @@ export default class VirtualWebEntity {
 
         this.id = id
 
-        this.mainDomSummary = mainDomSummary
+        this.virtualWebSummary = virtualWebSummary
 
-        this.vdomStore = new VirtualDomStore(this.openAi, this.puppeteer, { host })
+        this.vdomStore = new VirtualDomStore(this.AiService, this.puppeteer, { host })
     }
 
     setHost(host: string) {
         this.host = URLUtility.normalizeHost(host)
     }
 
-    async setMainDomSummary(summary: MainDomSummary) {
-        return this.mainDomSummary = summary
+    async setVirtualWebSummary(summary: VirtualWebSummary) {
+        return this.virtualWebSummary = summary
     }
 
-    getOrThrowMainDomSummary() {
-        if (!this.mainDomSummary) throw new VirtualDomSummaryNotFound()
-        return this.mainDomSummary
+    getOrThrowVirtualWebSummary() {
+        if (!this.virtualWebSummary) throw new VirtualDomSummaryNotFound()
+        return this.virtualWebSummary
     }
 
-    async generateMainDomSummary() {
+    async generateWebSummary() {
 
         return mainDomSummaryMock
 
@@ -83,7 +79,7 @@ export default class VirtualWebEntity {
 
         const texts = generatedSnapshot.vDomContext.innerTextChunks.getChunksPartsTexts()
 
-        const { response, ...rest } = await this.openAi.createBasicResponse(
+        const { response, ...rest } = await this.AiService.createBasicResponse(
             JSON.stringify(texts),
             `
         Instrucciones:
@@ -104,7 +100,8 @@ export default class VirtualWebEntity {
         )
 
         return {
-            summary: response,
+            content: response,
+            model: this.AiService.model.name,
             ...rest
         }
 

@@ -38,7 +38,6 @@ class VirtualDomEntity {
 
 
         return analysisMock
-
         const snapshot = await this.getOrGenerateSnapshot()
 
         return await this.domAnalysis.runAnalysis({
