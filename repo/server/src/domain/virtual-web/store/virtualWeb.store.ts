@@ -5,8 +5,8 @@ import VirtualWebNotFound from "@/domain/virtual-web/errors/VirtualWebNotFount.e
 import VirtualWebEntity, { VirtualWebEntityProps } from "@/domain/virtual-web/virtualWeb.entity"
 import StoreLockHelper from "@/domain/shared/helpers/StoreLock.helper"
 
-const timeoutDuration = 1000 * 60 * 5 // 5M
-const maxVDomDuration = 1000 * 60 * 30 //30M
+const timeoutDuration = 1000 * 60 * 0.1 // 5M
+const maxVDomDuration = 1000 * 60 * 0.5 //30M
 
 interface CreateVirtualWebProps extends Omit<VirtualWebEntityProps, "url"> {
     host: string
@@ -26,7 +26,6 @@ class VirtualWebStore {
     constructor(
         private openAi: OpenAi,
         private puppeteer: PuppeterService,
-
     ) { }
 
 
@@ -75,24 +74,24 @@ class VirtualWebStore {
     }
 
     private scheduleCleanup() {
-        // if (this.timeout !== null) return
-        // this.timeout = setTimeout(() => {
-        //     const now = Date.now()
-        //     this.virtualWebLastTouch.forEach((lastTouch, vWeb) => {
-        //         if (now - lastTouch >= maxVDomDuration) {
-        //             this.virtualWebLastTouch.delete(vWeb)
-        //             /**
-        //              * Aca tendriamos que crear un metood en el VirtualWeb que se encargue de verificar si hay algun virtualDom con un analisis activo.
-        //              */
-        //             this.store.delete(vWeb.url.host)
-        //             console.log(`VirtualWeb ${vWeb.url.host} removed for inactivity`)
-        //         }
-        //     })
-        //     this.timeout = null
-        //     if (this.virtualWebLastTouch.size > 0) {
-        //         this.scheduleCleanup()
-        //     }
-        // }, timeoutDuration)
+        if (this.timeout !== null) return
+        this.timeout = setTimeout(() => {
+            const now = Date.now()
+            this.virtualWebLastTouch.forEach((lastTouch, vWeb) => {
+                if (now - lastTouch >= maxVDomDuration) {
+                    this.virtualWebLastTouch.delete(vWeb)
+                    /**
+                     * Aca tendriamos que crear un metood en el VirtualWeb que se encargue de verificar si hay algun virtualDom con un analisis activo.
+                     */
+                    this.store.delete(vWeb.id)
+                    console.log(`VirtualWeb ${vWeb.host} removed for inactivity`)
+                }
+            })
+            this.timeout = null
+            if (this.virtualWebLastTouch.size > 0) {
+                this.scheduleCleanup()
+            }
+        }, timeoutDuration)
     }
 
 }
