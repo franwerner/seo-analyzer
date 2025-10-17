@@ -9,6 +9,7 @@ const nextConfig = {
             {
                 source: "/backend/:path*",
                 destination: `${backendUrl}/:path*`,
+                basePath: false
             },
         ];
     },
