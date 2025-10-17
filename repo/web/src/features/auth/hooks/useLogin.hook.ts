@@ -7,7 +7,7 @@ export default function useLogin() {
     const router = useRouter()
     return useMutation<ApiSuccessResponse, ApiErrorResponse, string>({
         mutationFn: async (password: string) => {
-            const response = await fetch("/api/auth/login", {
+            const response = await fetch("/backend/auth/login", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",

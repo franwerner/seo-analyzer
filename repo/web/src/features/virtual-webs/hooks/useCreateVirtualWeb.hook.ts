@@ -10,7 +10,7 @@ export default function useCreateVirtualWeb() {
 
     return useMutation<ApiSuccessResponse<CreateVirtualWebDTO>, ApiErrorResponse, CreateVirtualWebDTO>({
         mutationFn: async (props) => {
-            const response = await fetch("/api/virtual-web-stored/create", {
+            const response = await fetch("/backend/virtual-web-stored/create", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",

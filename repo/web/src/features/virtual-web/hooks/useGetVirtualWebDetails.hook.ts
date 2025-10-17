@@ -6,7 +6,7 @@ import { useQuery } from "@tanstack/react-query";
 export default function useGetVirtualWebDetails(virtualWebId: number) {
     return useQuery<ApiSuccessResponse<GetVirtualWebDetailsResponseDTO>, ApiErrorResponse>({
         queryFn: async () => {
-            const response = await fetch(`/api/virtual-web-stored/details/${virtualWebId}`)
+            const response = await fetch(`/backend/virtual-web-stored/details/${virtualWebId}`)
             return await getApiResponse(response)
         },
         queryKey: ["virtual-web", virtualWebId]

@@ -8,7 +8,7 @@ export default function useCreateVirtualWebSummary(virtualWebId: number) {
     const queryClient = useQueryClient()
     return useMutation<ApiSuccessResponse<CreateVirtualWebSummaryResponseDTO>, ApiErrorResponse>({
         mutationFn: async () => {
-            const response = await fetch(`/api/virtual-web/create-summary/${virtualWebId}`, {
+            const response = await fetch(`/backend/virtual-web/create-summary/${virtualWebId}`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json"

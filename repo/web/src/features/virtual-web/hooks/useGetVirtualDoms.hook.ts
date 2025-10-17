@@ -7,7 +7,7 @@ export default function useGetVirtualDoms(virtualWebId: number) {
     return useInfiniteQuery<ApiSuccessResponse<GetVirtualDomsResponseDto>, ApiErrorResponse>({
         queryKey: ["virtual-dom", virtualWebId],
         queryFn: async ({ pageParam = 0 }) => {
-            const response = await fetch(`/api/virtual-dom-stored/all/${virtualWebId}?skip=${pageParam}`)
+            const response = await fetch(`/backend/virtual-dom-stored/all/${virtualWebId}?skip=${pageParam}`)
             return await getApiResponse(response)
         },
         getNextPageParam: ({ result }) => {

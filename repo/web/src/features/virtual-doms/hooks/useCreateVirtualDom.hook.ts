@@ -10,7 +10,7 @@ export default function useCreateVirtualDom() {
         mutationKey: ["virtual-dom"],
         mutationFn: async (props) => {
             console.log(props)
-            const res = await fetch("/api/virtual-dom-stored/create", {
+            const res = await fetch("/backend/virtual-dom-stored/create", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json"

@@ -8,7 +8,7 @@ export default function useGetVirtualWebs() {
     return useInfiniteQuery<ApiSuccessResponse<GetVirtualWebsResponseDTO>, ApiErrorResponse>({
         queryKey: ["virtual-webs"],
         queryFn: async ({ pageParam = 0 }) => {
-            const response = await fetch(`/api/virtual-web-stored/all?skip=${pageParam}`)
+            const response = await fetch(`/backend/virtual-web-stored/all?skip=${pageParam}`)
             return await getApiResponse(response)
         },
         getNextPageParam: ({ result }) => {

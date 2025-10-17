@@ -6,7 +6,7 @@ export default function useUpdateVirtualWeb() {
 
     return useMutation({
         mutationFn: async (props: UpdateVirtualWebDTO) => {
-            const response = await fetch("/api/virtual-web/edit", {
+            const response = await fetch("/backend/virtual-web/edit", {
                 method: "PUT",
                 headers: {
                     "Content-Type": "application/json",
