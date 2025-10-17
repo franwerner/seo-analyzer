@@ -8,7 +8,7 @@ import SpellingValidation from "./validations/spelling.validation";
 import StructureValidation from "./validations/structure.validation";
 import { VirtualDomAnalysisError, VirtualDomAnalysisInProgressError } from "../../errors";
 import { AnalyzeStatus } from "../../types/AnalyzeStatuss";
-import { ValidationsType, ValidationTypeEnum } from "@packages/common";
+import { ValidationsType, ValidationTypeEnum } from "@seo-analyzer/common";
 
 export default class DomAnalysis {
 

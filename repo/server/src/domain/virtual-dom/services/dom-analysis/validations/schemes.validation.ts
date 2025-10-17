@@ -4,7 +4,7 @@ import ValidationUtility from "@/domain/virtual-dom/utils/validation.util";
 import ScriptComponent from "@/domain/virtual-dom/components/script.component";
 import HTMLComponent from "@/domain/virtual-dom/components/html.component";
 import { Issue } from "@/domain/virtual-dom/types/Issue.interface";
-import { ValidationTypeEnum } from "@packages/common";
+import { ValidationTypeEnum } from "@seo-analyzer/common";
 
 const prompt = `
 #RESPONDE EN INGLES

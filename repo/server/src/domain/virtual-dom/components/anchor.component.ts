@@ -1,5 +1,5 @@
 import URLUtility from "@/domain/shared/utils/URL.util";
-import { ValidationTypeEnum } from "@packages/common";
+import { ValidationTypeEnum } from "@seo-analyzer/common";
 import type { BaseComponentProps } from "./base.component";
 import BaseComponent from "./base.component";
 import BaseValidatableComponent from "./baseValidatable.component";

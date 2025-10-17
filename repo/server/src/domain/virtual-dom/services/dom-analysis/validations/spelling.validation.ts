@@ -2,7 +2,7 @@ import BaseComponent from "@/domain/virtual-dom/components/base.component";
 import VDomContext from "@/domain/virtual-dom/context/vDom.context";
 import OpenAi from "@/infrastructure/AI/openAi.service";
 import ValidationUtility from "@/domain/virtual-dom/utils/validation.util";
-import { ValidationTypeEnum } from "@packages/common";
+import { ValidationTypeEnum } from "@seo-analyzer/common";
 
 const prompt = `
         Eres un asistente de corrección ortográfica.

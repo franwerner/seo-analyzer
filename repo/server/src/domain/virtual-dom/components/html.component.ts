@@ -1,4 +1,4 @@
-import { ValidationTypeEnum } from "@packages/common";
+import { ValidationTypeEnum } from "@seo-analyzer/common";
 import type { BaseComponentProps } from "./base.component";
 import BaseValidatableComponent from "./baseValidatable.component";
 

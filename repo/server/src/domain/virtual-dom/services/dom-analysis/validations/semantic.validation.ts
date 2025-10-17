@@ -1,7 +1,7 @@
 import VDomContext from "@/domain/virtual-dom/context/vDom.context";
 import ValidationUtility from "@/domain/virtual-dom/utils/validation.util";
 import OpenAi from "@/infrastructure/AI/openAi.service";
-import { ValidationTypeEnum } from "@packages/common";
+import { ValidationTypeEnum } from "@seo-analyzer/common";
 
 export default class SemanticValidation extends ValidationUtility {
     constructor(

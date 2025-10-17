@@ -1,5 +1,5 @@
 import { Issue } from "../types/Issue.interface"
-import { ValidationTypeEnum } from "@packages/common"
+import { ValidationTypeEnum } from "@seo-analyzer/common"
 
 const issues: Array<Issue> = [
     {

@@ -1,4 +1,4 @@
-import { ValidationTypeEnum } from "@packages/common"
+import { ValidationTypeEnum } from "@seo-analyzer/common"
 
 export interface Issue {
     message: string

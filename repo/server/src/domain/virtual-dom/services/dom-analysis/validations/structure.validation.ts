@@ -1,7 +1,7 @@
 import OpenAi from "@/infrastructure/AI/openAi.service";
 import ValidationUtility from "@/domain/virtual-dom/utils/validation.util";
 import VDomContext from "@/domain/virtual-dom/context/vDom.context";
-import { ValidationTypeEnum } from "@packages/common";
+import { ValidationTypeEnum } from "@seo-analyzer/common";
 
 const prompt = `
                 #RESPONDE EN INGLES

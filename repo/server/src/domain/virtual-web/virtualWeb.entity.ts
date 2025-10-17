@@ -2,7 +2,7 @@ import URLUtility from "@/domain/shared/utils/URL.util";
 import VirtualDomStore from "@/domain/virtual-dom/store/virtualDom.store";
 import OpenAiService from "@/infrastructure/AI/openAi.service";
 import PuppeterService from "@/infrastructure/scrapper/puppeter.service";
-import { VirtualWebSummary } from "@packages/common";
+import { VirtualWebSummary } from "@seo-analyzer/common";
 import VirtualDomSummaryNotFound from "../virtual-dom/errors/VirtualDomSummaryNotFound.error";
 import mainDomSummaryMock from "./mocks/mainDomSummary.mock";
 

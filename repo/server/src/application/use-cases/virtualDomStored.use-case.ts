@@ -1,5 +1,5 @@
 import VirtualDomRepository from "../repositories/VirtualDom.repository";
-import { CreateVirtualDomDTO, createVirtualDomResponseScheme, createVirtualDomScheme, getVirtualDomsResponseScheme, } from "@packages/common"
+import { CreateVirtualDomDTO, createVirtualDomResponseScheme, createVirtualDomScheme, getVirtualDomsResponseScheme, } from "@seo-analyzer/common"
 import ValidateDTO from "../shared/decorators/ValidateDTO.decorator";
 export default class VirtualDomStoredUseCase {
 

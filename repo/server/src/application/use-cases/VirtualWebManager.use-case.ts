@@ -7,7 +7,7 @@ import {
     UpdateVirtualWebDTO,
     updateVirtualWebResponseScheme,
     updateVirtualWebScheme
-} from "@packages/common"
+} from "@seo-analyzer/common"
 import VirtualWebRepository from "../repositories/VirtualWeb.repository"
 import VirtualWebSummaryRepository from "../repositories/VirtualWebSummary.repository"
 import ValidateDTO from "../shared/decorators/ValidateDTO.decorator"

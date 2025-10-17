@@ -1,4 +1,4 @@
-import { CreateVirtualWebDTO, createVirtualWebResponseScheme, createVirtualWebScheme, getVirtualWebDetailsResponseScheme, getVirtualWebsResponseScheme } from "@packages/common";
+import { CreateVirtualWebDTO, createVirtualWebResponseScheme, createVirtualWebScheme, getVirtualWebDetailsResponseScheme, getVirtualWebsResponseScheme } from "@seo-analyzer/common";
 import VirtualWebRepository from "../repositories/VirtualWeb.repository";
 import VirtualWebSummaryRepository from "../repositories/VirtualWebSummary.repository";
 import OpenAiService from "@/infrastructure/AI/openAi.service";

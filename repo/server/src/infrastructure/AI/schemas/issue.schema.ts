@@ -1,4 +1,4 @@
-import { ValidationTypeEnum } from "@packages/common"
+import { ValidationTypeEnum } from "@seo-analyzer/common"
 import { z } from "zod"
 
 const issueSchema = z.object({

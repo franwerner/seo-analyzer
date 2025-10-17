@@ -6,7 +6,7 @@ import VirtualDomGeneratedSnapshotError from "./errors/VirtualDomGeneratedSnapsh
 import analysisMock from "./mock/analysis.mock";
 import DomAnalysis from "./services/dom-analysis";
 import SnapshotGeneratorUtility from "./utils/snapshotGenerator.utils";
-import { ValidationsType } from "@packages/common";
+import { ValidationsType } from "@seo-analyzer/common";
 
 
 export interface VirtualDomEntityProps {

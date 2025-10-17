@@ -1,7 +1,7 @@
 import BaseComponent from "@/domain/virtual-dom/components/base.component";
 import BaseValidatableComponent from "@/domain/virtual-dom/components/baseValidatable.component";
 import ValidationUtility from "@/domain/virtual-dom/utils/validation.util";
-import { ValidationsType, ValidationTypeEnum } from "@packages/common";
+import { ValidationsType, ValidationTypeEnum } from "@seo-analyzer/common";
 
 export type ValidationsTypeForComponentTree = ValidationTypeEnum.SEMANTIC | ValidationTypeEnum.STRUCTURE | ValidationTypeEnum.RESOURCE
 

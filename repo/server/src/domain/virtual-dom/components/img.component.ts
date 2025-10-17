@@ -1,5 +1,5 @@
 import { Issue } from "../types/Issue.interface"
-import { ValidationTypeEnum } from "@packages/common"
+import { ValidationTypeEnum } from "@seo-analyzer/common"
 import { BaseComponentProps } from "./base.component"
 import BaseValidatableComponent from "./baseValidatable.component"
 
