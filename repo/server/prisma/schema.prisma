@@ -59,11 +59,11 @@ model VirtualDom {
   @@unique([virtualWebId, pathname])
 }
 
-model ResourceUsage {
+model AIUsage {
   id                      Int                      @id @default(autoincrement())
   input                   Int
   output                  Int
-  source                  String
+  model                   String
   virtualDomAnalysisUsage VirtualDomAnalysisUsage?
   virtualWebSummaryUsage  VirtualWebSummaryUsage?
 }
@@ -71,9 +71,9 @@ model ResourceUsage {
 model VirtualWebSummaryUsage {
   id                  Int               @id @default(autoincrement())
   virtualWebSummaryId Int               @unique
-  resourceUsageId     Int               @unique
+  AIUsageId           Int               @unique
   virtualWebSummary   VirtualWebSummary @relation(fields: [virtualWebSummaryId], references: [id])
-  resourceUsage       ResourceUsage     @relation(fields: [resourceUsageId], references: [id])
+  AIUsage             AIUsage           @relation(fields: [AIUsageId], references: [id])
 }
 
 model VirtualDomAnalysis {
@@ -88,9 +88,9 @@ model VirtualDomAnalysis {
 model VirtualDomAnalysisUsage {
   id                   Int                @id @default(autoincrement())
   virtualDomAnalysisId Int                @unique
-  resourceUsageId      Int                @unique
+  AIUsageId            Int                @unique
   virtualDomAnalysis   VirtualDomAnalysis @relation(fields: [virtualDomAnalysisId], references: [id])
-  resourceUsage        ResourceUsage      @relation(fields: [resourceUsageId], references: [id])
+  AIUsage              AIUsage            @relation(fields: [AIUsageId], references: [id])
 }
 
 model AnalysisIssue {
