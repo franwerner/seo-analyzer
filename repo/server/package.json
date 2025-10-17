@@ -3,14 +3,15 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "dev": "node ./dist/index.js",
-    "dev:watch": "node --watch ./dist/index.js",
+    "dev": "node --watch ./dist/index.js",
     "build": "rollup -c",
-    "start": "node ./dist/index.js",
+    "start": "npm run prisma:generate && node ./dist/index.js",
     "build:watch": "rollup -c --watch",
-    "prisma:migrate": "npx prisma migrate dev --name init",
+    "prisma:migrate-dev": "npx prisma migrate dev --name init",
+    "prisma:migrate-deploy": "npx prisma migrate deploy",
     "prisma:generate": "npx prisma generate",
-    "prisma:studio": "npx prisma studio"
+    "prisma:studio": "npx prisma studio",
+    "deploy": "npm run build && npm run prisma:migrate-deploy"
   },
   "keywords": [],
   "author": "",

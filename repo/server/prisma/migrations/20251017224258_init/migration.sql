@@ -20,13 +20,13 @@ CREATE TABLE "VirtualWebConfig" (
 );
 
 -- CreateTable
-CREATE TABLE "VirtualDomSummary" (
+CREATE TABLE "VirtualWebSummary" (
     "id" SERIAL NOT NULL,
     "content" TEXT NOT NULL,
-    "virtualDomId" INTEGER NOT NULL,
+    "virtualWebId" INTEGER NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
-    CONSTRAINT "VirtualDomSummary_pkey" PRIMARY KEY ("id")
+    CONSTRAINT "VirtualWebSummary_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
@@ -40,22 +40,22 @@ CREATE TABLE "VirtualDom" (
 );
 
 -- CreateTable
-CREATE TABLE "ResourceUsage" (
+CREATE TABLE "AIUsage" (
     "id" SERIAL NOT NULL,
     "input" INTEGER NOT NULL,
     "output" INTEGER NOT NULL,
-    "source" TEXT NOT NULL,
+    "model" TEXT NOT NULL,
 
-    CONSTRAINT "ResourceUsage_pkey" PRIMARY KEY ("id")
+    CONSTRAINT "AIUsage_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
-CREATE TABLE "VirtualDomSummaryUsage" (
+CREATE TABLE "VirtualWebSummaryUsage" (
     "id" SERIAL NOT NULL,
     "virtualWebSummaryId" INTEGER NOT NULL,
-    "resourceUsageId" INTEGER NOT NULL,
+    "AIUsageId" INTEGER NOT NULL,
 
-    CONSTRAINT "VirtualDomSummaryUsage_pkey" PRIMARY KEY ("id")
+    CONSTRAINT "VirtualWebSummaryUsage_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
@@ -71,7 +71,7 @@ CREATE TABLE "VirtualDomAnalysis" (
 CREATE TABLE "VirtualDomAnalysisUsage" (
     "id" SERIAL NOT NULL,
     "virtualDomAnalysisId" INTEGER NOT NULL,
-    "resourceUsageId" INTEGER NOT NULL,
+    "AIUsageId" INTEGER NOT NULL,
 
     CONSTRAINT "VirtualDomAnalysisUsage_pkey" PRIMARY KEY ("id")
 );
@@ -109,16 +109,16 @@ CREATE UNIQUE INDEX "VirtualWebConfig_mainVirtualDomId_key" ON "VirtualWebConfig
 CREATE UNIQUE INDEX "VirtualDom_virtualWebId_pathname_key" ON "VirtualDom"("virtualWebId", "pathname");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "VirtualDomSummaryUsage_virtualWebSummaryId_key" ON "VirtualDomSummaryUsage"("virtualWebSummaryId");
+CREATE UNIQUE INDEX "VirtualWebSummaryUsage_virtualWebSummaryId_key" ON "VirtualWebSummaryUsage"("virtualWebSummaryId");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "VirtualDomSummaryUsage_resourceUsageId_key" ON "VirtualDomSummaryUsage"("resourceUsageId");
+CREATE UNIQUE INDEX "VirtualWebSummaryUsage_AIUsageId_key" ON "VirtualWebSummaryUsage"("AIUsageId");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "VirtualDomAnalysisUsage_virtualDomAnalysisId_key" ON "VirtualDomAnalysisUsage"("virtualDomAnalysisId");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "VirtualDomAnalysisUsage_resourceUsageId_key" ON "VirtualDomAnalysisUsage"("resourceUsageId");
+CREATE UNIQUE INDEX "VirtualDomAnalysisUsage_AIUsageId_key" ON "VirtualDomAnalysisUsage"("AIUsageId");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "IssueTraceId_issueId_traceId_key" ON "IssueTraceId"("issueId", "traceId");
@@ -130,16 +130,16 @@ ALTER TABLE "VirtualWebConfig" ADD CONSTRAINT "VirtualWebConfig_virtualWebId_fke
 ALTER TABLE "VirtualWebConfig" ADD CONSTRAINT "VirtualWebConfig_mainVirtualDomId_fkey" FOREIGN KEY ("mainVirtualDomId") REFERENCES "VirtualDom"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "VirtualDomSummary" ADD CONSTRAINT "VirtualDomSummary_virtualDomId_fkey" FOREIGN KEY ("virtualDomId") REFERENCES "VirtualDom"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "VirtualWebSummary" ADD CONSTRAINT "VirtualWebSummary_virtualWebId_fkey" FOREIGN KEY ("virtualWebId") REFERENCES "VirtualWeb"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "VirtualDom" ADD CONSTRAINT "VirtualDom_virtualWebId_fkey" FOREIGN KEY ("virtualWebId") REFERENCES "VirtualWeb"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "VirtualDomSummaryUsage" ADD CONSTRAINT "VirtualDomSummaryUsage_virtualWebSummaryId_fkey" FOREIGN KEY ("virtualWebSummaryId") REFERENCES "VirtualDomSummary"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "VirtualWebSummaryUsage" ADD CONSTRAINT "VirtualWebSummaryUsage_virtualWebSummaryId_fkey" FOREIGN KEY ("virtualWebSummaryId") REFERENCES "VirtualWebSummary"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "VirtualDomSummaryUsage" ADD CONSTRAINT "VirtualDomSummaryUsage_resourceUsageId_fkey" FOREIGN KEY ("resourceUsageId") REFERENCES "ResourceUsage"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "VirtualWebSummaryUsage" ADD CONSTRAINT "VirtualWebSummaryUsage_AIUsageId_fkey" FOREIGN KEY ("AIUsageId") REFERENCES "AIUsage"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "VirtualDomAnalysis" ADD CONSTRAINT "VirtualDomAnalysis_virtualDomId_fkey" FOREIGN KEY ("virtualDomId") REFERENCES "VirtualDom"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
@@ -148,7 +148,7 @@ ALTER TABLE "VirtualDomAnalysis" ADD CONSTRAINT "VirtualDomAnalysis_virtualDomId
 ALTER TABLE "VirtualDomAnalysisUsage" ADD CONSTRAINT "VirtualDomAnalysisUsage_virtualDomAnalysisId_fkey" FOREIGN KEY ("virtualDomAnalysisId") REFERENCES "VirtualDomAnalysis"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "VirtualDomAnalysisUsage" ADD CONSTRAINT "VirtualDomAnalysisUsage_resourceUsageId_fkey" FOREIGN KEY ("resourceUsageId") REFERENCES "ResourceUsage"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "VirtualDomAnalysisUsage" ADD CONSTRAINT "VirtualDomAnalysisUsage_AIUsageId_fkey" FOREIGN KEY ("AIUsageId") REFERENCES "AIUsage"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "AnalysisIssue" ADD CONSTRAINT "AnalysisIssue_virtualDomAnalysisId_fkey" FOREIGN KEY ("virtualDomAnalysisId") REFERENCES "VirtualDomAnalysis"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
