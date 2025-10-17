@@ -1,12 +1,13 @@
 {
-  "name": "next-app-template",
+  "name": "web",
   "version": "0.0.1",
   "private": true,
   "scripts": {
     "dev": "next dev --turbopack",
-    "build": "next build",
     "start": "next start",
-    "lint": "eslint --fix"
+    "lint": "eslint --fix",
+    "prebuild": "npm --prefix ../packages/common run build",
+    "build": "next build"
   },
   "dependencies": {
     "@heroui/accordion": "2.2.24",
@@ -89,8 +90,5 @@
     "tailwind-variants": "3.1.1",
     "tailwindcss": "4.1.11",
     "typescript": "5.6.3"
-  },
-  "_moduleAliases": {
-    "@packages/common": "./dist/packages/common"
   }
 }
