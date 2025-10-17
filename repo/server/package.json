@@ -7,7 +7,7 @@
     "build": "rollup -c",
     "start": "npm run prisma:generate && node ./dist/index.js",
     "build:watch": "rollup -c --watch",
-    "prisma:migrate-dev": "npx prisma migrate dev --name init",
+    "prisma:migrate": "npx prisma migrate dev",
     "prisma:migrate-deploy": "npx prisma migrate deploy",
     "prisma:generate": "npx prisma generate",
     "prisma:studio": "npx prisma studio",
