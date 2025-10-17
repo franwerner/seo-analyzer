@@ -1,5 +1,5 @@
 import URLUtility from "@/domain/shared/utils/URL.util";
-import ValidationType from "../types/ValidationType.enum";
+import { ValidationTypeEnum } from "@packages/common";
 import type { BaseComponentProps } from "./base.component";
 import BaseComponent from "./base.component";
 import BaseValidatableComponent from "./baseValidatable.component";
@@ -50,7 +50,7 @@ class AnchorComponent extends BaseValidatableComponent {
                 message: `the text "${this.innerText.value}" is not very descriptive`,
                 traceIds: [this.traceId],
                 tag: this.tag,
-                type: ValidationType.SEMANTIC
+                type: ValidationTypeEnum.SEMANTIC
             } satisfies Issue
         }
     }
@@ -62,7 +62,7 @@ class AnchorComponent extends BaseValidatableComponent {
             message: `the anchor does not have a href`,
             traceIds: [this.traceId],
             tag: this.tag,
-            type: ValidationType.SEMANTIC
+            type: ValidationTypeEnum.SEMANTIC
         } satisfies Issue
     }
 
@@ -86,7 +86,7 @@ class AnchorComponent extends BaseValidatableComponent {
                 message: `${href} link broken`,
                 traceIds: [this.traceId],
                 tag: this.tag,
-                type: ValidationType.RESOURCE
+                type: ValidationTypeEnum.RESOURCE
             } satisfies Issue
         }
     }

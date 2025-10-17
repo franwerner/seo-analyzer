@@ -1,7 +1,6 @@
 import ValidationUtility from "@/domain/virtual-dom/utils/validation.util";
 import { VirtualDomSnapshot } from "@/domain/virtual-dom/virtualDom.entity";
 import OpenAi from "@/infrastructure/AI/openAi.service";
-import ValidationType, { ValidationsType } from "../../types/ValidationType.enum";
 import ComponentTreeValidation, { ValidationsTypeForComponentTree } from "./validations/componentTree.validation";
 import SchemeValidaton from "./validations/schemes.validation";
 import SemanticValidation from "./validations/semantic.validation";
@@ -9,11 +8,11 @@ import SpellingValidation from "./validations/spelling.validation";
 import StructureValidation from "./validations/structure.validation";
 import { VirtualDomAnalysisError, VirtualDomAnalysisInProgressError } from "../../errors";
 import { AnalyzeStatus } from "../../types/AnalyzeStatuss";
-
+import { ValidationsType, ValidationTypeEnum } from "@packages/common";
 
 export default class DomAnalysis {
 
-    private static readonly VALIDATIONS_FOR_COMPONENT_TREE: Array<ValidationsTypeForComponentTree> = [ValidationType.SEMANTIC, ValidationType.STRUCTURE, ValidationType.RESOURCE]
+    private static readonly VALIDATIONS_FOR_COMPONENT_TREE: Array<ValidationsTypeForComponentTree> = [ValidationTypeEnum.SEMANTIC, ValidationTypeEnum.STRUCTURE, ValidationTypeEnum.RESOURCE]
 
     analyzeStatus: AnalyzeStatus = AnalyzeStatus.Idle
 
@@ -67,10 +66,10 @@ export default class DomAnalysis {
         const { root, vDomContext, htmlStructure, htmlSemantic } = snapshot
 
         const validationMap = {
-            [ValidationType.SEMANTIC]: () => new SemanticValidation(this.openAi, htmlSemantic, domSummary, vDomContext),
-            [ValidationType.STRUCTURE]: () => new StructureValidation(this.openAi, vDomContext, htmlStructure),
-            [ValidationType.SPELLING]: () => new SpellingValidation(this.openAi, vDomContext),
-            [ValidationType.SCHEME]: () => new SchemeValidaton(this.openAi, vDomContext, domSummary, root),
+            [ValidationTypeEnum.SEMANTIC]: () => new SemanticValidation(this.openAi, htmlSemantic, domSummary, vDomContext),
+            [ValidationTypeEnum.STRUCTURE]: () => new StructureValidation(this.openAi, vDomContext, htmlStructure),
+            [ValidationTypeEnum.SPELLING]: () => new SpellingValidation(this.openAi, vDomContext),
+            [ValidationTypeEnum.SCHEME]: () => new SchemeValidaton(this.openAi, vDomContext, domSummary, root),
         }
 
         try {

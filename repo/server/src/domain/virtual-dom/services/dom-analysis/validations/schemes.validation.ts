@@ -1,10 +1,10 @@
 import VDomContext from "@/domain/virtual-dom/context/vDom.context";
 import OpenAi from "@/infrastructure/AI/openAi.service";
 import ValidationUtility from "@/domain/virtual-dom/utils/validation.util";
-import ValidationType from "@/domain/virtual-dom/types/ValidationType.enum";
 import ScriptComponent from "@/domain/virtual-dom/components/script.component";
 import HTMLComponent from "@/domain/virtual-dom/components/html.component";
 import { Issue } from "@/domain/virtual-dom/types/Issue.interface";
+import { ValidationTypeEnum } from "@packages/common";
 
 const prompt = `
 #RESPONDE EN INGLES
@@ -43,7 +43,7 @@ export default class SchemeValidaton extends ValidationUtility {
             message: `Not found ${name} schema`,
             tag: "script",
             traceIds: [],
-            type: ValidationType.SCHEME
+            type: ValidationTypeEnum.SCHEME
         }
     }
 
@@ -87,7 +87,7 @@ export default class SchemeValidaton extends ValidationUtility {
             message: response,
             tag: "script",
             traceIds: [script.traceId],
-            type: ValidationType.SCHEME
+            type: ValidationTypeEnum.SCHEME
         })
         this.addTokens(tokens)
 

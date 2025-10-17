@@ -1,7 +1,7 @@
 import VDomContext from "@/domain/virtual-dom/context/vDom.context";
-import ValidationType from "@/domain/virtual-dom/types/ValidationType.enum";
 import ValidationUtility from "@/domain/virtual-dom/utils/validation.util";
 import OpenAi from "@/infrastructure/AI/openAi.service";
+import { ValidationTypeEnum } from "@packages/common";
 
 export default class SemanticValidation extends ValidationUtility {
     constructor(
@@ -86,7 +86,7 @@ export default class SemanticValidation extends ValidationUtility {
 
         if (traceIds.length > 0) {
             this.addIssue({
-                type: ValidationType.SEMANTIC,
+                type: ValidationTypeEnum.SEMANTIC,
                 message: "href and text are not semantically related",
                 tag: "a",
                 traceIds
@@ -135,7 +135,7 @@ export default class SemanticValidation extends ValidationUtility {
         }]
             
             `,
-            ValidationType.SEMANTIC
+            ValidationTypeEnum.SEMANTIC
         )
 
         this.addTokens(tokens)

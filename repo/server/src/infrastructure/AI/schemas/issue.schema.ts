@@ -1,11 +1,11 @@
-import ValidationType from "@/domain/virtual-dom/types/ValidationType.enum"
+import { ValidationTypeEnum } from "@packages/common"
 import { z } from "zod"
 
 const issueSchema = z.object({
     message: z.string(),
     tag: z.string(),
     traceIds: z.array(z.string()),
-    type: z.nativeEnum(ValidationType)
+    type: z.nativeEnum(ValidationTypeEnum)
 })
 
 

@@ -1,5 +1,5 @@
 import { Issue } from "../types/Issue.interface"
-import ValidationType from "../types/ValidationType.enum"
+import { ValidationTypeEnum } from "@packages/common"
 import { BaseComponentProps } from "./base.component"
 import BaseValidatableComponent from "./baseValidatable.component"
 
@@ -13,7 +13,7 @@ export default class ImgComponent extends BaseValidatableComponent {
             message: "Image without alt",
             tag: this.tag,
             traceIds: [this.traceId],
-            type: ValidationType.SEMANTIC,
+            type: ValidationTypeEnum.SEMANTIC,
         } satisfies Issue
     }
 

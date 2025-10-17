@@ -5,8 +5,8 @@ import HTMLComponent from "./components/html.component";
 import VirtualDomGeneratedSnapshotError from "./errors/VirtualDomGeneratedSnapshot.error";
 import analysisMock from "./mock/analysis.mock";
 import DomAnalysis from "./services/dom-analysis";
-import { ValidationsType } from "./types/ValidationType.enum";
 import SnapshotGeneratorUtility from "./utils/snapshotGenerator.utils";
+import { ValidationsType } from "@packages/common";
 
 
 export interface VirtualDomEntityProps {

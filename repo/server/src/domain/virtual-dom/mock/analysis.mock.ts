@@ -1,5 +1,5 @@
 import { Issue } from "../types/Issue.interface"
-import ValidationType from "../types/ValidationType.enum"
+import { ValidationTypeEnum } from "@packages/common"
 
 const issues: Array<Issue> = [
     {
@@ -14,25 +14,25 @@ const issues: Array<Issue> = [
             '4320030', '-889884652',
             '631752437'
         ],
-        type: ValidationType.STRUCTURE
+        type: ValidationTypeEnum.STRUCTURE
     },
     {
         message: "Missing semantic landmark for the page's top section.",
         tag: 'header',
         traceIds: ["1"],
-        type: ValidationType.STRUCTURE
+        type: ValidationTypeEnum.STRUCTURE
     },
     {
         message: "Missing semantic landmark for the page's bottom section.",
         tag: 'footer',
         traceIds: ["-1461494969"],
-        type: ValidationType.STRUCTURE
+        type: ValidationTypeEnum.STRUCTURE
     },
     {
         message: "The webpage contains more than 10 h3 elements",
         tag: 'h3',
         traceIds: ["-1461494969"],
-        type: ValidationType.STRUCTURE
+        type: ValidationTypeEnum.STRUCTURE
     }
 ]
 export default {

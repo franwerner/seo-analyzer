@@ -1,4 +1,4 @@
-import ValidationType from "../types/ValidationType.enum";
+import { ValidationTypeEnum } from "@packages/common";
 import type { BaseComponentProps } from "./base.component";
 import BaseValidatableComponent from "./baseValidatable.component";
 
@@ -14,7 +14,7 @@ class HTMLComponent extends BaseValidatableComponent {
                 message: "No lang attribute found",
                 tag: "html",
                 traceIds: [this.traceId],
-                type: ValidationType.SEMANTIC
+                type: ValidationTypeEnum.SEMANTIC
             }
         }
     }

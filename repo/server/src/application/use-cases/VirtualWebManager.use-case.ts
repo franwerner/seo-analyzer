@@ -3,7 +3,7 @@ import VirtualWebConfigNotFountError from "@/domain/virtual-web/errors/VirtualWe
 import VirtualWebStore from "@/domain/virtual-web/store/virtualWeb.store"
 import OpenAiService from "@/infrastructure/AI/openAi.service"
 import {
-    createVirtualWebSummaryResponseDto,
+    createVirtualWebSummaryResponseScheme,
     UpdateVirtualWebDTO,
     updateVirtualWebResponseScheme,
     updateVirtualWebScheme
@@ -59,7 +59,7 @@ export default class VirtualWebManagerUsecase {
                 model
             }
         })
-        const dto = createVirtualWebSummaryResponseDto.parse({
+        const dto = createVirtualWebSummaryResponseScheme.parse({
             content,
             ...res,
             usage: this.AiService.calculateUsageTokens(tokens)

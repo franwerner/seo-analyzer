@@ -1,9 +1,9 @@
 import BaseComponent from "@/domain/virtual-dom/components/base.component";
 import BaseValidatableComponent from "@/domain/virtual-dom/components/baseValidatable.component";
-import ValidationType, { ValidationsType } from "@/domain/virtual-dom/types/ValidationType.enum";
 import ValidationUtility from "@/domain/virtual-dom/utils/validation.util";
+import { ValidationsType, ValidationTypeEnum } from "@packages/common";
 
-export type ValidationsTypeForComponentTree = ValidationType.SEMANTIC | ValidationType.STRUCTURE | ValidationType.RESOURCE
+export type ValidationsTypeForComponentTree = ValidationTypeEnum.SEMANTIC | ValidationTypeEnum.STRUCTURE | ValidationTypeEnum.RESOURCE
 
 const validators: Record<ValidationsTypeForComponentTree, `validate${Capitalize<ValidationsTypeForComponentTree>}`> = {
     semantic: "validateSemantic",

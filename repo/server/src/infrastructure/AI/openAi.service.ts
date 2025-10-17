@@ -1,6 +1,5 @@
-import ValidationType from "@/domain/virtual-dom/types/ValidationType.enum";
 import WordsSchema from "@/infrastructure/AI/schemas/words.schema";
-import { Usage } from "@packages/common";
+import { Usage, ValidationsType, ValidationTypeEnum } from "@packages/common";
 import OpenAI from "openai";
 import { zodTextFormat } from "openai/helpers/zod";
 import { GPT5MiniModel, Model } from "./constant/models.constant";
@@ -88,7 +87,7 @@ class OpenAiService {
   async generateIssuesAsType(
     input: string,
     instructions: string,
-    type: ValidationType
+    type: ValidationTypeEnum
   ) {
 
     const response = await this.openAI.responses.create({

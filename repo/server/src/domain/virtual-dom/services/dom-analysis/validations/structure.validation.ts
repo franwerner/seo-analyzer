@@ -1,7 +1,7 @@
 import OpenAi from "@/infrastructure/AI/openAi.service";
 import ValidationUtility from "@/domain/virtual-dom/utils/validation.util";
 import VDomContext from "@/domain/virtual-dom/context/vDom.context";
-import ValidationType from "@/domain/virtual-dom/types/ValidationType.enum";
+import { ValidationTypeEnum } from "@packages/common";
 
 const prompt = `
                 #RESPONDE EN INGLES
@@ -47,14 +47,14 @@ export default class StructureValidation extends ValidationUtility {
                 message: "The webpage contains more than one h1 element",
                 tag: "H1",
                 traceIds: h1.map(prev => prev.traceId),
-                type: ValidationType.STRUCTURE
+                type: ValidationTypeEnum.STRUCTURE
             })
         } else if (h1.length === 0) {
             this.addIssue({
                 message: "No h1 found",
                 tag: "H1",
                 traceIds: [],
-                type: ValidationType.STRUCTURE
+                type: ValidationTypeEnum.STRUCTURE
             })
         }
     }
@@ -66,7 +66,7 @@ export default class StructureValidation extends ValidationUtility {
                 message: "The webpage contains more than 10 h2 elements",
                 tag: "h2",
                 traceIds: h2.map(prev => prev.traceId),
-                type: ValidationType.STRUCTURE
+                type: ValidationTypeEnum.STRUCTURE
             })
         }
     }
@@ -78,14 +78,14 @@ export default class StructureValidation extends ValidationUtility {
                 message: "No title found",
                 tag: "title",
                 traceIds: [],
-                type: ValidationType.STRUCTURE
+                type: ValidationTypeEnum.STRUCTURE
             })
         } else if (title.length > 1) {
             this.addIssue({
                 message: "The webpage contains more than one title element",
                 tag: "title",
                 traceIds: title.map(prev => prev.traceId),
-                type: ValidationType.STRUCTURE
+                type: ValidationTypeEnum.STRUCTURE
             })
         }
     }
@@ -97,14 +97,14 @@ export default class StructureValidation extends ValidationUtility {
                 message: "No meta description found",
                 tag: "meta",
                 traceIds: [],
-                type: ValidationType.STRUCTURE
+                type: ValidationTypeEnum.STRUCTURE
             })
         } else if (meta.length > 1) {
             this.addIssue({
                 message: "The webpage contains more than one meta description element",
                 tag: "meta",
                 traceIds: meta.map(prev => prev.traceId),
-                type: ValidationType.STRUCTURE
+                type: ValidationTypeEnum.STRUCTURE
             })
         }
     }
@@ -114,7 +114,7 @@ export default class StructureValidation extends ValidationUtility {
         const response = await this.openAI.generateIssuesAsType(
             this.htmlStructure,
             prompt,
-            ValidationType.STRUCTURE
+            ValidationTypeEnum.STRUCTURE
         )
 
         this.addTokens(response.tokens)
