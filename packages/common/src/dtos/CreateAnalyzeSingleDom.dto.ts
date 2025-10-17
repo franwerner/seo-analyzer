@@ -10,10 +10,10 @@ const validationSelectedScheme = z.object(validationKeys.reduce((acc, key) => {
 }, {} as Record<ValidationTypeEnum, z.ZodOptional<z.ZodBoolean>>)
 )
 
-export const createAnalyzeSinglePageScheme = z.object({
+export const createAnalyzeSingleDomScheme = z.object({
     virtualDomId: z.number(),
     virtualWebId: z.number(),
     validationsSelected: validationSelectedScheme.strip()
 })
 
-export type CreateAnalyzeSinglePageDto = z.infer<typeof createAnalyzeSinglePageScheme>
+export type CreateAnalyzeSingleDomDto = z.infer<typeof createAnalyzeSingleDomScheme>
