@@ -89,5 +89,8 @@
     "tailwind-variants": "3.1.1",
     "tailwindcss": "4.1.11",
     "typescript": "5.6.3"
+  },
+  "_moduleAliases": {
+    "@packages/common": "./dist/packages/common"
   }
 }
