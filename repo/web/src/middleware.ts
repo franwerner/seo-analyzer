@@ -1,7 +1,7 @@
 import { MiddlewareConfig, NextRequest, NextResponse } from "next/server";
 import verifyAuth from "./features/auth/services/verifyAuth.service";
 export const config: MiddlewareConfig = {
-    matcher: ["/admin/:path*"],
+    matcher: ["/virtualWeb/:path*", "/virtualDom/:path*"],
 
 }
 export async function middleware(req: NextRequest) {

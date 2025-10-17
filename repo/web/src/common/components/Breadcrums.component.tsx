@@ -1,5 +1,6 @@
 "use client"
 import { BreadcrumbItem, Breadcrumbs as HerouiBreadcrumbs } from "@heroui/breadcrumbs";
+import clsx from "clsx";
 import { usePathname } from "next/navigation";
 
 export default function Breadcrumbs() {
@@ -25,6 +26,7 @@ export default function Breadcrumbs() {
                 return (
                     <BreadcrumbItem
                         key={item}
+                        className={clsx(pathSegments.length === 1 && "bg-default-100")}
                         href={buildPath(index)}>
                         {item.charAt(0).toUpperCase() + item.slice(1)}
                     </BreadcrumbItem>

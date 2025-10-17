@@ -2,17 +2,15 @@
 import { ApiErrorResponse, ApiSuccessResponse } from "@/src/common/types/ApiResponse.interface"
 import getApiResponse from "@/src/common/utils/getApiResponse.util"
 import { InfiniteData, useMutation, useQueryClient } from "@tanstack/react-query"
-import { VirtualWeb } from "../types/VirtualWeb.type";
-import { CreateVirtualWebDTO } from "@packages/common";
-import { SuccessResponseVirtualWebs } from "./useGetWebs.hook";
+import { CreateVirtualWebDTO, GetVirtualWebsResponseDTO } from "@packages/common";
 
 
-export default function useRegisterVirtualWeb() {
+export default function useCreateVirtualWeb() {
     const queryClient = useQueryClient()
 
-    return useMutation<ApiSuccessResponse<VirtualWeb>, ApiErrorResponse, CreateVirtualWebDTO>({
+    return useMutation<ApiSuccessResponse<CreateVirtualWebDTO>, ApiErrorResponse, CreateVirtualWebDTO>({
         mutationFn: async (props) => {
-            const response = await fetch("/api/virtual-web/register", {
+            const response = await fetch("/api/virtual-web-stored/create", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
@@ -23,8 +21,8 @@ export default function useRegisterVirtualWeb() {
         },
         onSuccess: (data) => {
             queryClient.setQueryData(
-                ["webs"],
-                (oldData: InfiniteData<ApiSuccessResponse<SuccessResponseVirtualWebs>>) => {
+                ["virtual-webs"],
+                (oldData: InfiniteData<ApiSuccessResponse<GetVirtualWebsResponseDTO>>) => {
                     if (!oldData) return oldData
                     const newPages = oldData.pages.map((page, index) =>
                         index === 0

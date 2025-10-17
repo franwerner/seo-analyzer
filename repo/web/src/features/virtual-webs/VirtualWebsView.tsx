@@ -1,13 +1,14 @@
 "use client"
-import { Button } from "@heroui/button";
-import Link from "next/link";
-import useGetVirtualWebs from "../hooks/useGetWebs.hook";
-import { VirtualWeb } from "../types/VirtualWeb.type";
-import { Spinner } from "@heroui/spinner";
-import { Link as HLink } from "@heroui/link";
-import { memo, useState } from "react";
 import Container from "@/src/common/components/Container.component";
-import RegisterVirtualWebModal from "../components/RegisterVirtualWebModal.component";
+import { Button } from "@heroui/button";
+import { Link as HLink } from "@heroui/link";
+import { Spinner } from "@heroui/spinner";
+import { VirtualWeb } from "@packages/common";
+import Link from "next/link";
+import { memo, useState } from "react";
+import RegisterVirtualWebModal from "./components/RegisterVirtualWebModal.component";
+import useGetVirtualWebs from "./hooks/useGetWebs.hook";
+
 
 const VirtualWebItem = memo(({ web }: { web: VirtualWeb }) => {
     return (
@@ -15,14 +16,14 @@ const VirtualWebItem = memo(({ web }: { web: VirtualWeb }) => {
             key={web.id}
             className="flex justify-between  hover:scale-100 w-full h-full border border-b-2 border-default-300 items-center scale-95   rounded-lg py-1 px-4 shadow-sm transition-all"
         >
-            <div className="flex gap-1 flex-col">
+            <div className="flex gap-1 overflow-hidden flex-col">
                 <HLink
                     color="foreground"
                     showAnchorIcon
                     underline="hover"
                     isExternal
                     href={`http://${web.host}`}
-                    className="text-lg uppercase font-semibold "
+                    className="text-lg truncate uppercase font-semibold "
                 >
                     {web.host}
                 </HLink>
@@ -34,11 +35,11 @@ const VirtualWebItem = memo(({ web }: { web: VirtualWeb }) => {
                 </span>
             </div>
 
-            <Link href={`virtualWeb/${web.id}`}>
+            <Link href={`/virtualWeb/${web.id}`}>
                 <Button
                     color="secondary"
                     size="sm"
-                    className="text-sm font-semibold"
+                    className="text-sm font-medium"
                     variant="flat"
                 >
                     Go to panel
@@ -52,13 +53,17 @@ const ModalContainer = () => {
     const [isOpen, setIsOpen] = useState(false)
     return (
         <div className="self-end">
-            <Button color="success" variant="flat" onPress={() => setIsOpen(true)}>Register a new virtual web</Button>
+            <Button
+                color="success"
+                className="font-medium"
+                variant="flat"
+                onPress={() => setIsOpen(true)}>Register a new virtual web</Button>
             <RegisterVirtualWebModal isOpen={isOpen} onClose={() => setIsOpen(false)} />
         </div>
     )
 }
 
-export default function WebList() {
+export default function VirtualWebsView() {
 
     const { data, isLoading, fetchNextPage, hasNextPage } = useGetVirtualWebs()
 
@@ -70,7 +75,9 @@ export default function WebList() {
         <Container as="main">
             <ModalContainer />
             <div className="w-full flex-1 flex flex-col h-full p-6 gap-8 rounded-lg ">
-                <h2 className="text-3xl font-semibold text-default-900  text-center uppercase ">Virtual Web List</h2>
+                <div>
+                    <h2 className="text-3xl font-semibold text-default-900  text-center uppercase ">Virtual Web List</h2>
+                </div>
                 {
                     isLoading ?
                         <div className="flex justify-center h-full items-center flex-1">

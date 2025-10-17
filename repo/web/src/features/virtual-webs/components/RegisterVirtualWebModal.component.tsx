@@ -5,9 +5,9 @@ import { Button } from "@heroui/button"
 import { Form } from "@heroui/form"
 import { Input } from "@heroui/input"
 import { Modal, ModalBody, ModalContent, ModalHeader } from "@heroui/modal"
-import { useState } from "react"
-import useRegisterVirtualWeb from "../hooks/useRegisterVirtualWeb.hook"
 import { CreateVirtualWebDTO, createVirtualWebScheme } from "@packages/common"
+import { useState } from "react"
+import useCreateVirtualWeb from "../hooks/useCreateVirtualWeb.hook"
 
 
 interface RegisterWebModalProps {
@@ -22,7 +22,7 @@ const ModalForm = ({
     onClose: () => void
 }) => {
 
-    const { mutateAsync, isPending } = useRegisterVirtualWeb()
+    const { mutateAsync, isPending } = useCreateVirtualWeb()
 
     const [errors, setErrors] = useState<Partial<Record<keyof CreateVirtualWebDTO, string[]>>>({
         host: undefined,
@@ -56,26 +56,26 @@ const ModalForm = ({
             <div className="space-y-4 w-full">
                 <Input
                     name="host"
+                    label="Enter host URL (e.g. example.com)"
                     color="default"
                     isInvalid={!!errors.host}
                     errorMessage={() => <InputErrorList errors={errors.host} />}
-                    placeholder="Enter host URL (e.g. example.com)"
                     className="w-full"
                 />
                 <Input
                     name="mainPathname"
                     color="default"
+                    label="Enter main pathname (e.g. /about or /)"
                     isInvalid={!!errors.mainPathname}
                     defaultValue="/"
                     errorMessage={() => <InputErrorList errors={errors.mainPathname} />}
-                    placeholder="Enter main pathname (e.g. /)"
                     className="w-full"
                 />
             </div>
             <div className="p-6 flex w-full justify-between">
                 <Button
                     type="submit"
-                    className=" px-8 font-semibold"
+                    className=" px-8 font-medium"
                     isLoading={isPending}
                     variant="flat"
                     color="success" >
@@ -86,7 +86,7 @@ const ModalForm = ({
                     color="danger"
                     variant="flat"
                     isDisabled={isPending}
-                    className=" px-8  font-semibold"  >
+                    className=" px-8  font-medium"  >
                     Cancel
                 </Button>
             </div>

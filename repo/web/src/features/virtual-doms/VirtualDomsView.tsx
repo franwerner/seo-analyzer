@@ -1,0 +1,103 @@
+"use client"
+import Container from "@/src/common/components/Container.component"
+import { Button } from "@heroui/button"
+import { Spinner } from "@heroui/spinner"
+import { VirtualDom } from "@packages/common"
+import Link from "next/link"
+import { useParams } from "next/navigation"
+import { memo, useState } from "react"
+import useGetVirtualDoms from "../virtual-web/hooks/useGetVirtualDoms.hook"
+import RegisterVirtualDom from "./components/RegisterVirtualDomModal.component"
+
+
+const ModalContainer = () => {
+    const [isOpen, setIsOpen] = useState(false)
+    return (
+        <div className="flex justify-center   md:justify-end">
+            <Button
+                color="success"
+                className="font-medium max-w-min "
+                variant="flat"
+                onPress={() => setIsOpen(true)}>Register a new virtual dom</Button>
+            <RegisterVirtualDom isOpen={isOpen} onClose={() => setIsOpen(false)} />
+        </div>
+    )
+}
+
+const VirtualDomItem = memo(({ dom }: { dom: VirtualDom }) => {
+    return (
+        <li
+            key={dom.id}
+            className="flex justify-between py-6  hover:scale-100 w-full h-full border border-b-2 border-default-300 items-center scale-95   rounded-lg px-4 shadow-sm transition-all"
+        >
+            <div className="flex gap-1 overflow-hidden flex-col">
+                <span className="text-md text-gray-500">
+                    Pathname: {dom.pathname}
+                </span>
+            </div>
+
+            <Link href={`/virtualDom/${dom.id}`}>
+                <Button
+                    color="secondary"
+                    size="sm"
+                    className="text-sm font-medium"
+                    variant="flat"
+                >
+                    Go to panel
+                </Button>
+            </Link>
+        </li>
+    )
+})
+
+
+export default function VirtualDomsView() {
+
+    const { virtualWebId } = useParams()
+
+    const { data, isLoading, fetchNextPage, hasNextPage } = useGetVirtualDoms(Number(virtualWebId))
+
+    const dat = data?.pages || []
+
+    const doms = dat.flatMap(i => i.result?.virtualDoms || [])
+
+    return (
+        <Container as="main">
+            <ModalContainer />
+            <div className="w-full flex-1 flex flex-col h-full p-6 gap-8 rounded-lg ">
+                <div>
+                    <h2 className="text-3xl font-semibold text-default-900  text-center uppercase ">Virtual Dom List</h2>
+                </div>
+                {
+                    isLoading ?
+                        <div className="flex justify-center h-full items-center flex-1">
+                            <Spinner size="lg" />
+                        </div> :
+                        <div className="flex h-full flex-col flex-1 justify-start items-center w-full gap-8">
+                            <ul className="space-y-4 w-full  gap-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3" >
+                                {
+                                    doms.map((dom) => (
+                                        <VirtualDomItem key={dom.id} dom={dom} />
+                                    ))
+                                }
+                            </ul>
+                            {
+                                hasNextPage && (
+                                    <Button
+                                        onPress={() => fetchNextPage()}
+                                        color="default"
+                                        size="lg"
+                                        isLoading={isLoading}
+                                        variant="solid"
+                                        className="bg-default-900 text-white"
+                                    >
+                                        Show more
+                                    </Button>
+                                )
+                            }
+                        </div>
+                }
+            </div >
+        </Container>
+    )
+}

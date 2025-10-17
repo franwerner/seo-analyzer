@@ -1,10 +1,11 @@
 import { useMutation } from "@tanstack/react-query"
 import getApiResponse from "@/src/common/utils/getApiResponse.util"
+import { UpdateVirtualWebDTO } from "@packages/common"
 
 export default function useUpdateVirtualWeb() {
 
     return useMutation({
-        mutationFn: async (props: { id: number, host: string, mainPathname: string }) => {
+        mutationFn: async (props: UpdateVirtualWebDTO) => {
             const response = await fetch("/api/virtual-web/edit", {
                 method: "PUT",
                 headers: {

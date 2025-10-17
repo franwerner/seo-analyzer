@@ -19,7 +19,7 @@ export default function useLogin() {
             return await getApiResponse(response)
         },
         onSuccess: () => {
-            router.push("/admin/")
+            router.push("/virtualWeb/")
         }
     })
 }
