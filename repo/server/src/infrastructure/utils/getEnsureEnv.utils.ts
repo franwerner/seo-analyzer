@@ -6,6 +6,7 @@ interface Env {
     OPENAI_KEY: string
     CLIENT_URL: string
     NODE_ENV: string
+    PORT: number
 }
 
 const getEnsureEnv = (key: keyof Env) => {
