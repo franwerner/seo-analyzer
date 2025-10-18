@@ -1,10 +1,9 @@
-import { ApiErrorResponse, ApiSuccessResponse } from "@/src/common/types/ApiResponse.interface"
-import getApiResponse from "@/src/common/utils/getApiResponse.util"
-import { GetVirtualDomsResponseDto } from "@seo-analyzer/common"
+import { getApiResponse, GetVirtualDomsResponseDto } from "@seo-analyzer/common"
 import { useInfiniteQuery } from "@tanstack/react-query"
+import { ApiResponse } from "@seo-analyzer/common"
 
 export default function useGetVirtualDoms(virtualWebId: number) {
-    return useInfiniteQuery<ApiSuccessResponse<GetVirtualDomsResponseDto>, ApiErrorResponse>({
+    return useInfiniteQuery<ApiResponse.Success<GetVirtualDomsResponseDto>, ApiResponse.Failed>({
         queryKey: ["virtual-dom", virtualWebId],
         queryFn: async ({ pageParam = 0 }) => {
             const response = await fetch(`/backend/virtual-dom-stored/all/${virtualWebId}?skip=${pageParam}`)

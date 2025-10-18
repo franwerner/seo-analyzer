@@ -1,11 +1,10 @@
-import getApiResponse from "@/src/common/utils/getApiResponse.util"
-import { ApiErrorResponse, ApiSuccessResponse } from "@/src/common/types/ApiResponse.interface"
+import { ApiResponse, getApiResponse } from "@seo-analyzer/common"
 import { useMutation } from "@tanstack/react-query"
 import { useRouter } from "next/navigation"
 
 export default function useLogin() {
     const router = useRouter()
-    return useMutation<ApiSuccessResponse, ApiErrorResponse, string>({
+    return useMutation<ApiResponse.Success, ApiResponse.Failed, string>({
         mutationFn: async (password: string) => {
             const response = await fetch("/backend/auth/login", {
                 method: "POST",

@@ -1,9 +1,9 @@
 import { addToast } from "@heroui/toast";
+import { ApiResponseFailed } from "@seo-analyzer/common";
 import { MutationCache, QueryCache, QueryClient } from "@tanstack/react-query";
-import { ErrorResponse } from "../utils/getApiResponse.util";
 
 const onError = (error: Error) => {
-    if (error instanceof ErrorResponse) {
+    if (error instanceof ApiResponseFailed) {
         addToast({
             title: "Error",
             description: error.message,

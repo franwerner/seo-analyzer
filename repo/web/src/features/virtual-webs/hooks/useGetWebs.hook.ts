@@ -1,11 +1,10 @@
-import { ApiErrorResponse, ApiSuccessResponse } from "@/src/common/types/ApiResponse.interface";
-import getApiResponse from "@/src/common/utils/getApiResponse.util";
-import { GetVirtualWebsResponseDTO } from "@seo-analyzer/common";
+import { getApiResponse, GetVirtualWebsResponseDTO } from "@seo-analyzer/common";
 import { useInfiniteQuery } from "@tanstack/react-query";
+import { ApiResponse } from "@seo-analyzer/common";
 
 
 export default function useGetVirtualWebs() {
-    return useInfiniteQuery<ApiSuccessResponse<GetVirtualWebsResponseDTO>, ApiErrorResponse>({
+    return useInfiniteQuery<ApiResponse.Success<GetVirtualWebsResponseDTO>, ApiResponse.Failed>({
         queryKey: ["virtual-webs"],
         queryFn: async ({ pageParam = 0 }) => {
             const response = await fetch(`/backend/virtual-web-stored/all?skip=${pageParam}`)

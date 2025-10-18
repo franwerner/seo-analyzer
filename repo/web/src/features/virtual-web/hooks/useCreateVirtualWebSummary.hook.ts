@@ -1,12 +1,11 @@
-import { ApiErrorResponse, ApiSuccessResponse } from "@/src/common/types/ApiResponse.interface";
-import getApiResponse from "@/src/common/utils/getApiResponse.util";
 import mergeUsage from "@/src/common/utils/mergeUsage.util";
-import { CreateVirtualWebSummaryResponseDTO, GetVirtualWebDetailsResponseDTO } from "@seo-analyzer/common";
+import { CreateVirtualWebSummaryResponseDTO, getApiResponse, GetVirtualWebDetailsResponseDTO } from "@seo-analyzer/common";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { ApiResponse } from "@seo-analyzer/common";
 
 export default function useCreateVirtualWebSummary(virtualWebId: number) {
     const queryClient = useQueryClient()
-    return useMutation<ApiSuccessResponse<CreateVirtualWebSummaryResponseDTO>, ApiErrorResponse>({
+    return useMutation<ApiResponse.Success<CreateVirtualWebSummaryResponseDTO>, ApiResponse.Failed>({
         mutationFn: async () => {
             const response = await fetch(`/backend/virtual-web/create-summary/${virtualWebId}`, {
                 method: "POST",
@@ -19,7 +18,7 @@ export default function useCreateVirtualWebSummary(virtualWebId: number) {
         onSuccess(data) {
             queryClient.setQueryData(
                 ["virtual-web", virtualWebId],
-                (oldData: ApiSuccessResponse<GetVirtualWebDetailsResponseDTO>) => {
+                (oldData: ApiResponse.Success<GetVirtualWebDetailsResponseDTO>) => {
                     const result = data.result
                     if (!result) return oldData
                     const { usage, ...virtualWebSummary } = result

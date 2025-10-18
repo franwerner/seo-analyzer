@@ -34,7 +34,8 @@
     "**/*.ts",
     "**/*.tsx",
     ".next/types/**/*.ts",
-    "src/common/components/Breadcrums.component.tss"
+    "src/common/components/Breadcrums.component.tss",
+    "../../packages/common/src/utils/getApiResponse.util.ts"
   ],
   "exclude": [
     "node_modules"

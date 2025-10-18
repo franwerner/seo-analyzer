@@ -1,12 +1,11 @@
-import { ApiErrorResponse, ApiSuccessResponse } from "@/src/common/types/ApiResponse.interface";
-import getApiResponse from "@/src/common/utils/getApiResponse.util";
-import { CreateVirtualDomDTO, CreateVirtualDomResponseDTO, GetVirtualDomsResponseDto } from "@seo-analyzer/common";
+import { CreateVirtualDomDTO, CreateVirtualDomResponseDTO, getApiResponse, GetVirtualDomsResponseDto } from "@seo-analyzer/common";
 import { InfiniteData, useMutation, useQueryClient } from "@tanstack/react-query";
+import { ApiResponse } from "@seo-analyzer/common"
 
 export default function useCreateVirtualDom() {
 
     const queryClient = useQueryClient()
-    return useMutation<ApiSuccessResponse<CreateVirtualDomResponseDTO>, ApiErrorResponse, CreateVirtualDomDTO>({
+    return useMutation<ApiResponse.Success<CreateVirtualDomResponseDTO>, ApiResponse.Failed, CreateVirtualDomDTO>({
         mutationKey: ["virtual-dom"],
         mutationFn: async (props) => {
             console.log(props)
@@ -22,7 +21,7 @@ export default function useCreateVirtualDom() {
         onSuccess: (data) => {
             queryClient.setQueryData(
                 ["virtual-dom", data.result?.virtualWebId],
-                (oldData: InfiniteData<ApiSuccessResponse<GetVirtualDomsResponseDto>>) => {
+                (oldData: InfiniteData<ApiResponse.Success<GetVirtualDomsResponseDto>>) => {
                     if (!oldData) return oldData
                     const newPages = oldData.pages.map((page, index) =>
                         index === 0

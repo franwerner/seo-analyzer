@@ -1,14 +1,13 @@
 "use client"
-import { ApiErrorResponse, ApiSuccessResponse } from "@/src/common/types/ApiResponse.interface"
-import getApiResponse from "@/src/common/utils/getApiResponse.util"
 import { InfiniteData, useMutation, useQueryClient } from "@tanstack/react-query"
-import { CreateVirtualWebDTO, GetVirtualWebsResponseDTO } from "@seo-analyzer/common";
+import { CreateVirtualWebDTO, getApiResponse, GetVirtualWebsResponseDTO } from "@seo-analyzer/common";
+import { ApiResponse } from "@seo-analyzer/common";
 
 
 export default function useCreateVirtualWeb() {
     const queryClient = useQueryClient()
 
-    return useMutation<ApiSuccessResponse<CreateVirtualWebDTO>, ApiErrorResponse, CreateVirtualWebDTO>({
+    return useMutation<ApiResponse.Success<CreateVirtualWebDTO>, ApiResponse.Failed, CreateVirtualWebDTO>({
         mutationFn: async (props) => {
             const response = await fetch("/backend/virtual-web-stored/create", {
                 method: "POST",
@@ -22,7 +21,7 @@ export default function useCreateVirtualWeb() {
         onSuccess: (data) => {
             queryClient.setQueryData(
                 ["virtual-webs"],
-                (oldData: InfiniteData<ApiSuccessResponse<GetVirtualWebsResponseDTO>>) => {
+                (oldData: InfiniteData<ApiResponse.Success<GetVirtualWebsResponseDTO>>) => {
                     if (!oldData) return oldData
                     const newPages = oldData.pages.map((page, index) =>
                         index === 0
