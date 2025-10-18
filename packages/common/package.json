@@ -1,6 +1,6 @@
 {
   "name": "@seo-analyzer/common",
-  "version": "1.0.6",
+  "version": "1.0.8",
   "description": "",
   "type": "module",
   "main": "./dist/index.js",
@@ -17,7 +17,7 @@
   "scripts": {
     "build": "tsup",
     "prepublishOnly": "npm run build",
-    "publish": "npm publish --access restricted"
+    "publish": "npm publish --access public"
   },
   "keywords": [],
   "author": "",

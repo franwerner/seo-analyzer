@@ -19,11 +19,11 @@
   "description": "",
   "dependencies": {
     "@prisma/client": "^6.17.0",
-    "@seo-analyzer/common": "latest",
     "cookie-parser": "^1.4.7",
     "crc-32": "^1.2.2",
     "dotenv": "^17.2.1",
     "express": "^5.1.0",
+    "@seo-analyzer/common": "latest",
     "jsdom": "^26.1.0",
     "jsonwebtoken": "^9.0.2",
     "openai": "^5.15.0",
