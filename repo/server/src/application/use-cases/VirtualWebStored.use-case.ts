@@ -1,9 +1,9 @@
-import { CreateVirtualWebDTO, createVirtualWebResponseScheme, createVirtualWebScheme, getVirtualWebDetailsResponseScheme, getVirtualWebsResponseScheme } from "@seo-analyzer/common";
+import VirtualWebNotFound from "@/domain/virtual-web/errors/VirtualWebNotFount.error";
+import OpenAiService from "@/infrastructure/AI/openAi.service";
+import { CreateVirtualWebDTO, createVirtualWebScheme, getVirtualWebDetailsScheme, getVirtualWebsScheme } from "@seo-analyzer/common";
 import VirtualWebRepository from "../repositories/VirtualWeb.repository";
 import VirtualWebSummaryRepository from "../repositories/VirtualWebSummary.repository";
-import OpenAiService from "@/infrastructure/AI/openAi.service";
 import ValidateDTO from "../shared/decorators/validateDTO.decorator";
-import VirtualWebNotFound from "@/domain/virtual-web/errors/VirtualWebNotFount.error";
 
 export default class VirtualWebStoredUseCase {
 
@@ -15,32 +15,23 @@ export default class VirtualWebStoredUseCase {
         }
     ) { }
 
-    @ValidateDTO({
-        output: getVirtualWebsResponseScheme,
-        input: null
-    })
+    @ValidateDTO(getVirtualWebsScheme)
     async getVirtualWebs(skip?: number) {
         return await this.repositories.virtualWebRepository.findAll(skip)
     }
 
-    @ValidateDTO({
-        input: createVirtualWebScheme,
-        output: createVirtualWebResponseScheme
-    })
+    @ValidateDTO(createVirtualWebScheme)
     async createVirtualWeb({
         host,
         mainPathname
-    }: CreateVirtualWebDTO) {
+    }: CreateVirtualWebDTO["input"]) {
         return await this.repositories.virtualWebRepository.createVirtualWebAggregate({
             host,
             mainPathname
         })
     }
 
-    @ValidateDTO({
-        output: getVirtualWebDetailsResponseScheme,
-        input: null
-    })
+    @ValidateDTO(getVirtualWebDetailsScheme)
     async getVirtualWebDetails(id: number) {
 
         const [

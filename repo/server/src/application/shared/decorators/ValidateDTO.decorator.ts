@@ -1,15 +1,6 @@
-import { z } from "zod"
+import { SchemeOptions } from "@seo-analyzer/common";
 import validateInputDTO from "../utils/validateInputDTO.util";
 import validateOutputDTO from "../utils/validateOutputDTO.util";
-
-
-type InputType<I> = z.ZodType<I> | null
-type OutputType<O> = z.ZodType<O> | null
-
-interface ValidateOptions<I, O> {
-    input: InputType<I>
-    output: OutputType<O>
-}
 
 /**
  * Decorator para validar DTOs de entrada y salida.
@@ -22,7 +13,7 @@ interface ValidateOptions<I, O> {
  * Esto ayuda a evitar que el desarrollador olvide validar en caso de que estuviera planeada la entrada o salida..
  */
 
-export default function ValidateDTO<I, O>({ input, output }: ValidateOptions<I, O>) {
+export default function ValidateDTO<I, O>({ input, output }: SchemeOptions<I, O>) {
 
     if (input === undefined) {
         console.warn(new Error("[ValidateDTO] No input validation schema has been specified."));

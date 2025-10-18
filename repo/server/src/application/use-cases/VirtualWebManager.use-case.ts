@@ -3,9 +3,8 @@ import VirtualWebConfigNotFountError from "@/domain/virtual-web/errors/VirtualWe
 import VirtualWebStore from "@/domain/virtual-web/store/virtualWeb.store"
 import OpenAiService from "@/infrastructure/AI/openAi.service"
 import {
-    createVirtualWebSummaryResponseScheme,
+    createVirtualWebSummaryScheme,
     UpdateVirtualWebDTO,
-    updateVirtualWebResponseScheme,
     updateVirtualWebScheme
 } from "@seo-analyzer/common"
 import VirtualWebRepository from "../repositories/VirtualWeb.repository"
@@ -38,11 +37,8 @@ export default class VirtualWebManagerUsecase {
         })
     }
 
-    @ValidateDTO({
-        input: updateVirtualWebScheme,
-        output: updateVirtualWebResponseScheme
-    })
-    async updateVirtualWeb(props: UpdateVirtualWebDTO) {
+    @ValidateDTO(updateVirtualWebScheme)
+    async updateVirtualWeb(props: UpdateVirtualWebDTO["input"]) {
         const res = await this.repositories.virtualWebRepository.update(props)
         const virtualWebLock = await this.virtualWebStore.get(props.id)
         if (virtualWebLock) {
@@ -51,10 +47,7 @@ export default class VirtualWebManagerUsecase {
         return res
     }
 
-    @ValidateDTO({
-        output: createVirtualWebSummaryResponseScheme,
-        input: null
-    })
+    @ValidateDTO(createVirtualWebSummaryScheme)
     async createVirtualWebSummary(virtualWebId: number) {
         const virtualWeb = await this.getVirtualWebOrThrow(virtualWebId)
         const { content, tokens, model } = await virtualWeb.generateWebSummary()

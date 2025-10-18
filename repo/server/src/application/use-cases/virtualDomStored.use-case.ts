@@ -1,5 +1,5 @@
+import { CreateVirtualDomDTO, createVirtualDomScheme, getVirtualDomsScheme } from "@seo-analyzer/common";
 import VirtualDomRepository from "../repositories/VirtualDom.repository";
-import { CreateVirtualDomDTO, createVirtualDomResponseScheme, createVirtualDomScheme, getVirtualDomsResponseScheme, } from "@seo-analyzer/common"
 import ValidateDTO from "../shared/decorators/validateDTO.decorator";
 export default class VirtualDomStoredUseCase {
 
@@ -9,21 +9,15 @@ export default class VirtualDomStoredUseCase {
         }
     ) { }
 
-    @ValidateDTO({
-        input: createVirtualDomScheme,
-        output: createVirtualDomResponseScheme
-    })
-    async createVirtualDom(data: CreateVirtualDomDTO) {
+    @ValidateDTO(createVirtualDomScheme)
+    async createVirtualDom(data: CreateVirtualDomDTO["input"]) {
         return await this.repositories.virtualDomRepository.create({
             virtualWebId: data.virtualWebId,
             pathname: data.pathname,
         })
     }
 
-    @ValidateDTO({
-        output: getVirtualDomsResponseScheme,
-        input: null
-    })
+    @ValidateDTO(getVirtualDomsScheme)
     async getVirtualDoms(props: { virtualWebId: number, skip: number }) {
         return await this.repositories.virtualDomRepository.findAllByVirtualWeb(props)
     }
