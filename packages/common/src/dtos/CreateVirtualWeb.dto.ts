@@ -2,16 +2,18 @@ import hostScheme from "../schemes/host.scheme"
 import pathnameScheme from "../schemes/pathname.scheme"
 import { z } from "zod"
 import { virtualWebScheme } from "../schemes/virtualWeb.scheme"
+import { InferDTO } from "@/types/InferDTO.type"
 
 
-export const createVirtualWebScheme = z.object({
+const input = z.object({
     host: hostScheme,
     mainPathname: pathnameScheme,
 })
 
-export const createVirtualWebResponseScheme = virtualWebScheme
+const output = virtualWebScheme
 
-export type CreateVirtualWebDTO = z.infer<typeof createVirtualWebScheme>
-
-export type CreateVirtualWebResponseDTO = z.infer<typeof createVirtualWebResponseScheme>
-
+export const createVirtualWebScheme = {
+    input,
+    output
+}
+export type CreateVirtualWebDTO = InferDTO<typeof createVirtualWebScheme>

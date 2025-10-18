@@ -1,11 +1,20 @@
 import { paginationScheme, virtualDomScheme } from "@/schemes"
+import { InferDTO } from "@/types/InferDTO.type"
 import { z } from "zod"
 
 
-export const getVirtualDomsResponseScheme = z.object({
+const output = z.object({
     virtualDoms: z.array(virtualDomScheme),
     pagination: z.object({
         next: paginationScheme,
     })
 })
-export type GetVirtualDomsResponseDto = z.infer<typeof getVirtualDomsResponseScheme>
+
+const input = null
+
+export const getVirtualDomsScheme = {
+    input,
+    output
+}
+
+export type GetVirtualDomsDTO = InferDTO<typeof getVirtualDomsScheme>

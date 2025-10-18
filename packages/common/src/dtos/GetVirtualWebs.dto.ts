@@ -1,12 +1,20 @@
 import { z } from "zod"
 import { virtualWebScheme } from "../schemes/virtualWeb.scheme"
 import { paginationScheme } from "@/schemes"
+import { InferDTO } from "@/types/InferDTO.type"
 
-export const getVirtualWebsResponseScheme = z.object({
+const output = z.object({
     virtualWebs: z.array(virtualWebScheme),
     pagination: z.object({
         next: paginationScheme
     })
 })
 
-export type GetVirtualWebsResponseDTO = z.infer<typeof getVirtualWebsResponseScheme>
+const input = null
+
+export const getVirtualWebsScheme = {
+    input,
+    output
+}
+
+export type GetVirtualWebsDTO = InferDTO<typeof getVirtualWebsScheme>

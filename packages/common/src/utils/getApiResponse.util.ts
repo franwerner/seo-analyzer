@@ -14,7 +14,7 @@ export async function getApiResponse<T>(response: Response): Promise<ApiResponse
     }
     const json = await response.json()
     if (!response.ok) {
-        throw new ApiResponseFailed(json.error_type, json.message)
+        throw new ApiResponseFailed(json.error_type || "unhandled_error", json.message || "not identified error")
     }
 
     return json as ApiResponse.Success<T>

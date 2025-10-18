@@ -1,3 +1,4 @@
+import { InferDTO } from "@/types/InferDTO.type"
 import { ValidationTypeEnum } from "../types/ValidationType.enum"
 import { z } from "zod"
 
@@ -10,10 +11,17 @@ const validationSelectedScheme = z.object(validationKeys.reduce((acc, key) => {
 }, {} as Record<ValidationTypeEnum, z.ZodOptional<z.ZodBoolean>>)
 )
 
-export const createAnalyzeSingleDomScheme = z.object({
+const input = z.object({
     virtualDomId: z.number(),
     virtualWebId: z.number(),
     validationsSelected: validationSelectedScheme.strip()
 })
 
-export type CreateAnalyzeSingleDomDto = z.infer<typeof createAnalyzeSingleDomScheme>
+const output = null
+
+export const createAnalyzeSingleDomScheme = {
+    input,
+    output
+}
+
+export type CreateAnalyzeSingleDomDTO = InferDTO<typeof createAnalyzeSingleDomScheme>

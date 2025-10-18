@@ -1,13 +1,17 @@
 import { z } from "zod"
 import hostScheme from "../schemes/host.scheme"
 import { virtualWebScheme } from "@/schemes"
+import { InferDTO } from "@/types/InferDTO.type"
 
-export const updateVirtualWebScheme = z.object({
+const input = z.object({
     id: z.number(),
     host: hostScheme,
 })
 
-export type UpdateVirtualWebDTO = z.infer<typeof updateVirtualWebScheme>
+const output = virtualWebScheme
 
-export const updateVirtualWebResponseScheme = virtualWebScheme
-export type UpdateVirtualWebResponseScheme = z.infer<typeof updateVirtualWebResponseScheme>
+export const updateVirtualWebScheme = {
+    input,
+    output
+}
+export type UpdateVirtualWebDTO = InferDTO<typeof updateVirtualWebScheme>

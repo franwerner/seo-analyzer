@@ -1,8 +1,15 @@
 import { usageScheme, virtualWebSummaryScheme } from "@/schemes";
-import { z } from "zod";
+import { InferDTO } from "@/types/InferDTO.type";
 
-export const createVirtualWebSummaryResponseScheme = virtualWebSummaryScheme.extend({
+const output = virtualWebSummaryScheme.extend({
     usage: usageScheme
 })
 
-export type CreateVirtualWebSummaryResponseDTO = z.infer<typeof createVirtualWebSummaryResponseScheme>
+const input = null
+
+export const createVirtualWebSummaryScheme = {
+    input,
+    output
+}
+
+export type CreateVirtualWebSummaryDTO = InferDTO<typeof createVirtualWebSummaryScheme>
