@@ -4,7 +4,7 @@ import { Button } from "@heroui/button"
 import { Spinner } from "@heroui/spinner"
 import { VirtualDom } from "@seo-analyzer/common"
 import Link from "next/link"
-import { useParams } from "next/navigation"
+import { useParams, usePathname } from "next/navigation"
 import { memo, useState } from "react"
 import useGetVirtualDoms from "../virtual-web/hooks/useGetVirtualDoms.hook"
 import RegisterVirtualDom from "./components/RegisterVirtualDomModal.component"
@@ -25,6 +25,7 @@ const ModalContainer = () => {
 }
 
 const VirtualDomItem = memo(({ dom }: { dom: VirtualDom }) => {
+    const { virtualWebId } = useParams()
     return (
         <li
             key={dom.id}
@@ -35,8 +36,7 @@ const VirtualDomItem = memo(({ dom }: { dom: VirtualDom }) => {
                     Pathname: {dom.pathname}
                 </span>
             </div>
-
-            <Link href={`/virtualDom/${dom.id}`}>
+            <Link href={`virtualDom/${dom.id}`}>
                 <Button
                     color="secondary"
                     size="sm"

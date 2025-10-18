@@ -13,7 +13,7 @@ const VirtualWebItem = memo(({ web }: { web: VirtualWeb }) => {
     return (
         <li
             key={web.id}
-            className="flex justify-between  hover:scale-100 w-full h-full border border-b-2 border-default-300 items-center scale-95   rounded-lg py-2 px-4 shadow-sm transition-all"
+            className="flex justify-between  hover:scale-100 w-full h-full border border-b-2 border-default-300 items-center scale-95   rounded-lg py-4 px-4 shadow-sm transition-all"
         >
             <div className="flex gap-1 overflow-hidden flex-col">
                 <HLink
