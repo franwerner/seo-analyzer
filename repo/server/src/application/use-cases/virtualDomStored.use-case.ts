@@ -10,9 +10,7 @@ export default class VirtualDomStoredUseCase {
     ) { }
 
     @ValidateDTO(createVirtualDomScheme)
-    async createVirtualDom({
-        ...data
-    }: CreateVirtualDomDTO) {
+    async createVirtualDom(data: CreateVirtualDomDTO) {
         const result = await this.repositories.virtualDomRepository.create({
             virtualWebId: data.virtualWebId,
             pathname: data.pathname,

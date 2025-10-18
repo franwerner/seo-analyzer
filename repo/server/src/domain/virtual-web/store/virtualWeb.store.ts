@@ -53,7 +53,7 @@ class VirtualWebStore {
 
 
     get(id: number) {
-        const locked = this.lockStore.locked.get(id)
+        const locked = this.lockStore.getLock(id)
         if (locked) return locked
         const virtualWeb = this.store.get(id)
         virtualWeb && this.touch(virtualWeb)

@@ -42,10 +42,11 @@ export default class VirtualWebManagerUsecase {
     async updateVirtualWeb(props: UpdateVirtualWebDTO) {
         const res = await this.repositories.virtualWebRepository.update(props)
         const virtualWebLock = await this.virtualWebStore.get(props.id)
+        const resParsed = updateVirtualWebResponseScheme.parse(res)
         if (virtualWebLock) {
-            virtualWebLock.setHost(props.host)
+            virtualWebLock.setHost(resParsed.host)
         }
-        return updateVirtualWebResponseScheme.parse(res)
+        return resParsed
     }
 
     async createVirtualWebSummary(virtualWebId: number) {
@@ -59,13 +60,15 @@ export default class VirtualWebManagerUsecase {
                 model
             }
         })
-        const dto = createVirtualWebSummaryResponseScheme.parse({
+        virtualWeb.setVirtualWebSummary({
+            ...res,
+            content
+        })
+        return createVirtualWebSummaryResponseScheme.parse({
             content,
             ...res,
             usage: this.AiService.calculateUsageTokens(tokens)
         })
-        virtualWeb.setVirtualWebSummary(dto)
-        return dto
     }
 
 }

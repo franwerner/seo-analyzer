@@ -45,11 +45,12 @@ export default class VirtualWebStoredUseCase {
             this.repositories.virtualWebRepository.sumSummaryUsage(id)
         ])
 
-        const analysisUsage = this.AiService.calculateUsageTokens(analysisUsageWithoutTotal)
-        const summaryUsage = this.AiService.calculateUsageTokens(summaryUsageWithoutTotal)
         if (!virtualWeb) {
             throw new VirtualWebNotFound()
         }
+
+        const analysisUsage = this.AiService.calculateUsageTokens(analysisUsageWithoutTotal)
+        const summaryUsage = this.AiService.calculateUsageTokens(summaryUsageWithoutTotal)
         return getVirtualWebDetailsResponseScheme.parse({
             ...virtualWeb,
             analysisUsage,

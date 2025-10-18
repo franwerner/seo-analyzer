@@ -11,8 +11,7 @@
     "prisma:migrate": "npx prisma migrate dev",
     "prisma:migrate-deploy": "npx prisma migrate deploy",
     "prisma:generate": "npx prisma generate",
-    "prisma:studio": "npx prisma studio",
-    "deploy": "npm run build && npm run prisma:migrate-deploy"
+    "prisma:studio": "npx prisma studio"
   },
   "keywords": [],
   "author": "",

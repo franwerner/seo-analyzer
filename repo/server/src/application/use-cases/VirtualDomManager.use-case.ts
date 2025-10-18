@@ -16,9 +16,9 @@ export default class VirtualDomManagerUseCase {
 
     async getVirtualDomOrThrow(props: { virtualWebId: number, virtualDomId: number }) {
         const { virtualWebId, virtualDomId } = props
-        const virtualWeb = await this.virtualWebManagerService.getVirtualWebOrThrow(virtualWebId)
-        const virtualDom = await virtualWeb.vdomStore.getOrCreate(virtualDomId, async (create) => {
-            const virtualDom = await this.repositories.virtualDomRepository.findByVirtualWebAndDom(props)
+        const virtualWebEntity = await this.virtualWebManagerService.getVirtualWebOrThrow(virtualWebId)
+        const virtualDomEntity = await virtualWebEntity.vdomStore.getOrCreate(virtualDomId, async (create) => {
+            const virtualDom = await this.repositories.virtualDomRepository.findByRelation(props)
             if (!virtualDom) throw new VirtualDomNotFountError()
             return create({
                 id: virtualDom.id,
@@ -26,8 +26,8 @@ export default class VirtualDomManagerUseCase {
             })
         })
         return {
-            virtualWeb,
-            virtualDom
+            virtualWebEntity,
+            virtualDomEntity
         }
     }
 
@@ -40,16 +40,16 @@ export default class VirtualDomManagerUseCase {
     }: CreateAnalyzeSingleDomDto) {
 
         const {
-            virtualDom,
-            virtualWeb
+            virtualDomEntity,
+            virtualWebEntity
         } = await this.getVirtualDomOrThrow({
             virtualWebId,
             virtualDomId
         })
 
-        const summary = virtualWeb.getOrThrowVirtualWebSummary()
+        const summary = virtualWebEntity.getOrThrowVirtualWebSummary()
 
-        const { issues, tokens, model } = await virtualDom.analyze(summary.content, validationsSelected)
+        const { issues, tokens, model } = await virtualDomEntity.analyze(summary.content, validationsSelected)
 
         await this.repositories.virtualDomAnalysisRepository.createAnalysisAggreate({
             virtualDomId,

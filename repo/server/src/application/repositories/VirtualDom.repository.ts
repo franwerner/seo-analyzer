@@ -55,7 +55,7 @@ export default class VirtualDomRepository {
         }
     }
 
-    findByVirtualWebAndDom({ virtualDomId, virtualWebId }: { virtualDomId: number, virtualWebId: number }) {
+    findByRelation({ virtualDomId, virtualWebId }: { virtualDomId: number, virtualWebId: number }) {
         return this.client.virtualDom.findUnique({
             where: {
                 id: virtualDomId,
