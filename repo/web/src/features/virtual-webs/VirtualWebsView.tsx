@@ -75,7 +75,7 @@ export default function VirtualWebsView() {
             <ModalContainer />
             <div className="w-full flex-1 flex flex-col h-full p-6 gap-8 rounded-lg ">
                 <div>
-                    <h2 className="text-3xl font-semibold text-default-900  text-center uppercase ">Virtual Web List</h2>
+                    <h2 className="text-3xl font-semibold text-default-900  text-center uppercase underline">Virtual Web List</h2>
                 </div>
                 {
                     isLoading ?

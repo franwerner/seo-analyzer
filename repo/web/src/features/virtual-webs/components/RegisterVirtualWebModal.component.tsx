@@ -24,14 +24,14 @@ const ModalForm = ({
 
     const { mutateAsync, isPending } = useCreateVirtualWeb()
 
-    const [errors, setErrors] = useState<Partial<Record<keyof CreateVirtualWebDTO, string[]>>>({
+    const [errors, setErrors] = useState<Partial<Record<keyof CreateVirtualWebDTO["input"], string[]>>>({
         host: undefined,
         mainPathname: undefined
     })
 
     const handleSubmit = (form: NormalizedFormDataType) => {
 
-        const res = createVirtualWebScheme.safeParse(form)
+        const res = createVirtualWebScheme.input.safeParse(form)
         if (!res.success) {
             const fieldErrors = res.error.flatten().fieldErrors
             setErrors(fieldErrors)

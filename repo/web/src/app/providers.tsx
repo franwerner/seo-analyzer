@@ -30,6 +30,10 @@ export function Providers({ children, themeProps }: ProvidersProps) {
     <HeroUIProvider className="h-full flex flex-col flex-1" navigate={router.push}>
       <NextThemesProvider {...themeProps}>
         <ToastProvider
+          maxVisibleToasts={2}
+          toastProps={{
+            timeout: 3000
+          }}
         />
         <QueryClientProvider
           client={queryClientConfig()}>

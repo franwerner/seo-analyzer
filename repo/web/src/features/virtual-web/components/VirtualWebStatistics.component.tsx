@@ -1,6 +1,6 @@
 import UsageCard from "@/src/common/components/UsageCard.component";
 import { Button } from "@heroui/button";
-import { GetVirtualWebDetailsResponseDTO } from "@seo-analyzer/common";
+import { GetVirtualWebDetailsDTO } from "@seo-analyzer/common";
 import Link from "next/link";
 import { useParams } from "next/navigation";
 
@@ -30,7 +30,7 @@ const AditionalInfo = ({ createdAt, virtualDomCount }: AditionalInfoProps) => {
 }
 
 
-const UsageInfo = ({ summaryUsage, analysisUsage }: Pick<GetVirtualWebDetailsResponseDTO, "summaryUsage" | "analysisUsage">) => {
+const UsageInfo = ({ summaryUsage, analysisUsage }: Pick<GetVirtualWebDetailsDTO["output"], "summaryUsage" | "analysisUsage">) => {
 
     const usages = [
         {
@@ -60,7 +60,7 @@ export default function VirtualWebStatistics({
     createdAt,
     summaryUsage,
     virtualDomCount
-}: Pick<GetVirtualWebDetailsResponseDTO, "createdAt" | "virtualDomCount" | "summaryUsage" | "analysisUsage">) {
+}: Pick<GetVirtualWebDetailsDTO["output"], "createdAt" | "virtualDomCount" | "summaryUsage" | "analysisUsage">) {
     const { virtualWebId } = useParams()
 
     return (

@@ -25,7 +25,7 @@ const ModalForm = ({ onClose }: { onClose: () => void }) => {
     const [errors, setErrors] = useState<string[] | undefined>()
 
     const handleSubmit = (form: NormalizedFormDataType) => {
-        const res = createVirtualDomScheme.safeParse({
+        const res = createVirtualDomScheme.input.safeParse({
             pathname: form.pathname,
             virtualWebId: Number(virtualWebId)
         })
