@@ -3,7 +3,7 @@ import Container from "@/src/common/components/Container.component";
 import { Button } from "@heroui/button";
 import { Link as HLink } from "@heroui/link";
 import { Spinner } from "@heroui/spinner";
-import { usageScheme, VirtualWeb } from "@seo-analyzer/common";
+import { VirtualWeb } from "@seo-analyzer/common";
 import Link from "next/link";
 import { memo, useState } from "react";
 import RegisterVirtualWebModal from "./components/RegisterVirtualWebModal.component";
@@ -13,7 +13,7 @@ const VirtualWebItem = memo(({ web }: { web: VirtualWeb }) => {
     return (
         <li
             key={web.id}
-            className="flex justify-between  hover:scale-100 w-full h-full border border-b-2 border-default-300 items-center scale-95   rounded-lg py-1 px-4 shadow-sm transition-all"
+            className="flex justify-between  hover:scale-100 w-full h-full border border-b-2 border-default-300 items-center scale-95   rounded-lg py-2 px-4 shadow-sm transition-all"
         >
             <div className="flex gap-1 overflow-hidden flex-col">
                 <HLink
