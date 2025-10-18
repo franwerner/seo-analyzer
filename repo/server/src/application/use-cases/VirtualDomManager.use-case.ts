@@ -1,7 +1,7 @@
 import VirtualDomRepository from "@/application/repositories/VirtualDom.repository"
 import { VirtualDomNotFountError } from "@/domain/virtual-dom/errors"
 import VirtualDomAnalysisRepository from "../repositories/VirtualDomAnalysis.repository"
-import ValidateDTO from "../shared/decorators/ValidateDTO.decorator"
+import ValidateDTO from "../shared/decorators/validateDTO.decorator"
 import VirtualWebManagerService from "./VirtualWebManager.use-case"
 import { CreateAnalyzeSingleDomDto, createAnalyzeSingleDomScheme } from "@seo-analyzer/common"
 
@@ -32,7 +32,10 @@ export default class VirtualDomManagerUseCase {
     }
 
     //Falta DTO de respueta y cambiar el nombre page a DOM
-    @ValidateDTO(createAnalyzeSingleDomScheme)
+    @ValidateDTO({
+        input: createAnalyzeSingleDomScheme,
+        output: null
+    })
     async createSingleDomAnalyze({
         virtualWebId,
         virtualDomId,

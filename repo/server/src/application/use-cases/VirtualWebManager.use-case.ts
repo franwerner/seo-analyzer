@@ -10,7 +10,7 @@ import {
 } from "@seo-analyzer/common"
 import VirtualWebRepository from "../repositories/VirtualWeb.repository"
 import VirtualWebSummaryRepository from "../repositories/VirtualWebSummary.repository"
-import ValidateDTO from "../shared/decorators/ValidateDTO.decorator"
+import ValidateDTO from "../shared/decorators/validateDTO.decorator"
 
 export default class VirtualWebManagerUsecase {
 
@@ -38,17 +38,23 @@ export default class VirtualWebManagerUsecase {
         })
     }
 
-    @ValidateDTO(updateVirtualWebScheme)
+    @ValidateDTO({
+        input: updateVirtualWebScheme,
+        output: updateVirtualWebResponseScheme
+    })
     async updateVirtualWeb(props: UpdateVirtualWebDTO) {
         const res = await this.repositories.virtualWebRepository.update(props)
         const virtualWebLock = await this.virtualWebStore.get(props.id)
-        const resParsed = updateVirtualWebResponseScheme.parse(res)
         if (virtualWebLock) {
-            virtualWebLock.setHost(resParsed.host)
+            virtualWebLock.setHost(res.host)
         }
-        return resParsed
+        return res
     }
 
+    @ValidateDTO({
+        output: createVirtualWebSummaryResponseScheme,
+        input: null
+    })
     async createVirtualWebSummary(virtualWebId: number) {
         const virtualWeb = await this.getVirtualWebOrThrow(virtualWebId)
         const { content, tokens, model } = await virtualWeb.generateWebSummary()
@@ -60,15 +66,16 @@ export default class VirtualWebManagerUsecase {
                 model
             }
         })
-        virtualWeb.setVirtualWebSummary({
+        const virtualWebSummary = {
             ...res,
             content
-        })
-        return createVirtualWebSummaryResponseScheme.parse({
-            content,
-            ...res,
-            usage: this.AiService.calculateUsageTokens(tokens)
-        })
+        }
+        const usage = this.AiService.calculateUsageTokens(tokens)
+        virtualWeb.setVirtualWebSummary(virtualWebSummary)
+        return {
+            ...virtualWebSummary,
+            usage
+        }
     }
 
 }

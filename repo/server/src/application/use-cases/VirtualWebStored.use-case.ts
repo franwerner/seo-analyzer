@@ -2,7 +2,7 @@ import { CreateVirtualWebDTO, createVirtualWebResponseScheme, createVirtualWebSc
 import VirtualWebRepository from "../repositories/VirtualWeb.repository";
 import VirtualWebSummaryRepository from "../repositories/VirtualWebSummary.repository";
 import OpenAiService from "@/infrastructure/AI/openAi.service";
-import ValidateDTO from "../shared/decorators/ValidateDTO.decorator";
+import ValidateDTO from "../shared/decorators/validateDTO.decorator";
 import VirtualWebNotFound from "@/domain/virtual-web/errors/VirtualWebNotFount.error";
 
 export default class VirtualWebStoredUseCase {
@@ -15,24 +15,32 @@ export default class VirtualWebStoredUseCase {
         }
     ) { }
 
+    @ValidateDTO({
+        output: getVirtualWebsResponseScheme,
+        input: null
+    })
     async getVirtualWebs(skip?: number) {
-        const virtualWebs = await this.repositories.virtualWebRepository.findAll(skip)
-        return getVirtualWebsResponseScheme.parse(virtualWebs)
+        return await this.repositories.virtualWebRepository.findAll(skip)
     }
 
-    @ValidateDTO(createVirtualWebScheme)
+    @ValidateDTO({
+        input: createVirtualWebScheme,
+        output: createVirtualWebResponseScheme
+    })
     async createVirtualWeb({
         host,
         mainPathname
     }: CreateVirtualWebDTO) {
-        const res = await this.repositories.virtualWebRepository.createVirtualWebAggregate({
+        return await this.repositories.virtualWebRepository.createVirtualWebAggregate({
             host,
             mainPathname
         })
-
-        return createVirtualWebResponseScheme.parse(res)
     }
 
+    @ValidateDTO({
+        output: getVirtualWebDetailsResponseScheme,
+        input: null
+    })
     async getVirtualWebDetails(id: number) {
 
         const [
@@ -51,11 +59,11 @@ export default class VirtualWebStoredUseCase {
 
         const analysisUsage = this.AiService.calculateUsageTokens(analysisUsageWithoutTotal)
         const summaryUsage = this.AiService.calculateUsageTokens(summaryUsageWithoutTotal)
-        return getVirtualWebDetailsResponseScheme.parse({
+        return {
             ...virtualWeb,
             analysisUsage,
             summaryUsage,
-        })
+        }
     }
 
 }
