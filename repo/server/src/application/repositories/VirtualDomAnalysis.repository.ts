@@ -1,12 +1,12 @@
 import { AIUsage, AnalysisIssue, PrismaClient } from "@prisma/client";
 
-
-
 interface CreateAggregate {
     virtualDomId: number,
     analysisIssues: Array<Omit<AnalysisIssue, 'id' | 'virtualDomAnalysisId'> & { traceIds: Array<string> }>
     AIUsage: Omit<AIUsage, 'id'>
 }
+
+const LIMIT = 15
 
 export default class VirtualDomAnalysisRepository {
     constructor(private client: PrismaClient) { }
@@ -15,7 +15,6 @@ export default class VirtualDomAnalysisRepository {
         return this.client.virtualDomAnalysis.create({ data })
     }
 
-
     createAnalysisAggreate({
         analysisIssues,
         AIUsage,
@@ -23,8 +22,7 @@ export default class VirtualDomAnalysisRepository {
     }: CreateAggregate) {
 
         return this.client.$transaction(async (tx) => {
-
-            const { id: virtualDomAnalysisId } = await tx.virtualDomAnalysis.create({
+            const virtualDomAnalysis = await tx.virtualDomAnalysis.create({
                 data: {
                     ...data,
                     virtualDomAnalysisUsage: {
@@ -37,6 +35,8 @@ export default class VirtualDomAnalysisRepository {
                 },
                 select: {
                     id: true,
+                    createdAt: true,
+                    virtualDomId: true,
                 }
             })
 
@@ -46,7 +46,7 @@ export default class VirtualDomAnalysisRepository {
                 await tx.analysisIssue.create({
                     data: {
                         ...rest,
-                        virtualDomAnalysisId,
+                        virtualDomAnalysisId: virtualDomAnalysis.id,
                         issueTraceId: {
                             createMany: {
                                 data: traceIds.map((traceId) => ({ traceId })),
@@ -58,7 +58,118 @@ export default class VirtualDomAnalysisRepository {
                 })
             }
 
+            return virtualDomAnalysis
         })
 
     }
+
+    async findUniqueWithIssues({ id }: { id: number }) {
+
+        const res = await this.client.virtualDomAnalysis.findUnique({
+            where: { id },
+            include: {
+                analysisIssue: {
+                    include: {
+                        _count: {
+                            select: {
+                                issueTraceId: true
+                            }
+                        }
+                    }
+                },
+                virtualDomAnalysisUsage: {
+                    include: {
+                        AIUsage: {
+                            select: {
+                                input: true,
+                                output: true,
+                            }
+                        }
+                    }
+                }
+            }
+        })
+
+        if (!res) return
+        const { analysisIssue, virtualDomAnalysisUsage } = res
+
+        return {
+            ...res,
+            issuesCount: analysisIssue.length,
+            analysisIssues: analysisIssue.map(({ _count, ...rest }) => ({
+                ...rest,
+                traceIdCount: _count.issueTraceId
+            })),
+            analysisUsage: {
+                input: Number(virtualDomAnalysisUsage?.AIUsage?.input) || 0,
+                output: Number(virtualDomAnalysisUsage?.AIUsage?.output) || 0,
+            }
+        }
+    }
+
+    async findByVirtualDom({ virtualDomId, skip = 0 }: { virtualDomId: number, skip?: number }) {
+        const analysesPromise = this.client.virtualDomAnalysis.findMany({
+            where: {
+                virtualDomId,
+            },
+            select: {
+                id: true,
+                createdAt: true,
+                virtualDomId: true,
+                _count: {
+                    select: {
+                        analysisIssue: true
+                    }
+                },
+                virtualDomAnalysisUsage: {
+                    select: {
+                        AIUsage: {
+                            select: {
+                                input: true,
+                                output: true,
+                            }
+                        }
+                    }
+                }
+            },
+            orderBy: {
+                createdAt: 'desc'
+            },
+            skip,
+            take: LIMIT
+        })
+
+        const hasNextPromise = this.client.virtualDomAnalysis.count({
+            where: {
+                virtualDomId,
+            },
+            skip: skip + LIMIT,
+            take: 1,
+        })
+
+
+        const [virtualDomAnalyses, hasNext] = await Promise.all([
+            analysesPromise,
+            hasNextPromise,
+        ])
+
+        return {
+            virtualDomAnalyses: virtualDomAnalyses.map(({ _count, virtualDomAnalysisUsage, ...rest }) => ({
+                ...rest,
+                issuesCount: _count.analysisIssue,
+                analysisUsage: {
+                    input: Number(virtualDomAnalysisUsage?.AIUsage?.input) || 0,
+                    output: Number(virtualDomAnalysisUsage?.AIUsage?.output) || 0,
+                }
+            })),
+            pagination: {
+                next: {
+                    has: hasNext > 0,
+                    skip: skip + LIMIT
+                }
+            }
+        }
+
+    }
+
 }

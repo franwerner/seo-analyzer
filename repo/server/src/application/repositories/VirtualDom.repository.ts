@@ -10,7 +10,7 @@ export default class VirtualDomRepository {
         return this.client.virtualDom.create({ data, select: { id: true, pathname: true, createdAt: true, virtualWebId: true } })
     }
 
-    async findAllByVirtualWeb({ virtualWebId, skip }: { virtualWebId: number, skip: number }) {
+    async findByVirtualWeb({ virtualWebId, skip }: { virtualWebId: number, skip: number }) {
         const virtualDomsPromise = this.client.virtualDom.findMany({
             where: {
                 virtualWebId
@@ -55,17 +55,60 @@ export default class VirtualDomRepository {
         }
     }
 
-    findByRelation({ virtualDomId, virtualWebId }: { virtualDomId: number, virtualWebId: number }) {
+    findByRelation({ id, virtualWebId }: { id: number, virtualWebId: number }) {
         return this.client.virtualDom.findUnique({
             where: {
-                id: virtualDomId,
-                virtualWebId: virtualWebId
+                id,
+                virtualWebId
             },
             select: {
                 id: true,
                 pathname: true,
             }
         })
+    }
+
+    findUniqueWithVirtualWeb({ id }: { id: number }) {
+        return this.client.virtualDom.findUnique({
+            where: {
+                id,
+            },
+            select: {
+                id: true,
+                pathname: true,
+                createdAt: true,
+                virtualWeb: {
+                    select: {
+                        host: true,
+                        id: true
+                    }
+                },
+            },
+        })
+    }
+
+    async findAnalysisUsage({ id }: { id: number }) {
+        const res = await this.client.aIUsage.aggregate({
+            where: {
+                virtualDomAnalysisUsage: {
+                    virtualDomAnalysis: {
+                        virtualDom: {
+                            id
+                        }
+                    }
+                }
+            },
+            _sum: {
+                input: true,
+                output: true
+            }
+        })
+        const input = Number(res._sum.input) || 0
+        const output = Number(res._sum.output) || 0
+        return {
+            input,
+            output,
+        }
     }
 
 

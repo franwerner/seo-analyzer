@@ -203,12 +203,11 @@ export default class VirtualWebRepository {
             }
         })
 
-        const input = res._sum.input || 0
-        const output = res._sum.output || 0
+
 
         return {
-            input,
-            output,
+            input: Number(res._sum.input) || 0,
+            output: Number(res._sum.output) || 0,
         }
     }
 
@@ -231,13 +230,10 @@ export default class VirtualWebRepository {
             }
         })
 
-        const input = res._sum.input || 0
-        const output = res._sum.output || 0
-
 
         return {
-            input,
-            output,
+            input: Number(res._sum.input) || 0,
+            output: Number(res._sum.output) || 0,
         }
     }
 

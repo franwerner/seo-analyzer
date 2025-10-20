@@ -22,6 +22,7 @@ export default class VirtualWebSummaryRepository {
             select: {
                 id: true,
                 createdAt: true,
+                virtualWebId: true
             }
         })
     }
