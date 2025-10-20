@@ -1,16 +1,13 @@
 "use client"
 import Container from "@/src/common/components/Container.component";
-import { Button } from "@heroui/button";
-import { Link as HLink } from "@heroui/link";
-import { Spinner } from "@heroui/spinner";
-import { VirtualWeb } from "@seo-analyzer/common";
-import Link from "next/link";
-import { memo, useState } from "react";
-import useGetVirtualWebs from "../hooks/useGetWebs.hook";
 import ResourceNotFound from "@/src/common/components/ResourceNotFound.component";
 import ShowMoreButton from "@/src/common/components/ShowMoreButton.component";
+import { Button } from "@heroui/button";
+import { Spinner } from "@heroui/spinner";
+import { useState } from "react";
 import RegisterVirtualWebModal from "../components/RegisterVirtualWebModal.component";
 import VirtualWebCard from "../components/VirtualWebCard.component";
+import useGetVirtualWebs from "../hooks/useGetWebs.hook";
 
 
 

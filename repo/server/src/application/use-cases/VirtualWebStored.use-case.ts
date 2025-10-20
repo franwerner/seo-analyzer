@@ -2,7 +2,7 @@ import VirtualWebNotFound from "@/domain/virtual-web/errors/VirtualWebNotFount.e
 import { CreateVirtualWebDTO, createVirtualWebScheme, getVirtualWebDetailsScheme, getVirtualWebsScheme } from "@seo-analyzer/common";
 import VirtualWebRepository from "../repositories/VirtualWeb.repository";
 import VirtualWebSummaryRepository from "../repositories/VirtualWebSummary.repository";
-import validateDTO from "../shared/decorators/validateDTO.decorator";
+import { validateDTO } from "../shared/decorators/validateDTO.decorator";
 
 export default class VirtualWebStoredUseCase {
 

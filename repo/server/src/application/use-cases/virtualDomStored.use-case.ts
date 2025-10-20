@@ -2,7 +2,7 @@ import { VirtualDomNotFountError } from "@/domain/virtual-dom/errors";
 import { CreateVirtualDomDTO, createVirtualDomScheme, getVirtualDomAnalysesScheme, getVirtualDomAnalysisScheme, getVirtualDomDetailsScheme, getVirtualDomsScheme } from "@seo-analyzer/common";
 import VirtualDomRepository from "../repositories/VirtualDom.repository";
 import VirtualDomAnalysisRepository from "../repositories/VirtualDomAnalysis.repository";
-import validateDTO from "../shared/decorators/validateDTO.decorator";
+import { validateDTO } from "../shared/decorators/validateDTO.decorator";
 export default class VirtualDomStoredUseCase {
 
     constructor(

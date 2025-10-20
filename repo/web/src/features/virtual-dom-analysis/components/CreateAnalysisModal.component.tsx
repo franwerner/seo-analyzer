@@ -3,7 +3,6 @@ import { Button } from "@heroui/button";
 import { Checkbox, CheckboxGroup } from "@heroui/checkbox";
 import { Modal, ModalBody, ModalContent, ModalFooter, ModalHeader } from "@heroui/modal";
 import { ValidationTypeEnum } from "@seo-analyzer/common";
-import { useMutationState } from "@tanstack/react-query";
 import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import useCreateVirtualDomAnalysis from "../hooks/useCreateVirtualDomAnalysis.hook";
@@ -20,12 +19,6 @@ export default function CreateAnalysisModal({
     const { virtualDomId, virtualWebId } = useParams()
 
     const { mutate, isPending } = useCreateVirtualDomAnalysis()
-
-    useMutationState({
-        select(mutation) {
-
-        },
-    })
 
     const [selected, setSelected] = useState<Array<ValidationTypeEnum>>([])
 

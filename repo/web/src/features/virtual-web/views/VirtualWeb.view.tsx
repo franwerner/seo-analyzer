@@ -1,10 +1,11 @@
 "use client"
 import Container from "@/src/common/components/Container.component";
 import Loader from "@/src/common/components/Loader.component";
+import ResourceNotFound from "@/src/common/components/ResourceNotFound.component";
 import TitleUrl from "@/src/common/components/TitleURL.component";
-import { notFound, useParams } from "next/navigation";
-import VirtualWebSummaryCard from "../components/VirtualWebSummaryCard.component";
+import { useParams } from "next/navigation";
 import VirtualWebStatistics from "../components/VirtualWebStatistics.component";
+import VirtualWebSummaryCard from "../components/VirtualWebSummaryCard.component";
 import useGetVirtualWebDetails from "../hooks/useGetVirtualWebDetails.hook";
 
 
@@ -15,7 +16,7 @@ export default function VirtualWebView() {
     const { data, isPending } = useGetVirtualWebDetails(Number(virtualWebId))
 
     if (isPending) return <Loader />
-    else if (!data?.result) return notFound()
+    else if (!data?.result) return <ResourceNotFound message="Virtual Web not found" />
 
     const { createdAt, virtualDomCount, summaryUsage, analysisUsage, host, virtualWebSummary } = data.result
 

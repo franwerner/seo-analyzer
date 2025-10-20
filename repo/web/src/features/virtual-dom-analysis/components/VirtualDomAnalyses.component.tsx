@@ -2,14 +2,13 @@
 import Loader from "@/src/common/components/Loader.component";
 import ResourceNotFound from "@/src/common/components/ResourceNotFound.component";
 import ShowMoreButton from "@/src/common/components/ShowMoreButton.component";
-import { Table, TableBody, TableCell, TableColumn, TableHeader, TableRow } from "@heroui/table";
-import { useParams } from "next/navigation";
-import { useRouter } from "next/navigation";
-import CreateAnalysisModal from "./CreateAnalysisModal.component";
-import { useState } from "react";
-import { Button } from "@heroui/button";
-import useGetVirtualDomAnalysis from "../hooks/useGetVirtualDomAnalyses.hook";
 import formatUSD from "@/src/common/utils/formatUSD.util";
+import { Button } from "@heroui/button";
+import { Table, TableBody, TableCell, TableColumn, TableHeader, TableRow } from "@heroui/table";
+import { useParams, useRouter } from "next/navigation";
+import { useState } from "react";
+import useGetVirtualDomAnalysis from "../hooks/useGetVirtualDomAnalyses.hook";
+import CreateAnalysisModal from "./CreateAnalysisModal.component";
 
 const ModalContainer = () => {
     const [isOpen, setIsOpen] = useState(false)
@@ -42,7 +41,7 @@ export default function VirtualDomAnalyses() {
     const { data, isPending, fetchNextPage, hasNextPage, isLoading, error, isError } = useGetVirtualDomAnalysis(Number(virtualDomId))
 
     if (isPending) return <Loader />
-    else if (isError) throw error
+    else if (isError) return <p>{error.message}</p>
 
     const analysis = data.pages.flatMap(page => page.result?.virtualDomAnalyses || [])
 

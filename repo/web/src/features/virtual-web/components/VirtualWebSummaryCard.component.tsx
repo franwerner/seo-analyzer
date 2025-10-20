@@ -5,7 +5,7 @@ import useCreateVirtualWebSummary from "../hooks/useCreateVirtualWebSummary.hook
 import { useParams } from "next/navigation";
 
 interface WebSummaryGeneratorProps {
-    virtualWebSummary?: VirtualWebSummary | null;
+    virtualWebSummary?: Omit<VirtualWebSummary, "virtualWebId"> | null;
 }
 
 const SummaryGenerator = () => {

@@ -9,7 +9,7 @@ import {
 import VirtualWebRepository from "../repositories/VirtualWeb.repository"
 import VirtualWebSummaryRepository from "../repositories/VirtualWebSummary.repository"
 import toDecimal from "../shared/utils/toDecimal.utils"
-import validateDTO from "../shared/decorators/validateDTO.decorator"
+import { validateDTO } from "../shared/decorators/validateDTO.decorator"
 
 export default class VirtualWebManagerUsecase {
 

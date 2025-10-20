@@ -12,6 +12,7 @@
     "experimentalDecorators": true,
     "strict": true,
     "noUncheckedIndexedAccess": true,
+    "emitDecoratorMetadata": true,
     "skipLibCheck": true,
     "isolatedModules": true,
     "noUncheckedSideEffectImports": true,

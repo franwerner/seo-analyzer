@@ -6,5 +6,6 @@ export default async function VirtualDomAnalysesPage({
     params: Promise<{ virtualWebId: string; virtualDomId: string }>;
 }) {
     const { virtualWebId, virtualDomId } = await params;
+
     redirect(`/virtualWeb/${virtualWebId}/virtualDom/${virtualDomId}`);
 }

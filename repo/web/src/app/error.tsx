@@ -1,6 +1,4 @@
-"use client";
-
-import { Button } from "@heroui/button";
+"use client"
 import { useEffect } from "react";
 
 
@@ -21,12 +19,6 @@ export default function Error({
         <p className="font-medium text-xl">An unexpected error occurred!</p>
         {error.message && <p className="text-md mt-1">{error.message}</p>}
       </div>
-      <Button
-        onPress={reset}
-        className="mt-2 px-5 py-2 bg-danger-600 text-white rounded-md text-sm font-medium hover:bg-danger-700 transition-colors"
-      >
-        Try again
-      </Button>
     </div>
   )
 }

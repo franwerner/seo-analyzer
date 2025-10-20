@@ -6,11 +6,9 @@ export default function mergeUsage(...usages: (Usage | undefined)[]) {
         return {
             input: acc.input + usage.input,
             output: acc.output + usage.output,
-            total: acc.total + usage.total
         }
     }, {
         input: 0,
         output: 0,
-        total: 0
     })
 }
