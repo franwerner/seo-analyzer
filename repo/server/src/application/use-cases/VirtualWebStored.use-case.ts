@@ -2,7 +2,8 @@ import VirtualWebNotFound from "@/domain/virtual-web/errors/VirtualWebNotFount.e
 import { CreateVirtualWebDTO, createVirtualWebScheme, getVirtualWebDetailsScheme, getVirtualWebsScheme } from "@seo-analyzer/common";
 import VirtualWebRepository from "../repositories/VirtualWeb.repository";
 import VirtualWebSummaryRepository from "../repositories/VirtualWebSummary.repository";
-import { validateDTO } from "../shared/decorators/validateDTO.decorator";
+import validateOutputDTO from "../shared/utils/validateOutputDTO.utils";
+import validateInputDTO from "../shared/utils/validateInputDTO.utils";
 
 export default class VirtualWebStoredUseCase {
 
@@ -13,25 +14,19 @@ export default class VirtualWebStoredUseCase {
         }
     ) { }
 
-    @validateDTO(getVirtualWebsScheme)
     async getVirtualWebs(skip?: number) {
-        return await this.repositories.virtualWebRepository.findAll(skip)
+        const res = await this.repositories.virtualWebRepository.findAll(skip)
+        return validateOutputDTO(getVirtualWebsScheme.output, res)
     }
 
-    @validateDTO(createVirtualWebScheme)
-    async createVirtualWeb({
-        host,
-        mainPathname
-    }: CreateVirtualWebDTO["input"]) {
-        return await this.repositories.virtualWebRepository.createVirtualWebAggregate({
-            host,
-            mainPathname
-        })
+    async createVirtualWeb(props: CreateVirtualWebDTO["input"]) {
+        const validatedData = validateInputDTO(createVirtualWebScheme.input, props)
+        return validateOutputDTO(createVirtualWebScheme.output,
+            await this.repositories.virtualWebRepository.createVirtualWebAggregate(validatedData)
+        )
     }
 
-    @validateDTO(getVirtualWebDetailsScheme)
     async getVirtualWebDetails(id: number) {
-
         const [
             virtualWeb,
             analysisUsage,
@@ -45,11 +40,11 @@ export default class VirtualWebStoredUseCase {
         if (!virtualWeb) {
             throw new VirtualWebNotFound()
         }
-        return {
+        return validateOutputDTO(getVirtualWebDetailsScheme.output, {
             ...virtualWeb,
             analysisUsage,
             summaryUsage,
-        }
+        })
     }
 
 }

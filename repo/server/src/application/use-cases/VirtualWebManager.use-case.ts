@@ -9,7 +9,8 @@ import {
 import VirtualWebRepository from "../repositories/VirtualWeb.repository"
 import VirtualWebSummaryRepository from "../repositories/VirtualWebSummary.repository"
 import toDecimal from "../shared/utils/toDecimal.utils"
-import { validateDTO } from "../shared/decorators/validateDTO.decorator"
+import validateOutputDTO from "../shared/utils/validateOutputDTO.utils"
+import validateInputDTO from "../shared/utils/validateInputDTO.utils"
 
 export default class VirtualWebManagerUsecase {
 
@@ -36,17 +37,16 @@ export default class VirtualWebManagerUsecase {
         })
     }
 
-    @validateDTO(updateVirtualWebScheme)
     async updateVirtualWeb(props: UpdateVirtualWebDTO["input"]) {
-        const res = await this.repositories.virtualWebRepository.update(props)
-        const virtualWebLock = await this.virtualWebStore.get(props.id)
+        const validatedData = validateInputDTO(updateVirtualWebScheme.input, props)
+        const res = await this.repositories.virtualWebRepository.update(validatedData)
+        const virtualWebLock = await this.virtualWebStore.get(validatedData.id)
         if (virtualWebLock) {
             virtualWebLock.setHost(res.host)
         }
-        return res
+        return validateOutputDTO(updateVirtualWebScheme.output, res)
     }
 
-    @validateDTO(createVirtualWebSummaryScheme)
     async createVirtualWebSummary(virtualWebId: number) {
         const virtualWeb = await this.getVirtualWebOrThrow(virtualWebId)
         const { content, usage, model } = await virtualWeb.generateWebSummary()
@@ -64,10 +64,10 @@ export default class VirtualWebManagerUsecase {
             content
         }
         virtualWeb.setVirtualWebSummary(virtualWebSummary)
-        return {
+        return validateOutputDTO(createVirtualWebSummaryScheme.output, {
             ...virtualWebSummary,
             summaryUsage: usage
-        }
+        })
     }
-
 }
+

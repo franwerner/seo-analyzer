@@ -3,8 +3,9 @@ import { VirtualDomNotFountError } from "@/domain/virtual-dom/errors"
 import { CreateVirtualDomAnalysisDTO, createVirtualDomAnalysisScheme } from "@seo-analyzer/common"
 import VirtualDomAnalysisRepository from "../repositories/VirtualDomAnalysis.repository"
 import toDecimal from "../shared/utils/toDecimal.utils"
+import validateOutputDTO from "../shared/utils/validateOutputDTO.utils"
 import VirtualWebManagerService from "./VirtualWebManager.use-case"
-import { validateDTO } from "../shared/decorators/validateDTO.decorator"
+import validateInputDTO from "../shared/utils/validateInputDTO.utils"
 
 export default class VirtualDomManagerUseCase {
     constructor(
@@ -36,13 +37,10 @@ export default class VirtualDomManagerUseCase {
         }
     }
 
-    //Falta DTO de respueta y cambiar el nombre page a DOM
-    @validateDTO(createVirtualDomAnalysisScheme)
-    async createVirtualDomAnalysis({
-        id,
-        virtualWebId,
-        validationsSelected
-    }: CreateVirtualDomAnalysisDTO["input"]) {
+    async createVirtualDomAnalysis(props: CreateVirtualDomAnalysisDTO["input"]) {
+
+        const validatedData = validateInputDTO(createVirtualDomAnalysisScheme.input, props)
+        const { id, virtualWebId, validationsSelected } = validatedData
 
         const {
             virtualDomEntity,
@@ -66,11 +64,12 @@ export default class VirtualDomManagerUseCase {
             }
         })
 
-        return {
+        return validateOutputDTO(createVirtualDomAnalysisScheme.output, {
             ...virtualDomAnalysis,
             analysisUsage: usage,
             issuesCount: issues.length
-        }
+        })
     }
 
 }
+

@@ -9,10 +9,8 @@
       "ESNext",
       "DOM"
     ],
-    "experimentalDecorators": true,
     "strict": true,
     "noUncheckedIndexedAccess": true,
-    "emitDecoratorMetadata": true,
     "skipLibCheck": true,
     "noUncheckedSideEffectImports": true,
     "moduleDetection": "force",
@@ -26,7 +24,8 @@
     }
   },
   "include": [
-    "src/**/*.ts"
+    "src/**/*.ts",
+    "src/application/shared/decorators/validateOutputDTO.utilsts"
   ],
   "tsc-alias": {
     "resolveFullPaths": true,
