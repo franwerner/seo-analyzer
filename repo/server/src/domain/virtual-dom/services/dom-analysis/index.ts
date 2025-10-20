@@ -32,7 +32,7 @@ export default class DomAnalysis {
     }
 
 
-    private static async validationInstances(instances: Array<ValidationUtility>) {
+    private async validationInstances(instances: Array<ValidationUtility>) {
         /**
          * Cosas a tener en cuenta en un futuro:
          * Los promise.all de cada validador si uno falla la promesa se rechaza por completo.
@@ -42,9 +42,10 @@ export default class DomAnalysis {
         await Promise.all(instances.map(i => i.validate()))
         const mergedValidation = ValidationUtility.mergeValidations(instances.map(validation => validation.getValidation()))
         const groupByErrorType = ValidationUtility.groupByIssueType(mergedValidation.issues)
+
         const validation = {
             issues: groupByErrorType,
-            tokens: mergedValidation.tokens,
+            usage: mergedValidation.usage
         }
         return validation
     }
@@ -89,7 +90,7 @@ export default class DomAnalysis {
 
             validationInstances.push(...recolectedValidators)
 
-            const resourceUsage = await DomAnalysis.validationInstances(validationInstances)
+            const resourceUsage = await this.validationInstances(validationInstances)
             return {
                 ...resourceUsage,
                 model: this.openAi.model.name

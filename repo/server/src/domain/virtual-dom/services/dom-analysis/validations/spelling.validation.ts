@@ -43,12 +43,12 @@ export default class SpellingValidation extends ValidationUtility {
 
         return results.reduce((acc, query) => {
             query.words.forEach(word => acc.words.add(word))
-            acc.tokens.input += query.tokens.input
-            acc.tokens.output += query.tokens.output
+            acc.usage.input += query.usage.input
+            acc.usage.output += query.usage.output
             return acc
         }, {
             words: new Set<string>(),
-            tokens: {
+            usage: {
                 input: 0,
                 output: 0
             }
@@ -92,11 +92,11 @@ export default class SpellingValidation extends ValidationUtility {
 
     async validate() {
 
-        const { words, tokens } = await this.getCheckWordsResult()
+        const { words, usage } = await this.getCheckWordsResult()
 
         const groupedWordsByComponent = await this.groupWordsByComponent(words)
 
-        this.addTokens(tokens)
+        this.addUsage(usage)
 
         groupedWordsByComponent.forEach((words, part) => {
             const toArray = Array.from(words)

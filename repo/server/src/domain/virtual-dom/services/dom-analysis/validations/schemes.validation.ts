@@ -78,7 +78,7 @@ export default class SchemeValidaton extends ValidationUtility {
         Lenguaje: ${this.root.attributes.lang || "Sin especificar"}
         `;
 
-        const { response, tokens } = await this.openAi.createBasicResponse(
+        const { response, usage } = await this.openAi.createBasicResponse(
             script.innerText.value,
             instruction
         )
@@ -89,7 +89,7 @@ export default class SchemeValidaton extends ValidationUtility {
             traceIds: [script.traceId],
             type: ValidationTypeEnum.SCHEME
         })
-        this.addTokens(tokens)
+        this.addUsage(usage)
 
     }
 

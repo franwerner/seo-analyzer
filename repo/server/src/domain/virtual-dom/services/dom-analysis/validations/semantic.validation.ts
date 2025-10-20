@@ -69,16 +69,16 @@ export default class SemanticValidation extends ValidationUtility {
         const res = await Promise.all(chunks.map(chunk => this.validateHrefSemanticChunk(chunk)))
 
         const {
-            tokens,
+            usage,
             traceIds
-        } = res.reduce((acc, { traceIds, tokens }) => {
+        } = res.reduce((acc, { traceIds, usage }) => {
             acc.traceIds.push(...traceIds)
-            acc.tokens.input += tokens.input
-            acc.tokens.output += tokens.output
+            acc.usage.input += usage.input
+            acc.usage.output += usage.output
             return acc
         }, {
             traceIds: [] as Array<string>,
-            tokens: {
+            usage: {
                 input: 0,
                 output: 0
             }
@@ -92,12 +92,12 @@ export default class SemanticValidation extends ValidationUtility {
                 traceIds
             })
         }
-        this.addTokens(tokens)
+        this.addUsage(usage)
 
     }
 
     async validateHtmlSemantic() {
-        const { issues, tokens } = await this.openAI.generateIssuesAsType(
+        const { issues, usage } = await this.openAI.generateIssuesAsType(
             JSON.stringify(this.htmlSemantic),
             `
         #RESPONDE EN INGLES:
@@ -138,7 +138,7 @@ export default class SemanticValidation extends ValidationUtility {
             ValidationTypeEnum.SEMANTIC
         )
 
-        this.addTokens(tokens)
+        this.addUsage(usage)
         this.addIssue(issues)
     }
 

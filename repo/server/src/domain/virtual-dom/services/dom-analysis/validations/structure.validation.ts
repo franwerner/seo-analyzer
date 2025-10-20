@@ -117,7 +117,7 @@ export default class StructureValidation extends ValidationUtility {
             ValidationTypeEnum.STRUCTURE
         )
 
-        this.addTokens(response.tokens)
+        this.addUsage(response.usage)
         this.addIssue(response.issues)
 
     }

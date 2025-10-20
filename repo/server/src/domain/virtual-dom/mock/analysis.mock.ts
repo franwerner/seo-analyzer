@@ -37,9 +37,9 @@ const issues: Array<Issue> = [
 ]
 export default {
     issues,
-    tokens: {
-        input: 10209,
-        output: 4434
+    usage: {
+        input: 0.34545,
+        output: 0.4434
     },
-    model: "gpt-test"
+    model: "gpt-5-test"
 }

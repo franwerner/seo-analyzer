@@ -1,5 +1,5 @@
 import { Validation } from "@/domain/virtual-dom/types/Validation.interface"
-import { Tokens } from "../types/Tokens.interface"
+import { Usage } from "@seo-analyzer/common"
 import { Issue } from "../types/Issue.interface"
 
 /**
@@ -10,7 +10,7 @@ import { Issue } from "../types/Issue.interface"
 
 export default abstract class ValidationUtility {
 
-    tokens: Tokens = {
+    usage: Usage = {
         input: 0,
         output: 0
     }
@@ -38,15 +38,15 @@ export default abstract class ValidationUtility {
     static mergeValidations(validations: Array<Validation>): Required<Validation> {
         return validations.reduce((acc, current) => {
             acc.issues.push(...current.issues)
-            if (current.tokens) {
-                const tokens = acc.tokens as Tokens
-                tokens.input += (current.tokens.input || 0)
-                tokens.output += (current.tokens.output || 0)
+            if (current.usage) {
+                const usage = acc.usage as Usage
+                usage.input += (current.usage.input || 0)
+                usage.output += (current.usage.output || 0)
             }
             return acc
         }, {
             issues: [],
-            tokens: {
+            usage: {
                 input: 0,
                 output: 0
             }
@@ -64,14 +64,14 @@ export default abstract class ValidationUtility {
     getValidation() {
         return {
             issues: this.issues,
-            tokens: this.tokens
+            usage: this.usage
         }
     }
 
 
-    addTokens(tokens: Tokens) {
-        this.tokens.input += tokens.input
-        this.tokens.output += tokens.output
+    addUsage(usage: Usage) {
+        this.usage.input += usage.input
+        this.usage.output += usage.output
     }
 
 }
