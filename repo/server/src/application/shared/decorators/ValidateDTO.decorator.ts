@@ -14,7 +14,7 @@ import OutputDTOError from "../errors/OutputDTO.error";
  * Esto ayuda a evitar que el desarrollador olvide validar en caso de que estuviera planeada la entrada o salida..
  */
 
-export default function ValidateDTO<I, O>({ input, output }: SchemeOptions<I, O>) {
+export default function validateDTO<I, O>({ input, output }: SchemeOptions<I, O>) {
 
     if (input === undefined) {
         console.warn(new Error("[ValidateDTO] No input validation schema has been specified."));
