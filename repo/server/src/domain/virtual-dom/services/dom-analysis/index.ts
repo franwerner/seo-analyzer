@@ -66,6 +66,7 @@ export default class DomAnalysis {
 
         const { root, vDomContext, htmlStructure, htmlSemantic } = snapshot
 
+        console.log(validationsSelected)
         const validationMap = {
             [ValidationTypeEnum.SEMANTIC]: () => new SemanticValidation(this.openAi, htmlSemantic, domSummary, vDomContext),
             [ValidationTypeEnum.STRUCTURE]: () => new StructureValidation(this.openAi, vDomContext, htmlStructure),
