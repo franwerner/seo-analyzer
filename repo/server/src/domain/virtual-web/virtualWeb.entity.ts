@@ -21,7 +21,7 @@ interface VirtualWebConfig {
 
 export interface VirtualWebEntityProps {
     host: string
-    virtualWebSummary?: VirtualWebSummary | null
+    virtualWebSummary?: Omit<VirtualWebSummary, 'virtualWebId'> | null
     virtualWebConfig: VirtualWebConfig
     id: number
 }
@@ -31,7 +31,7 @@ export default class VirtualWebEntity {
     vdomStore: VirtualDomStore
     host: string
     virtualWebConfig: VirtualWebConfig
-    virtualWebSummary?: VirtualWebSummary | null = null
+    virtualWebSummary?: Omit<VirtualWebSummary, 'virtualWebId'> | null = null
     id: number
 
     constructor(
@@ -64,9 +64,6 @@ export default class VirtualWebEntity {
     }
 
     async generateWebSummary() {
-
-        return mainDomSummaryMock
-
         const snapshot = await this.vdomStore.getOrCreate(this.virtualWebConfig.virtualDom.id, async (create) => {
             return create({
                 pathname: this.virtualWebConfig.virtualDom.pathname,
@@ -82,6 +79,7 @@ export default class VirtualWebEntity {
         const { response, ...rest } = await this.AiService.createBasicResponse(
             JSON.stringify(texts),
             `
+        #Responde en ingles
         Instrucciones:
         Recibirás un array de strings, cada indice del array representa una parte(oracion) del contenido de un sitio web. 
         Tu tarea es analizar todo el contenido y generar un resumen conciso y extenso que capture la esencia del sitio.
