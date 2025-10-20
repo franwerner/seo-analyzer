@@ -1,5 +1,5 @@
 import WordsSchema from "@/infrastructure/AI/schemas/words.schema";
-import { Usage, ValidationsType, ValidationTypeEnum } from "@seo-analyzer/common";
+import { Usage, ValidationTypeEnum } from "@seo-analyzer/common";
 import OpenAI from "openai";
 import { zodTextFormat } from "openai/helpers/zod";
 import { GPT5MiniModel, Model } from "./constant/models.constant";
@@ -27,7 +27,6 @@ class OpenAiService {
     return {
       input: priceInput,
       output: priceOutput,
-      total: priceInput + priceOutput
     }
   }
 
@@ -46,7 +45,7 @@ class OpenAiService {
     })
     return {
       response: response.output_text,
-      tokens: OpenAiService.getTokenUsage(response),
+      usage: this.calculateUsageTokens(OpenAiService.getTokenUsage(response)),
     }
   }
 
@@ -63,7 +62,7 @@ class OpenAiService {
 
     return {
       traceIds: traceIdsSchema.parse(JSON.parse(response.output_text)).traceIds,
-      tokens: OpenAiService.getTokenUsage(response),
+      usage: this.calculateUsageTokens(OpenAiService.getTokenUsage(response)),
     }
   }
 
@@ -79,7 +78,7 @@ class OpenAiService {
 
     return {
       words: WordsSchema.parse(JSON.parse(response.output_text)).words,
-      tokens: OpenAiService.getTokenUsage(response),
+      usage: this.calculateUsageTokens(OpenAiService.getTokenUsage(response)),
     }
   }
 
@@ -104,7 +103,7 @@ class OpenAiService {
 
     return {
       issues,
-      tokens: OpenAiService.getTokenUsage(response),
+      usage: this.calculateUsageTokens(OpenAiService.getTokenUsage(response)),
     }
 
   }
