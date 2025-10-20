@@ -1,17 +1,20 @@
-import { CreateVirtualDomDTO, createVirtualDomScheme, getVirtualDomsScheme } from "@seo-analyzer/common";
+import { VirtualDomNotFountError } from "@/domain/virtual-dom/errors";
+import { CreateVirtualDomDTO, createVirtualDomScheme, getVirtualDomAnalysesScheme, getVirtualDomAnalysisScheme, getVirtualDomDetailsScheme, getVirtualDomsScheme } from "@seo-analyzer/common";
 import VirtualDomRepository from "../repositories/VirtualDom.repository";
+import VirtualDomAnalysisRepository from "../repositories/VirtualDomAnalysis.repository";
 import ValidateDTO from "../shared/decorators/validateDTO.decorator";
 export default class VirtualDomStoredUseCase {
 
     constructor(
         private repositories: {
-            virtualDomRepository: VirtualDomRepository
+            virtualDomRepository: VirtualDomRepository,
+            virtualDomAnalysisRepository: VirtualDomAnalysisRepository
         }
     ) { }
 
     @ValidateDTO(createVirtualDomScheme)
-    async createVirtualDom(data: CreateVirtualDomDTO["input"]) {
-        return await this.repositories.virtualDomRepository.create({
+    createVirtualDom(data: CreateVirtualDomDTO["input"]) {
+        return this.repositories.virtualDomRepository.create({
             virtualWebId: data.virtualWebId,
             pathname: data.pathname,
         })
@@ -19,6 +22,30 @@ export default class VirtualDomStoredUseCase {
 
     @ValidateDTO(getVirtualDomsScheme)
     async getVirtualDoms(props: { virtualWebId: number, skip: number }) {
-        return await this.repositories.virtualDomRepository.findAllByVirtualWeb(props)
+        return await this.repositories.virtualDomRepository.findByVirtualWeb(props)
+    }
+
+    @ValidateDTO(getVirtualDomAnalysesScheme)
+    getVirtualDomAnalyses(id: number) {
+        return this.repositories.virtualDomAnalysisRepository.findByVirtualDom({ virtualDomId: id })
+    }
+
+    @ValidateDTO(getVirtualDomAnalysisScheme)
+    getVirtualDomAnalysis(id: number) {
+        return this.repositories.virtualDomAnalysisRepository.findUniqueWithIssues({ id })
+    }
+
+    @ValidateDTO(getVirtualDomDetailsScheme)
+    async getVirtualDomDetails(id: number) {
+        const [virtualDom, analysesUsage] = await Promise.all([
+            await this.repositories.virtualDomRepository.findUniqueWithVirtualWeb({ id }),
+            await this.repositories.virtualDomRepository.findAnalysisUsage({ id })
+        ])
+        if (!virtualDom) throw new VirtualDomNotFountError()
+
+        return {
+            ...virtualDom,
+            analysesUsage
+        }
     }
 }

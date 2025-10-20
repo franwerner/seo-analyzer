@@ -1,7 +1,6 @@
 import { VirtualWebNotFountError } from "@/domain/virtual-web/errors"
 import VirtualWebConfigNotFountError from "@/domain/virtual-web/errors/VirtualWebConfigNotFount.error"
 import VirtualWebStore from "@/domain/virtual-web/store/virtualWeb.store"
-import OpenAiService from "@/infrastructure/AI/openAi.service"
 import {
     createVirtualWebSummaryScheme,
     UpdateVirtualWebDTO,
@@ -10,11 +9,11 @@ import {
 import VirtualWebRepository from "../repositories/VirtualWeb.repository"
 import VirtualWebSummaryRepository from "../repositories/VirtualWebSummary.repository"
 import ValidateDTO from "../shared/decorators/validateDTO.decorator"
+import toDecimal from "../shared/utils/toDecimal.utils"
 
 export default class VirtualWebManagerUsecase {
 
     constructor(
-        private AiService: OpenAiService,
         private virtualWebStore: VirtualWebStore,
         private repositories: {
             virtualWebRepository: VirtualWebRepository,
@@ -50,12 +49,13 @@ export default class VirtualWebManagerUsecase {
     @ValidateDTO(createVirtualWebSummaryScheme)
     async createVirtualWebSummary(virtualWebId: number) {
         const virtualWeb = await this.getVirtualWebOrThrow(virtualWebId)
-        const { content, tokens, model } = await virtualWeb.generateWebSummary()
+        const { content, usage, model } = await virtualWeb.generateWebSummary()
         const res = await this.repositories.virtualWebSummaryRepository.createSummaryAggregate({
             virtualWebId: virtualWebId,
             content,
             AIUsage: {
-                ...tokens,
+                input: toDecimal(usage.input),
+                output: toDecimal(usage.output),
                 model
             }
         })
@@ -63,11 +63,10 @@ export default class VirtualWebManagerUsecase {
             ...res,
             content
         }
-        const usage = this.AiService.calculateUsageTokens(tokens)
         virtualWeb.setVirtualWebSummary(virtualWebSummary)
         return {
             ...virtualWebSummary,
-            usage
+            summaryUsage: usage
         }
     }
 

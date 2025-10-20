@@ -1,5 +1,4 @@
 import VirtualWebNotFound from "@/domain/virtual-web/errors/VirtualWebNotFount.error";
-import OpenAiService from "@/infrastructure/AI/openAi.service";
 import { CreateVirtualWebDTO, createVirtualWebScheme, getVirtualWebDetailsScheme, getVirtualWebsScheme } from "@seo-analyzer/common";
 import VirtualWebRepository from "../repositories/VirtualWeb.repository";
 import VirtualWebSummaryRepository from "../repositories/VirtualWebSummary.repository";
@@ -8,7 +7,6 @@ import ValidateDTO from "../shared/decorators/validateDTO.decorator";
 export default class VirtualWebStoredUseCase {
 
     constructor(
-        private AiService: OpenAiService,
         private repositories: {
             virtualWebRepository: VirtualWebRepository
             virtualWebSummaryRepository: VirtualWebSummaryRepository
@@ -36,8 +34,8 @@ export default class VirtualWebStoredUseCase {
 
         const [
             virtualWeb,
-            analysisUsageWithoutTotal,
-            summaryUsageWithoutTotal,
+            analysisUsage,
+            summaryUsage,
         ] = await Promise.all([
             this.repositories.virtualWebRepository.findUniqueWithConfigAndSummary(id),
             this.repositories.virtualWebRepository.sumAnalysisUsage(id),
@@ -47,9 +45,6 @@ export default class VirtualWebStoredUseCase {
         if (!virtualWeb) {
             throw new VirtualWebNotFound()
         }
-
-        const analysisUsage = this.AiService.calculateUsageTokens(analysisUsageWithoutTotal)
-        const summaryUsage = this.AiService.calculateUsageTokens(summaryUsageWithoutTotal)
         return {
             ...virtualWeb,
             analysisUsage,
