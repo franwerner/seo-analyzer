@@ -25,26 +25,27 @@ const virtualDomAnalysisRepository = new VirtualDomAnalysisRepository(prisma)
 
 //#UseCases
 const virtualWebManagerUseCase = new VirtualWebManagerUseCase(
-    openAiService,
     virtualWebStore, {
     virtualWebRepository,
     virtualWebSummaryRepository,
 })
-const virtualDomManagerUseCase = new VirtualDomManagerUseCase(virtualWebManagerUseCase, {
+const virtualDomManagerUseCase = new VirtualDomManagerUseCase(
+    virtualWebManagerUseCase, {
     virtualDomRepository,
     virtualDomAnalysisRepository
 });
 const virtualWebStoredUseCase = new VirtualWebStoredUseCase(
-    openAiService,
     {
         virtualWebRepository,
         virtualWebSummaryRepository
     })
 
 
-const virtualDomStoredUseCase = new VirtualDomStoredUseCase({
-    virtualDomRepository
-})
+const virtualDomStoredUseCase = new VirtualDomStoredUseCase(
+    {
+        virtualDomRepository,
+        virtualDomAnalysisRepository
+    })
 
 prisma.$connect().then(() => console.log("Connected to database"))
 
