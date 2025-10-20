@@ -4,8 +4,9 @@
   "main": "index.js",
   "type": "module",
   "scripts": {
-    "dev": "node --watch ./dist/index.js",
+    "dev:watch": "node --watch ./dist/index.js",
     "build": "rollup -c",
+    "dev": "concurrently --raw -n BUILD,DEV -c yellow,cyan \"npm run build:watch\" \"npm run dev:watch\"",
     "start": "npm run prisma:generate && node ./dist/index.js",
     "build:watch": "rollup -c --watch",
     "prisma:migrate": "npx prisma migrate dev",
@@ -19,11 +20,11 @@
   "description": "",
   "dependencies": {
     "@prisma/client": "^6.17.0",
+    "@seo-analyzer/common": "latest",
     "cookie-parser": "^1.4.7",
     "crc-32": "^1.2.2",
     "dotenv": "^17.2.1",
     "express": "^5.1.0",
-    "@seo-analyzer/common": "latest",
     "jsdom": "^26.1.0",
     "jsonwebtoken": "^9.0.2",
     "openai": "^5.15.0",
@@ -37,6 +38,7 @@
     "@types/jsdom": "^21.1.7",
     "@types/jsonwebtoken": "^9.0.10",
     "@types/node": "^24.3.0",
+    "concurrently": "^9.2.1",
     "prisma": "^6.17.0",
     "rollup": "^4.48.1"
   }
