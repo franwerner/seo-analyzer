@@ -2,9 +2,9 @@ import VirtualDomRepository from "@/application/repositories/VirtualDom.reposito
 import { VirtualDomNotFountError } from "@/domain/virtual-dom/errors"
 import { CreateVirtualDomAnalysisDTO, createVirtualDomAnalysisScheme } from "@seo-analyzer/common"
 import VirtualDomAnalysisRepository from "../repositories/VirtualDomAnalysis.repository"
-import ValidateDTO from "../shared/decorators/validateDTO.decorator"
 import toDecimal from "../shared/utils/toDecimal.utils"
 import VirtualWebManagerService from "./VirtualWebManager.use-case"
+import ValidateDTO from "../shared/decorators/validateDTO.decorator"
 
 export default class VirtualDomManagerUseCase {
     constructor(
