@@ -2,7 +2,6 @@ import VirtualWebNotFound from "@/domain/virtual-web/errors/VirtualWebNotFount.e
 import { CreateVirtualWebDTO, createVirtualWebScheme, getVirtualWebDetailsScheme, getVirtualWebsScheme } from "@seo-analyzer/common";
 import VirtualWebRepository from "../repositories/VirtualWeb.repository";
 import VirtualWebSummaryRepository from "../repositories/VirtualWebSummary.repository";
-import validateDTO from "../shared/decorators/validateDTO.decorator";
 
 export default class VirtualWebStoredUseCase {
 
@@ -13,12 +12,10 @@ export default class VirtualWebStoredUseCase {
         }
     ) { }
 
-    @validateDTO(getVirtualWebsScheme)
     async getVirtualWebs(skip?: number) {
         return await this.repositories.virtualWebRepository.findAll(skip)
     }
 
-    @validateDTO(createVirtualWebScheme)
     async createVirtualWeb({
         host,
         mainPathname
@@ -29,7 +26,6 @@ export default class VirtualWebStoredUseCase {
         })
     }
 
-    @validateDTO(getVirtualWebDetailsScheme)
     async getVirtualWebDetails(id: number) {
 
         const [
