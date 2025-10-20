@@ -7,7 +7,7 @@ import { Input } from "@heroui/input"
 import { Modal, ModalBody, ModalContent, ModalHeader } from "@heroui/modal"
 import { CreateVirtualWebDTO, createVirtualWebScheme } from "@seo-analyzer/common"
 import { useState } from "react"
-import useCreateVirtualWeb from "../hooks/useCreateVirtualWeb.hook"
+import useCreateVirtualWeb from "../../virtual-web/hooks/useCreateVirtualWeb.hook"
 
 
 interface RegisterWebModalProps {
@@ -49,7 +49,7 @@ const ModalForm = ({
     return (
         <Form
             validationBehavior="aria"
-            onSubmit={(e) => {
+            onSubmit={(e: React.FormEvent<HTMLFormElement>) => {
                 e.preventDefault()
                 handleSubmit(normalizeFormData(e))
             }}>
@@ -58,6 +58,7 @@ const ModalForm = ({
                     name="host"
                     label="Enter host URL (e.g. example.com)"
                     color="default"
+                    isRequired
                     isInvalid={!!errors.host}
                     errorMessage={() => <InputErrorList errors={errors.host} />}
                     className="w-full"
@@ -65,6 +66,7 @@ const ModalForm = ({
                 <Input
                     name="mainPathname"
                     color="default"
+                    isRequired
                     label="Enter main pathname (e.g. /about or /)"
                     isInvalid={!!errors.mainPathname}
                     defaultValue="/"
@@ -78,7 +80,7 @@ const ModalForm = ({
                     className=" px-8 font-medium"
                     isLoading={isPending}
                     variant="flat"
-                    color="success" >
+                    color="secondary" >
                     Register
                 </Button>
                 <Button

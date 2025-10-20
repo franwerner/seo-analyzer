@@ -31,7 +31,7 @@ export default function UsageCard({ label, data }: UsageProps) {
                     <div className="w-full h-3 rounded-full bg-gray-200 overflow-hidden">
                         <div
                             className={`${colors[key]} h-3 rounded-full transition-all`}
-                            style={{ width: `${((data[key] / data.total) * 100) || 0}%` }}
+                            style={{ width: `${((data[key] / (data.input + data.output)) * 100) || 0}%` }}
                         >
 
                         </div>
@@ -42,7 +42,7 @@ export default function UsageCard({ label, data }: UsageProps) {
                 <span className="font-medium text-gray-800">Total:</span>
                 <span
                     className={`font-medium  px-3 py-1 rounded-full  bg-emerald-100 text-emerald-700`}>
-                    {formatUSD(data.total)}
+                    {formatUSD(data.input + data.output)}
                 </span>
             </div>
         </div>

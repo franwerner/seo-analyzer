@@ -1,5 +1,5 @@
-import { Spinner } from "@heroui/spinner";
+import LoaderComponent from "../common/components/Loader.component";
 
 export default function loader() {
-    return <Spinner size="sm" />
+    return <LoaderComponent />
 }

@@ -20,12 +20,11 @@ export default function Breadcrumbs() {
             variant="solid"
             itemsAfterCollapse={2}
             itemsBeforeCollapse={1}
-            maxItems={3}
             className="p-4">
             {pathSegments.map((item, index) => {
                 return (
                     <BreadcrumbItem
-                        key={item}
+                        key={index}
                         className={clsx(pathSegments.length === 1 && "bg-default-100")}
                         href={buildPath(index)}>
                         {item.charAt(0).toUpperCase() + item.slice(1)}

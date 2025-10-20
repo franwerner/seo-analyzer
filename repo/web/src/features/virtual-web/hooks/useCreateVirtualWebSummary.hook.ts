@@ -4,15 +4,15 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 export default function useCreateVirtualWebSummary(virtualWebId: number) {
     const queryClient = useQueryClient()
-    return useMutation<ApiResponse.Success<CreateVirtualWebSummaryDTO["output"]>, ApiResponse.Failed>({
+    return useMutation({
         mutationFn: async () => {
-            const response = await fetch(`/backend/virtual-web/create-summary/${virtualWebId}`, {
+            const response = await fetch(`/backend/virtual-web/${virtualWebId}/create-summary`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json"
                 },
             })
-            return getApiResponse(response)
+            return getApiResponse<CreateVirtualWebSummaryDTO["output"]>(response)
         },
         onSuccess(data) {
             queryClient.setQueryData(
@@ -20,14 +20,14 @@ export default function useCreateVirtualWebSummary(virtualWebId: number) {
                 (oldData: ApiResponse.Success<GetVirtualWebDetailsDTO["output"]>) => {
                     const result = data.result
                     if (!result) return oldData
-                    const { usage, ...virtualWebSummary } = result
+                    const { summaryUsage, ...virtualWebSummary } = result
                     if (!oldData) return oldData
                     return {
                         ...oldData,
                         result: {
                             ...oldData.result,
                             virtualWebSummary,
-                            summaryUsage: mergeUsage(oldData.result?.summaryUsage, usage)
+                            summaryUsage: mergeUsage(oldData.result?.summaryUsage, summaryUsage)
                         }
                     }
                 }

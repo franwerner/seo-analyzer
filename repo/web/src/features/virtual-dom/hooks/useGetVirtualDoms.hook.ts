@@ -3,11 +3,11 @@ import { useInfiniteQuery } from "@tanstack/react-query"
 import { ApiResponse } from "@seo-analyzer/common"
 
 export default function useGetVirtualDoms(virtualWebId: number) {
-    return useInfiniteQuery<ApiResponse.Success<GetVirtualDomsDTO["output"]>, ApiResponse.Failed>({
-        queryKey: ["virtual-dom", virtualWebId],
+    return useInfiniteQuery({
+        queryKey: ["virtual-doms", virtualWebId],
         queryFn: async ({ pageParam = 0 }) => {
-            const response = await fetch(`/backend/virtual-dom-stored/all/${virtualWebId}?skip=${pageParam}`)
-            return getApiResponse(response)
+            const response = await fetch(`/backend/virtual-dom/virtual-web/${virtualWebId}?skip=${pageParam}`)
+            return getApiResponse<GetVirtualDomsDTO["output"]>(response)
         },
         getNextPageParam: ({ result }) => {
             if (!result) return

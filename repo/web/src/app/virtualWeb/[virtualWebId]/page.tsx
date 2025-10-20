@@ -1,5 +1,5 @@
-import VirtualWeb from "@/src/features/virtual-web/VirtualWebView";
+import VirtualWebView from "@/src/features/virtual-web/views/VirtualWeb.view";
 
 export default function VirtualWebPanel() {
-    return <VirtualWeb />
+    return <VirtualWebView />
 }

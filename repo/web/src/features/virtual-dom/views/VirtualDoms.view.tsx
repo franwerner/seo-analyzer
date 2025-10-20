@@ -1,13 +1,14 @@
 "use client"
 import Container from "@/src/common/components/Container.component"
+import ShowMoreButton from "@/src/common/components/ShowMoreButton.component"
 import { Button } from "@heroui/button"
 import { Spinner } from "@heroui/spinner"
 import { VirtualDom } from "@seo-analyzer/common"
 import Link from "next/link"
-import { useParams, usePathname } from "next/navigation"
+import { useParams } from "next/navigation"
 import { memo, useState } from "react"
-import useGetVirtualDoms from "../virtual-web/hooks/useGetVirtualDoms.hook"
-import RegisterVirtualDom from "./components/RegisterVirtualDomModal.component"
+import useGetVirtualDoms from "../hooks/useGetVirtualDoms.hook"
+import RegisterVirtualDom from "../components/RegisterVirtualDomModal.component"
 
 
 const ModalContainer = () => {
@@ -36,7 +37,7 @@ const VirtualDomItem = memo(({ dom }: { dom: VirtualDom }) => {
                     Pathname: {dom.pathname}
                 </span>
             </div>
-            <Link href={`virtualDom/${dom.id}`}>
+            <Link href={`/virtualWeb/${virtualWebId}/virtualDom/${dom.id}`}>
                 <Button
                     color="secondary"
                     size="sm"
@@ -65,9 +66,7 @@ export default function VirtualDomsView() {
         <Container as="main">
             <ModalContainer />
             <div className="w-full flex-1 flex flex-col h-full p-6 gap-8 rounded-lg ">
-                <div>
-                    <h2 className="text-3xl font-semibold text-default-900  text-center uppercase ">Virtual Dom List</h2>
-                </div>
+                <h1 className="text-3xl font-semibold text-default-800  text-center uppercase ">Virtual Dom List</h1>
                 {
                     isLoading ?
                         <div className="flex justify-center h-full items-center flex-1">
@@ -81,20 +80,11 @@ export default function VirtualDomsView() {
                                     ))
                                 }
                             </ul>
-                            {
-                                hasNextPage && (
-                                    <Button
-                                        onPress={() => fetchNextPage()}
-                                        color="default"
-                                        size="lg"
-                                        isLoading={isLoading}
-                                        variant="solid"
-                                        className="bg-default-900 text-white"
-                                    >
-                                        Show more
-                                    </Button>
-                                )
-                            }
+                            <ShowMoreButton
+                                fetchNextPage={fetchNextPage}
+                                isLoading={isLoading}
+                                hasNextPage={hasNextPage}
+                            />
                         </div>
                 }
             </div >

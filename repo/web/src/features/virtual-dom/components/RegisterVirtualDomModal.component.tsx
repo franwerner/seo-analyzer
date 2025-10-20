@@ -43,13 +43,13 @@ const ModalForm = ({ onClose }: { onClose: () => void }) => {
     return (
         <Form
             validationBehavior="aria"
-            onSubmit={(e) => {
+            onSubmit={(e: React.FormEvent<HTMLFormElement>) => {
                 e.preventDefault()
                 handleSubmit(normalizeFormData(e))
             }}>
             <Input
                 name="pathname"
-                label="Enter main pathname (e.g. /about or /)"
+                label="Enter pathname (e.g. /about or /)"
                 defaultValue="/"
                 color="default"
                 isInvalid={!!errors}
@@ -62,7 +62,7 @@ const ModalForm = ({ onClose }: { onClose: () => void }) => {
                     className=" px-8 font-medium"
                     isLoading={isPending}
                     variant="flat"
-                    color="success" >
+                    color="secondary" >
                     Register
                 </Button>
                 <Button

@@ -14,11 +14,11 @@ export default function LoginForm() {
     }
 
     return (
-        <Card className="w-full max-w-md p-6 shadow-xl rounded-2xl  border border-primary-100 backdrop-blur-sm">
+        <Card className="w-full max-w-md p-6 shadow-xl rounded-2xl  border border-default-100 backdrop-blur-sm">
             <CardHeader className="flex justify-center pb-2">
-                <h2 className="text-3xl font-bold text-primary-500  text-center tracking-tight">Welcome!</h2>
+                <h2 className="text-3xl font-bold text-default-900  text-center tracking-tight">Welcome!</h2>
             </CardHeader>
-            <Form onSubmit={(e) => {
+            <Form onSubmit={(e: React.FormEvent<HTMLFormElement>) => {
                 e.preventDefault()
                 handleSubmit(normalizeFormData(e))
             }}>
@@ -28,8 +28,8 @@ export default function LoginForm() {
                         id="password"
                         type="password"
                         variant="flat"
-                        placeholder="Password"
-                        color="primary"
+                        label="Password"
+                        color="default"
                         disabled={isPending}
                         isRequired
                         className="w-full"
@@ -38,8 +38,8 @@ export default function LoginForm() {
                 <CardFooter className="flex flex-col gap-4 mt-2">
                     <Button
                         type="submit"
-                        color="primary"
-                        className="w-full"
+                        color="default"
+                        className="w-full bg-default-800 font-semibold text-white"
                         size="lg"
                         isLoading={isPending}
                         variant="solid"

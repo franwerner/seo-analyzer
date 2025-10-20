@@ -15,7 +15,7 @@ const AditionalInfo = ({ createdAt, virtualDomCount }: AditionalInfoProps) => {
         { label: "Virtual DOM Count", value: virtualDomCount, color: "bg-primary/20 text-primary-700" },
     ];
     return (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {stats.map((item, idx) => (
                 <div
                     key={idx}
@@ -65,16 +65,10 @@ export default function VirtualWebStatistics({
 
     return (
         <div className="w-full p-2 gap-4 justify-between flex flex-col h-full">
-            <AditionalInfo
-                createdAt={new Date(createdAt)}
-                virtualDomCount={virtualDomCount} />
-            <UsageInfo
-                summaryUsage={summaryUsage}
-                analysisUsage={analysisUsage} />
             <div className="w-full flex-1">
                 <Link href={`/virtualWeb/${virtualWebId}/virtualDom`} className="block w-full h-full">
                     <Button
-                        color="success"
+                        color="secondary"
                         size="lg"
                         className="w-full text-lg font-medium"
                         variant="flat"
@@ -83,6 +77,13 @@ export default function VirtualWebStatistics({
                     </Button>
                 </Link>
             </div>
+            <AditionalInfo
+                createdAt={new Date(createdAt)}
+                virtualDomCount={virtualDomCount} />
+            <UsageInfo
+                summaryUsage={summaryUsage}
+                analysisUsage={analysisUsage} />
+
         </div>
     );
 }
