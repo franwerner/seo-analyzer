@@ -8,8 +8,8 @@ import {
 } from "@seo-analyzer/common"
 import VirtualWebRepository from "../repositories/VirtualWeb.repository"
 import VirtualWebSummaryRepository from "../repositories/VirtualWebSummary.repository"
-import validateDTO from "@/application/shared/decorators/validateDTO.decorator"
 import toDecimal from "../shared/utils/toDecimal.utils"
+import validateDTO from "../shared/decorators/validateDTO.decorator"
 
 export default class VirtualWebManagerUsecase {
 

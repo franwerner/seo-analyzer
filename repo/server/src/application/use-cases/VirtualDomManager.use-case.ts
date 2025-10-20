@@ -4,7 +4,7 @@ import { CreateVirtualDomAnalysisDTO, createVirtualDomAnalysisScheme } from "@se
 import VirtualDomAnalysisRepository from "../repositories/VirtualDomAnalysis.repository"
 import toDecimal from "../shared/utils/toDecimal.utils"
 import VirtualWebManagerService from "./VirtualWebManager.use-case"
-import validateDTO from "@/application/shared/decorators/validateDTO.decorator"
+import validateDTO from "../shared/decorators/validateDTO.decorator"
 
 export default class VirtualDomManagerUseCase {
     constructor(
