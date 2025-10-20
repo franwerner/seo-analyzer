@@ -61,8 +61,8 @@ model VirtualDom {
 
 model AIUsage {
   id                      Int                      @id @default(autoincrement())
-  input                   Int
-  output                  Int
+  input                   Decimal                  @db.Decimal(18, 8)
+  output                  Decimal                  @db.Decimal(18, 8)
   model                   String
   virtualDomAnalysisUsage VirtualDomAnalysisUsage?
   virtualWebSummaryUsage  VirtualWebSummaryUsage?
