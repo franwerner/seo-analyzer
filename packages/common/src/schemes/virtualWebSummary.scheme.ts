@@ -3,8 +3,9 @@ import { dateScheme } from "./date.scheme"
 
 export const virtualWebSummaryScheme = z.object({
     id: z.number(),
+    virtualWebId: z.number(),
     content: z.string(),
-    createdAt: dateScheme
+    createdAt: dateScheme,
 })
 
 

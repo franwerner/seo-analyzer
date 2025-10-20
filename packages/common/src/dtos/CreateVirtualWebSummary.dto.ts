@@ -2,7 +2,7 @@ import { usageScheme, virtualWebSummaryScheme } from "@/schemes";
 import { InferDTO } from "@/types/InferDTO.type";
 
 const output = virtualWebSummaryScheme.extend({
-    usage: usageScheme
+    summaryUsage: usageScheme
 })
 
 const input = null

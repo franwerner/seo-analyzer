@@ -1,7 +1,7 @@
 export declare namespace ApiResponse {
 
     export interface Success<T = any> {
-        result?: T
+        result: T
         message?: string
     }
 

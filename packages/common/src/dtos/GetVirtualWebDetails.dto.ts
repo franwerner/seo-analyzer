@@ -5,7 +5,9 @@ import { virtualWebSummaryScheme } from "../schemes/virtualWebSummary.scheme"
 import { InferDTO } from "@/types/InferDTO.type"
 
 const output = virtualWebScheme.merge(z.object({
-    virtualWebSummary: virtualWebSummaryScheme.nullable().optional(),
+    virtualWebSummary: virtualWebSummaryScheme.omit({
+        virtualWebId: true
+    }).nullable().optional(),
     summaryUsage: usageScheme,
     analysisUsage: usageScheme,
 }))
