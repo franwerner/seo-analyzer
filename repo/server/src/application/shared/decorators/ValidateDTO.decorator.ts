@@ -1,6 +1,7 @@
 import { SchemeOptions } from "@seo-analyzer/common";
-import validateInputDTO from "../utils/validateInputDTO.util";
-import validateOutputDTO from "../utils/validateOutputDTO.util";
+import createDTOValidator from "../utils/createDTOValidator.utils";
+import InputDTOError from "../errors/InputDTO.error";
+import OutputDTOError from "../errors/OutputDTO.error";
 
 /**
  * Decorator para validar DTOs de entrada y salida.
@@ -23,8 +24,8 @@ export default function ValidateDTO<I, O>({ input, output }: SchemeOptions<I, O>
         console.warn(new Error("[ValidateDTO] No output validation schema has been specified."));
     }
 
-    const fnInput = input ? validateInputDTO(input) : null
-    const fnOutput = output ? validateOutputDTO(output) : null
+    const fnInput = input ? createDTOValidator(input, InputDTOError) : null
+    const fnOutput = output ? createDTOValidator(output, OutputDTOError) : null
 
     return function (
         _target: any,
