@@ -5,8 +5,8 @@ import VirtualWebNotFound from "@/domain/virtual-web/errors/VirtualWebNotFount.e
 import VirtualWebEntity, { VirtualWebEntityProps } from "@/domain/virtual-web/virtualWeb.entity"
 import StoreLockHelper from "@/domain/shared/helpers/StoreLock.helper"
 
-const timeoutDuration = 1000 * 60 * 0.1 // 5M
-const maxVDomDuration = 1000 * 60 * 0.5 //30M
+const timeoutDuration = 1000 * 60 * 5 // 5M
+const maxVDomDuration = 1000 * 60 * 30 //30M
 
 interface CreateVirtualWebProps extends Omit<VirtualWebEntityProps, "url"> {
     host: string
