@@ -8,6 +8,7 @@ import {
 } from "@seo-analyzer/common"
 import VirtualWebRepository from "../repositories/VirtualWeb.repository"
 import VirtualWebSummaryRepository from "../repositories/VirtualWebSummary.repository"
+import validateDTO from "../shared/decorators/validateDTO.decorator"
 import toDecimal from "../shared/utils/toDecimal.utils"
 
 export default class VirtualWebManagerUsecase {
@@ -35,6 +36,7 @@ export default class VirtualWebManagerUsecase {
         })
     }
 
+    @validateDTO(updateVirtualWebScheme)
     async updateVirtualWeb(props: UpdateVirtualWebDTO["input"]) {
         const res = await this.repositories.virtualWebRepository.update(props)
         const virtualWebLock = await this.virtualWebStore.get(props.id)
@@ -44,6 +46,7 @@ export default class VirtualWebManagerUsecase {
         return res
     }
 
+    @validateDTO(createVirtualWebSummaryScheme)
     async createVirtualWebSummary(virtualWebId: number) {
         const virtualWeb = await this.getVirtualWebOrThrow(virtualWebId)
         const { content, usage, model } = await virtualWeb.generateWebSummary()
