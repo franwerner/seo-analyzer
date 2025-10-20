@@ -36,8 +36,6 @@ class VirtualDomEntity {
 
     async analyze(domSummary: string, validationsSelected: ValidationsType) {
 
-
-        return analysisMock
         const snapshot = await this.getOrGenerateSnapshot()
 
         return await this.domAnalysis.runAnalysis({
