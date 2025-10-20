@@ -1,9 +1,10 @@
 import VirtualDomRepository from "@/application/repositories/VirtualDom.repository"
 import { VirtualDomNotFountError } from "@/domain/virtual-dom/errors"
-import { CreateVirtualDomAnalysisDTO } from "@seo-analyzer/common"
+import { CreateVirtualDomAnalysisDTO, createVirtualDomAnalysisScheme } from "@seo-analyzer/common"
 import VirtualDomAnalysisRepository from "../repositories/VirtualDomAnalysis.repository"
 import toDecimal from "../shared/utils/toDecimal.utils"
 import VirtualWebManagerService from "./VirtualWebManager.use-case"
+import validateDTO from "@/application/shared/decorators/validateDTO.decorator"
 
 export default class VirtualDomManagerUseCase {
     constructor(
@@ -36,6 +37,7 @@ export default class VirtualDomManagerUseCase {
     }
 
     //Falta DTO de respueta y cambiar el nombre page a DOM
+    @validateDTO(createVirtualDomAnalysisScheme)
     async createVirtualDomAnalysis({
         id,
         virtualWebId,
