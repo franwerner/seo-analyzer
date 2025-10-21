@@ -1,7 +1,6 @@
 "use client"
 import Container from "@/src/common/components/Container.component";
 import Loader from "@/src/common/components/Loader.component";
-import ResourceNotFound from "@/src/common/components/ResourceNotFound.component";
 import TitleUrl from "@/src/common/components/TitleURL.component";
 import UsageCard from "@/src/common/components/UsageCard.component";
 import { useParams } from "next/navigation";
@@ -12,13 +11,14 @@ export default function VirtualDomView() {
 
     const { virtualDomId } = useParams()
 
-    const { data, isPending } = useGetVirtualDom(Number(virtualDomId))
+    const { data, isPending, error, isError } = useGetVirtualDom(Number(virtualDomId))
 
-    const virtualDom = data?.result
 
     if (isPending) return <Loader />
-    else if (!virtualDom) return <ResourceNotFound message="Virtual DOM not found" />
+    else if (isError) throw error
 
+
+    const virtualDom = data.result
     const url = virtualDom.virtualWeb.host + virtualDom.pathname
 
     return (

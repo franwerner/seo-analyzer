@@ -13,7 +13,7 @@ export default function VirtualDomAnalysisView() {
     const { data, isPending, error, isError } = useGetVirtualDomAnalysis(Number(virtualDomAnalysisId))
 
     if (isPending) return <Loader />
-    else if (isError) return <p>{error.message}</p>
+    else if (isError) throw error
     const { analysisUsage, analysisIssues, createdAt, issuesCount } = data.result
 
     return (

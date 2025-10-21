@@ -38,18 +38,18 @@ export default function VirtualDomAnalyses() {
     const router = useRouter()
     const { virtualDomId } = useParams()
 
-    const { data, isPending, fetchNextPage, hasNextPage, isLoading, error, isError } = useGetVirtualDomAnalysis(Number(virtualDomId))
+    const { data, isPending, fetchNextPage, hasNextPage, error, isError } = useGetVirtualDomAnalysis(Number(virtualDomId))
 
     if (isPending) return <Loader />
-    else if (isError) return <p>{error.message}</p>
+    else if (isError) throw error
 
-    const analysis = data.pages.flatMap(page => page.result?.virtualDomAnalyses || [])
+    const analysis = data.pages.flatMap(page => page.result.virtualDomAnalyses)
 
     return (
-        <div className="flex h-full flex-col flex-1 justify-start items-center gap-8">
+        <div className="flex h-full flex-col flex-1 justify-start items-center py-8 gap-8">
             <ModalContainer />
             {analysis.length == 0 ?
-                <ResourceNotFound message="Analyses not found" /> :
+                <ResourceNotFound message="No analyses available" /> :
                 <Table>
                     <TableHeader>
                         <TableColumn className="text-center">ID</TableColumn>
@@ -60,7 +60,7 @@ export default function VirtualDomAnalyses() {
                         <TableColumn className="text-center">Total</TableColumn>
                     </TableHeader>
                     <TableBody>
-                        {analysis?.map((analysis) => (
+                        {analysis.map((analysis) => (
                             <TableRow
                                 key={analysis.id}
                                 onClick={() => router.push(`${virtualDomId}/analyses/${analysis.id}`)}
@@ -78,7 +78,7 @@ export default function VirtualDomAnalyses() {
             }
             <ShowMoreButton
                 fetchNextPage={fetchNextPage}
-                isLoading={isLoading}
+                isLoading={isPending}
                 hasNextPage={hasNextPage}
             />
         </div>

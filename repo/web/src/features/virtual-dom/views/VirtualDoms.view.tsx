@@ -1,14 +1,15 @@
 "use client"
 import Container from "@/src/common/components/Container.component"
+import Loader from "@/src/common/components/Loader.component"
+import ResourceNotFound from "@/src/common/components/ResourceNotFound.component"
 import ShowMoreButton from "@/src/common/components/ShowMoreButton.component"
 import { Button } from "@heroui/button"
-import { Spinner } from "@heroui/spinner"
 import { VirtualDom } from "@seo-analyzer/common"
 import Link from "next/link"
 import { useParams } from "next/navigation"
 import { memo, useState } from "react"
-import useGetVirtualDoms from "../hooks/useGetVirtualDoms.hook"
 import RegisterVirtualDom from "../components/RegisterVirtualDomModal.component"
+import useGetVirtualDoms from "../hooks/useGetVirtualDoms.hook"
 
 
 const ModalContainer = () => {
@@ -56,23 +57,23 @@ export default function VirtualDomsView() {
 
     const { virtualWebId } = useParams()
 
-    const { data, isLoading, fetchNextPage, hasNextPage } = useGetVirtualDoms(Number(virtualWebId))
+    const { data, isPending, fetchNextPage, hasNextPage, error, isError } = useGetVirtualDoms(Number(virtualWebId))
 
-    const dat = data?.pages || []
+    if (isPending) return <Loader />
+    else if (isError) throw error
 
-    const doms = dat.flatMap(i => i.result?.virtualDoms || [])
+    const doms = data.pages.flatMap(i => i.result.virtualDoms)
 
     return (
         <Container as="main">
             <ModalContainer />
             <div className="w-full flex-1 flex flex-col h-full p-6 gap-8 rounded-lg ">
                 <h1 className="text-3xl font-semibold text-default-800  text-center uppercase ">Virtual Dom List</h1>
-                {
-                    isLoading ?
-                        <div className="flex justify-center h-full items-center flex-1">
-                            <Spinner size="lg" />
-                        </div> :
-                        <div className="flex h-full flex-col flex-1 justify-start items-center w-full gap-8">
+                <div className="flex h-full flex-col flex-1 justify-start items-center w-full gap-8">
+                    {
+                        doms.length === 0 ? (
+                            <ResourceNotFound message="No virtual doms available" />
+                        ) : (
                             <ul className="space-y-4 w-full  gap-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3" >
                                 {
                                     doms.map((dom) => (
@@ -80,13 +81,14 @@ export default function VirtualDomsView() {
                                     ))
                                 }
                             </ul>
-                            <ShowMoreButton
-                                fetchNextPage={fetchNextPage}
-                                isLoading={isLoading}
-                                hasNextPage={hasNextPage}
-                            />
-                        </div>
-                }
+                        )
+                    }
+                    <ShowMoreButton
+                        fetchNextPage={fetchNextPage}
+                        isLoading={isPending}
+                        hasNextPage={hasNextPage}
+                    />
+                </div>
             </div >
         </Container>
     )
