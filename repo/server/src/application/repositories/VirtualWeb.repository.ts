@@ -131,7 +131,7 @@ export default class VirtualWebRepository {
         })
     }
 
-    async findAll(skip: number = 0) {
+    async findAll(skip: number) {
         const virtualWebsPromise = this.client.virtualWeb.findMany({
             select: {
                 id: true,

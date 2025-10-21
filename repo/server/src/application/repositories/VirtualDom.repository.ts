@@ -21,20 +21,18 @@ export default class VirtualDomRepository {
                 createdAt: true,
                 virtualWebId: true
             },
-            skip: skip,
+            skip,
             take: LIMIT,
             orderBy: {
                 id: 'desc'
             },
         })
 
-        const nextSkip = skip + LIMIT
-
         const hasNextPromise = this.client.virtualDom.count({
             where: {
                 virtualWebId
             },
-            skip: nextSkip,
+            skip: (skip + LIMIT),
             take: 1,
         })
 

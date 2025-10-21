@@ -45,7 +45,8 @@ export default class VirtualDomController {
 
     static async getVirtualDomAnalyses(req: Request, res: Response) {
         const { id } = req.params
-        const result = await virtualDomStoredUseCase.getVirtualDomAnalyses(Number(id))
+        const { skip } = req.query
+        const result = await virtualDomStoredUseCase.getVirtualDomAnalyses({ virtualDomId: Number(id), skip: Number(skip) })
         res.status(200).json({
             result
         })

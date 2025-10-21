@@ -1,9 +1,10 @@
-import { AIUsage, AnalysisIssue, PrismaClient } from "@prisma/client";
+import { AnalysisIssue, PrismaClient } from "@prisma/client";
+import { AIUsageType } from "./shared/types/AIUsaga.type";
 
 interface CreateAggregate {
     virtualDomId: number,
     analysisIssues: Array<Omit<AnalysisIssue, 'id' | 'virtualDomAnalysisId'> & { traceIds: Array<string> }>
-    AIUsage: Omit<AIUsage, 'id'>
+    AIUsage: AIUsageType
 }
 
 const LIMIT = 15
@@ -107,7 +108,7 @@ export default class VirtualDomAnalysisRepository {
         }
     }
 
-    async findByVirtualDom({ virtualDomId, skip = 0 }: { virtualDomId: number, skip?: number }) {
+    async findByVirtualDom({ virtualDomId, skip }: { virtualDomId: number, skip: number }) {
         const analysesPromise = this.client.virtualDomAnalysis.findMany({
             where: {
                 virtualDomId,
@@ -143,7 +144,7 @@ export default class VirtualDomAnalysisRepository {
             where: {
                 virtualDomId,
             },
-            skip: skip + LIMIT,
+            skip: (skip + LIMIT),
             take: 1,
         })
 

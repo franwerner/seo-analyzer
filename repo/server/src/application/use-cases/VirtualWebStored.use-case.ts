@@ -14,7 +14,7 @@ export default class VirtualWebStoredUseCase {
         }
     ) { }
 
-    async getVirtualWebs(skip?: number) {
+    async getVirtualWebs(skip: number) {
         const res = await this.repositories.virtualWebRepository.findAll(skip)
         return validateOutputDTO(getVirtualWebsScheme.output, res)
     }
