@@ -32,10 +32,10 @@ export default class VirtualDomStoredUseCase {
         )
     }
 
-    async getVirtualDomAnalyses(id: number) {
+    async getVirtualDomAnalyses({ virtualDomId, skip }: { virtualDomId: number, skip: number }) {
         return validateOutputDTO(
             getVirtualDomAnalysesScheme.output,
-            await this.repositories.virtualDomAnalysisRepository.findByVirtualDom({ virtualDomId: id })
+            await this.repositories.virtualDomAnalysisRepository.findByVirtualDom({ virtualDomId, skip })
         )
     }
 
@@ -48,8 +48,8 @@ export default class VirtualDomStoredUseCase {
 
     async getVirtualDomDetails(id: number) {
         const [virtualDom, analysesUsage] = await Promise.all([
-            await this.repositories.virtualDomRepository.findUniqueWithVirtualWeb({ id }),
-            await this.repositories.virtualDomRepository.findAnalysisUsage({ id })
+            this.repositories.virtualDomRepository.findUniqueWithVirtualWeb({ id }),
+            this.repositories.virtualDomRepository.findAnalysisUsage({ id })
         ])
         if (!virtualDom) throw new VirtualDomNotFountError()
 
