@@ -8,9 +8,8 @@ import {
 } from "@seo-analyzer/common"
 import VirtualWebRepository from "../repositories/VirtualWeb.repository"
 import VirtualWebSummaryRepository from "../repositories/VirtualWebSummary.repository"
-import toDecimal from "../shared/utils/toDecimal.utils"
-import validateOutputDTO from "../shared/utils/validateOutputDTO.utils"
 import validateInputDTO from "../shared/utils/validateInputDTO.utils"
+import validateOutputDTO from "../shared/utils/validateOutputDTO.utils"
 
 export default class VirtualWebManagerUsecase {
 
@@ -54,8 +53,8 @@ export default class VirtualWebManagerUsecase {
             virtualWebId: virtualWebId,
             content,
             AIUsage: {
-                input: toDecimal(usage.input),
-                output: toDecimal(usage.output),
+                input: usage.input,
+                output: usage.output,
                 model
             }
         })

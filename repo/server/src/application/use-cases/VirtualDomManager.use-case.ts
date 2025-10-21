@@ -2,7 +2,6 @@ import VirtualDomRepository from "@/application/repositories/VirtualDom.reposito
 import { VirtualDomNotFountError } from "@/domain/virtual-dom/errors"
 import { CreateVirtualDomAnalysisDTO, createVirtualDomAnalysisScheme } from "@seo-analyzer/common"
 import VirtualDomAnalysisRepository from "../repositories/VirtualDomAnalysis.repository"
-import toDecimal from "../shared/utils/toDecimal.utils"
 import validateOutputDTO from "../shared/utils/validateOutputDTO.utils"
 import VirtualWebManagerService from "./VirtualWebManager.use-case"
 import validateInputDTO from "../shared/utils/validateInputDTO.utils"
@@ -58,8 +57,8 @@ export default class VirtualDomManagerUseCase {
             virtualDomId: id,
             analysisIssues: issues,
             AIUsage: {
-                input: toDecimal(usage.input),
-                output: toDecimal(usage.output),
+                input: usage.input,
+                output: usage.output,
                 model: model
             }
         })
