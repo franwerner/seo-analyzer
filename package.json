@@ -1,20 +1,17 @@
 {
-  "name": "my-turborepo",
-  "private": true,
+  "name": "monorepo",
+  "version": "1.0.0",
+  "main": "index.js",
   "scripts": {
-    "build": "turbo run build",
-    "dev": "turbo run dev",
-    "lint": "turbo run lint",
-    "format": "prettier --write \"**/*.{ts,tsx,md}\"",
-    "check-types": "turbo run check-types"
-  },
-  "devDependencies": {
-    "prettier": "^3.6.2",
-    "turbo": "^2.5.8",
-    "typescript": "5.9.2"
+    "build:client": "npm run build --workspace=client",
+    "build:server": "npm run build --workspace=server",
+    "start:server": "npm run dev --workspace=server"
   },
   "engines": {
-    "node": ">=18"
+    "node": ">=20.0.0"
   },
-  "packageManager": "npm@10.8.2"
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": ""
 }
