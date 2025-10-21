@@ -1,4 +1,5 @@
-import { AIUsage, PrismaClient, VirtualWebSummary } from "@prisma/client";
+import { PrismaClient, VirtualWebSummary } from "@prisma/client";
+import { AIUsageType } from "./shared/types/AIUsaga.type";
 
 export default class VirtualWebSummaryRepository {
     constructor(private client: PrismaClient) { }
@@ -7,7 +8,7 @@ export default class VirtualWebSummaryRepository {
     createSummaryAggregate({
         AIUsage,
         ...data
-    }: Omit<VirtualWebSummary, "id" | "createdAt"> & { AIUsage: Omit<AIUsage, "id" | "createdAt"> }) {
+    }: Omit<VirtualWebSummary, "id" | "createdAt"> & { AIUsage: AIUsageType }) {
         return this.client.virtualWebSummary.create({
             data: {
                 ...data,
@@ -27,19 +28,4 @@ export default class VirtualWebSummaryRepository {
         })
     }
 
-    findLastByVirtualWeb(id: number) {
-        return this.client.virtualWebSummary.findFirst({
-            where: {
-                virtualWebId: id,
-            },
-            orderBy: {
-                id: 'desc'
-            },
-            select: {
-                id: true,
-                content: true,
-                createdAt: true,
-            }
-        })
-    }
 }
