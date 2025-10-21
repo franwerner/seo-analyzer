@@ -7,7 +7,7 @@ import { Input } from "@heroui/input"
 import { Modal, ModalBody, ModalContent, ModalHeader } from "@heroui/modal"
 import { CreateVirtualWebDTO, createVirtualWebScheme } from "@seo-analyzer/common"
 import { useState } from "react"
-import useCreateVirtualWeb from "../../virtual-web/hooks/useCreateVirtualWeb.hook"
+import useCreateVirtualWeb from "../hooks/useCreateVirtualWeb.hook"
 
 
 interface RegisterWebModalProps {

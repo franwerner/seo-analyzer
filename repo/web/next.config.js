@@ -1,6 +1,5 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-    basePath: "",
     async rewrites() {
         console.log(process.env.BACKEND_URL)
         const backendUrl = process.env.BACKEND_URL;
