@@ -7,8 +7,8 @@ export const analysisIssueScheme = z.object({
     virtualDomAnalysisId: z.number(),
     tag: z.string(),
     message: z.string(),
-    traceIdCount: z.number(),
     type: validationTypeEnumScheme,
+    traceIds: z.array(z.string())
 })
 
 export type AnalysisIssue = z.infer<typeof analysisIssueScheme>

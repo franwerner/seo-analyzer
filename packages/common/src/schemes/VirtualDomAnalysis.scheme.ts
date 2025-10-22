@@ -1,6 +1,7 @@
 import z from "zod";
 import { dateScheme } from "./date.scheme";
 import { usageScheme } from "./usage.scheme";
+import { analysisIssueScheme } from "./analysisIssue.scheme";
 
 
 export const virtualDomAnalysisScheme = z.object({
@@ -8,7 +9,8 @@ export const virtualDomAnalysisScheme = z.object({
     virtualDomId: z.number(),
     createdAt: dateScheme,
     issuesCount: z.number(),
-    analysisUsage: usageScheme
+    analysisUsage: usageScheme,
+    analysisIssues: analysisIssueScheme.array()
 })
 
 
