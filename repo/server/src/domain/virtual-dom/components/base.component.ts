@@ -1,8 +1,7 @@
-import TextComponent from "./text.component";
-import crc32 from "crc-32";
 import VDomContext from "@/domain/virtual-dom/context/vDom.context";
+import crc32 from "crc-32";
 import VirtualDom from "../virtualDom.entity";
-import ScriptComponent from "./script.component";
+import TextComponent from "./text.component";
 
 interface BaseComponentProps {
     tag: string;
