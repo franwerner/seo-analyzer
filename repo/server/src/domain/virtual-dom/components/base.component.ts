@@ -166,6 +166,7 @@ class BaseComponent {
                  * Como no se detectan los saltos de linea con \n se debe verificar, 
                  * si el siguiente hermano tiene un espacio al inicio, entonces no sera necesario agregar el espacio.
                  */
+                child.innerText.claimedByParent = true
                 const nextSibling = children[index + 1]
                 const innerText = nextSibling instanceof TextComponent ? nextSibling.text : nextSibling?.innerText.value
                 if (!innerText) return acc
