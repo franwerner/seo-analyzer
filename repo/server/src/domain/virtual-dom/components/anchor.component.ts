@@ -47,7 +47,7 @@ class AnchorComponent extends BaseValidatableComponent {
         const { isGenericText } = this.localContext
         if (isGenericText) {
             return {
-                message: `the text "${this.innerText.value}" is not very descriptive`,
+                message: `the text "${this.innerText.value.trim()}" is not very descriptive`,
                 traceIds: [this.traceId],
                 tag: this.tag,
                 type: ValidationTypeEnum.SEMANTIC
