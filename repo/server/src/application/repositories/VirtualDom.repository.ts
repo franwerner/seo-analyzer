@@ -10,6 +10,23 @@ export default class VirtualDomRepository {
         return this.client.virtualDom.create({ data, select: { id: true, pathname: true, createdAt: true, virtualWebId: true } })
     }
 
+    findUniqueByHostAndPath({ host, pathname }: { host: string, pathname: string }) {
+        /**
+         * Esto siempre devolvera uno solo, debido a el @unique en el schema de `host` y `pathname`.
+         * virtualDOm tiene @unique [virtualWebId, pathname]
+         */
+        return this.client.virtualDom.findFirst({
+            where: {
+                pathname: pathname,
+                AND: {
+                    virtualWeb: {
+                        host: host
+                    }
+                }
+            }
+        })
+    }
+
     async findByVirtualWeb({ virtualWebId, skip }: { virtualWebId: number, skip: number }) {
         const virtualDomsPromise = this.client.virtualDom.findMany({
             where: {

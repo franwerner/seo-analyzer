@@ -12,6 +12,14 @@ export default class VirtualDomController {
         })
     }
 
+    static async getVirtualDomByHostPath(req: Request, res: Response) {
+        const { host, pathname } = req.query
+        const result = await virtualDomStoredUseCase.getVirtualDomByHostPath({ host: String(host), pathname: String(pathname) })
+        res.status(200).json({
+            result
+        })
+    }
+
     static async createVirtualDomAnalysis(req: Request, res: Response) {
         const { virtualDomId, virtualWebId } = req.params
         const { validationsSelected } = req.body
@@ -28,7 +36,7 @@ export default class VirtualDomController {
 
     static async getVirtualDomAnalysis(req: Request, res: Response) {
         const { analysisId } = req.params
-        const result = await virtualDomStoredUseCase.getVirtualDomAnalysis(Number(analysisId))
+        const result = await virtualDomStoredUseCase.getVirtualDomAnalysis({ id: Number(analysisId) })
         res.status(200).json({
             result
         })
