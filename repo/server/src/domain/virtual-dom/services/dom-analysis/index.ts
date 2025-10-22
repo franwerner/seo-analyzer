@@ -10,6 +10,12 @@ import { VirtualDomAnalysisError, VirtualDomAnalysisInProgressError } from "../.
 import { AnalyzeStatus } from "../../types/AnalyzeStatuss";
 import { ValidationsType, ValidationTypeEnum } from "@seo-analyzer/common";
 
+interface RunAnalysisProps {
+    snapshot: VirtualDomSnapshot,
+    domSummary: string,
+    validationsSelected: ValidationsType,
+}
+
 export default class DomAnalysis {
 
     private static readonly VALIDATIONS_FOR_COMPONENT_TREE: Array<ValidationsTypeForComponentTree> = [ValidationTypeEnum.SEMANTIC, ValidationTypeEnum.STRUCTURE, ValidationTypeEnum.RESOURCE]
@@ -50,23 +56,13 @@ export default class DomAnalysis {
         return validation
     }
 
-    async runAnalysis({
+    private getValidatorInstances({
         snapshot,
         domSummary,
-        validationsSelected,
-    }: {
-        snapshot: VirtualDomSnapshot,
-        domSummary: string,
-        validationsSelected: ValidationsType,
-    }) {
-
-        this.throwIfAnalyzing()
-
-        this.setStatus(AnalyzeStatus.Analyzing)
+        validationsSelected
+    }: RunAnalysisProps) {
 
         const { root, vDomContext, htmlStructure, htmlSemantic } = snapshot
-
-        console.log(validationsSelected)
         const validationMap = {
             [ValidationTypeEnum.SEMANTIC]: () => new SemanticValidation(this.openAi, htmlSemantic, domSummary, vDomContext),
             [ValidationTypeEnum.STRUCTURE]: () => new StructureValidation(this.openAi, vDomContext, htmlStructure),
@@ -74,23 +70,41 @@ export default class DomAnalysis {
             [ValidationTypeEnum.SCHEME]: () => new SchemeValidaton(this.openAi, vDomContext, domSummary, root),
         }
 
-        try {
-            const validationInstances: Array<ValidationUtility> = []
+        const validationInstances: Array<ValidationUtility> = []
 
-            if (DomAnalysis.VALIDATIONS_FOR_COMPONENT_TREE.some(v => validationsSelected[v])) {
-                validationInstances.push(new ComponentTreeValidation(root, validationsSelected))
+        if (DomAnalysis.VALIDATIONS_FOR_COMPONENT_TREE.some(v => validationsSelected[v])) {
+            validationInstances.push(new ComponentTreeValidation(root, validationsSelected))
+        }
+
+        const recolectedValidators = Object.keys(validationsSelected).map(v => {
+            const key = v as keyof typeof validationMap
+            const value = validationsSelected[key]
+            if (key in validationMap && value) {
+                return validationMap[key]()
             }
+        }).filter(v => v !== undefined)
 
-            const recolectedValidators = Object.keys(validationsSelected).map(v => {
-                const key = v as keyof typeof validationMap
-                const value = validationsSelected[key]
-                if (key in validationMap && value) {
-                    return validationMap[key]()
-                }
-            }).filter(v => v !== undefined)
+        validationInstances.push(...recolectedValidators)
 
-            validationInstances.push(...recolectedValidators)
+        return validationInstances
 
+    }
+    async runAnalysis({
+        snapshot,
+        domSummary,
+        validationsSelected,
+    }: RunAnalysisProps) {
+
+        this.throwIfAnalyzing()
+
+        this.setStatus(AnalyzeStatus.Analyzing)
+
+        try {
+            const validationInstances = this.getValidatorInstances({
+                snapshot,
+                domSummary,
+                validationsSelected
+            })
             const resourceUsage = await this.validationInstances(validationInstances)
             return {
                 ...resourceUsage,
