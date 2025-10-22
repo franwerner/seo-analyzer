@@ -12,9 +12,14 @@ const prompt = `
         2. Ignora por completo la gramática, sintaxis, puntuación, redacción o palabras mal empleadas en contexto. SOLO revisa si la palabra está mal escrita.
         3. No incluyas explicaciones, definiciones ni texto adicional fuera del Array.
         4. No marques como error:
-        - Abreviaturas válidas (ej: "etc.", "Sr.", "Dr.", "vs.")
-        - Siglas o acrónimos en mayúsculas (ej: "ONU", "NASA")
-        - Palabras técnicas correctamente escritas.
+         - Abreviaturas válidas (ej: "etc.", "Sr.", "Dr.", "vs.")
+         - Siglas o acrónimos en mayúsculas (ej: "ONU", "NASA")
+         - Palabras técnicas correctamente escritas
+         - Direcciones de calles y abreviaciones de calles (ej: "Calle 123", "Av. 123")
+         - Nombres propios de personas, empresas o productos que aparezcan en el contexto
+         - Números, códigos o identificadores alfanuméricos (ej: "A123", "2025-09-01")
+         - Correos electrónicos y URLs (ej: "info@empresa.com", "www.ejemplo.com")
+         - Horarios o tiempos expresados con ":" o "h" (ej: "11:00", "9:30h", "23:15")
         5. Cada palabra debe aparecer solo una vez en el Array, aunque se repita en el texto.
 `
 
