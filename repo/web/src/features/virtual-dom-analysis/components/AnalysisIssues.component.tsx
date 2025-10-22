@@ -70,7 +70,7 @@ export default function AnalysisIssues({
                                 <CardBody className="text-sm text-default-700 space-y-2">
                                     <p>{issue.message}</p>
                                     <p className="text-xs text-gray-500 cursor-help">
-                                        Elements with issue: {issue.traceIdCount}
+                                        Elements with issue: {issue.traceIds.length}
                                     </p>
                                 </CardBody>
                             </Card>
