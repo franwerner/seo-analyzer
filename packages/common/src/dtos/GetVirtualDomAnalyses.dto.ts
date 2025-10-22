@@ -6,7 +6,7 @@ import { z } from "zod"
 const input = null
 
 const output = z.object({
-    virtualDomAnalyses: z.array(virtualDomAnalysisScheme),
+    virtualDomAnalyses: z.array(virtualDomAnalysisScheme.omit({ analysisIssues: true })),
     pagination: z.object({
         next: paginationScheme,
     })

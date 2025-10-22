@@ -1,13 +1,9 @@
 import { virtualDomAnalysisScheme } from "@/schemes"
-import { analysisIssueScheme } from "@/schemes/analysisIssue.scheme"
 import { InferDTO } from "@/types/InferDTO.type"
-import { z } from "zod"
 
 const input = null
 
-const output = virtualDomAnalysisScheme.extend({
-    analysisIssues: z.array(analysisIssueScheme)
-})
+const output = virtualDomAnalysisScheme
 
 export const getVirtualDomAnalysisScheme = {
     input,
