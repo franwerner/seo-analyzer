@@ -25,7 +25,7 @@ export default class VirtualDomStoredUseCase {
         )
     }
 
-    async getVirtualDoms(props: { virtualWebId: number, skip: number }) {
+    async getVirtualDomsByVirtualWeb(props: { virtualWebId: number, skip: number }) {
         return validateOutputDTO(
             getVirtualDomsScheme.output,
             await this.repositories.virtualDomRepository.findByVirtualWeb(props)

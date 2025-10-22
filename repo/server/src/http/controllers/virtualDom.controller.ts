@@ -3,21 +3,21 @@ import { Request, Response } from "express"
 
 export default class VirtualDomController {
 
-    static async getAllVirtualDoms(req: Request, res: Response) {
+    static async getVirtualDomsByVirtualWeb(req: Request, res: Response) {
         const { virtualWebId } = req.params
         const { skip } = req.query
-        const result = await virtualDomStoredUseCase.getVirtualDoms({ virtualWebId: Number(virtualWebId), skip: Number(skip) })
+        const result = await virtualDomStoredUseCase.getVirtualDomsByVirtualWeb({ virtualWebId: Number(virtualWebId), skip: Number(skip) })
         res.status(200).json({
             result
         })
     }
 
     static async createVirtualDomAnalysis(req: Request, res: Response) {
-        const { id, virtualWebId } = req.params
+        const { virtualDomId, virtualWebId } = req.params
         const { validationsSelected } = req.body
         const result = await virtualDomManagerUseCase
             .createVirtualDomAnalysis({
-                id: Number(id),
+                id: Number(virtualDomId),
                 virtualWebId: Number(virtualWebId),
                 validationsSelected
             })
