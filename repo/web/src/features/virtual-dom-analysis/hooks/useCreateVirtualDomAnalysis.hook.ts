@@ -7,7 +7,7 @@ export default function useCreateVirtualDomAnalysis() {
     const router = useRouter()
     return useMutation({
         mutationFn: async ({ virtualWebId, id, ...rest }: CreateVirtualDomAnalysisDTO["input"]) => {
-            const response = await fetch(`/backend/virtual-dom/${id}/virtual-web/${virtualWebId}/analyses`, {
+            const response = await fetch(`/backend/virtual-web/${virtualWebId}/virtual-dom/${id}/analyses`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json"
