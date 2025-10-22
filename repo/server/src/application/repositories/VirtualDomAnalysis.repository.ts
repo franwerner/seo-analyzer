@@ -42,24 +42,21 @@ export default class VirtualDomAnalysisRepository {
             })
 
 
-            for (const analysisIssue of analysisIssues) {
-                const { traceIds, ...rest } = analysisIssue
-                await tx.analysisIssue.create({
+            const analysisIssuesPromise = analysisIssues.map((analysisIssue) => {
+                return tx.analysisIssue.create({
                     data: {
-                        ...rest,
+                        ...analysisIssue,
                         virtualDomAnalysisId: virtualDomAnalysis.id,
-                        issueTraceId: {
-                            createMany: {
-                                data: traceIds.map((traceId) => ({ traceId })),
-                                skipDuplicates: true
-                            }
-                        },
-
                     }
                 })
-            }
+            })
 
-            return virtualDomAnalysis
+            const analysisIssuesRes = await Promise.all(analysisIssuesPromise)
+
+            return {
+                ...virtualDomAnalysis,
+                analysisIssues: analysisIssuesRes,
+            }
         })
 
     }
@@ -70,12 +67,13 @@ export default class VirtualDomAnalysisRepository {
             where: { id },
             include: {
                 analysisIssue: {
-                    include: {
-                        _count: {
-                            select: {
-                                issueTraceId: true
-                            }
-                        }
+                    select: {
+                        id: true,
+                        virtualDomAnalysisId: true,
+                        traceIds: true,
+                        message: true,
+                        tag: true,
+                        type: true,
                     }
                 },
                 virtualDomAnalysisUsage: {
@@ -97,14 +95,11 @@ export default class VirtualDomAnalysisRepository {
         return {
             ...res,
             issuesCount: analysisIssue.length,
-            analysisIssues: analysisIssue.map(({ _count, ...rest }) => ({
-                ...rest,
-                traceIdCount: _count.issueTraceId
-            })),
             analysisUsage: {
                 input: Number(virtualDomAnalysisUsage?.AIUsage?.input) || 0,
                 output: Number(virtualDomAnalysisUsage?.AIUsage?.output) || 0,
-            }
+            },
+            analysisIssues: analysisIssue
         }
     }
 
@@ -155,7 +150,7 @@ export default class VirtualDomAnalysisRepository {
         ])
 
         return {
-            virtualDomAnalyses: virtualDomAnalyses.map(({ _count, virtualDomAnalysisUsage, ...rest }) => ({
+            virtualDomAnalyses: virtualDomAnalyses.map(({ virtualDomAnalysisUsage, _count, ...rest }) => ({
                 ...rest,
                 issuesCount: _count.analysisIssue,
                 analysisUsage: {

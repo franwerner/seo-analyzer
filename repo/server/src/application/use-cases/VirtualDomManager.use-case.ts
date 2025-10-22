@@ -66,7 +66,7 @@ export default class VirtualDomManagerUseCase {
         return validateOutputDTO(createVirtualDomAnalysisScheme.output, {
             ...virtualDomAnalysis,
             analysisUsage: usage,
-            issuesCount: issues.length
+            issuesCount: virtualDomAnalysis.analysisIssues.length,
         })
     }
 
