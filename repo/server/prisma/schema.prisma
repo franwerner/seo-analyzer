@@ -100,14 +100,5 @@ model AnalysisIssue {
   message              String
   type                 ValidationType
   virtualDomAnalysis   VirtualDomAnalysis @relation(fields: [virtualDomAnalysisId], references: [id])
-  issueTraceId         IssueTraceId[]
-}
-
-model IssueTraceId {
-  id            Int           @id @default(autoincrement())
-  issueId       Int
-  traceId       String
-  analysisIssue AnalysisIssue @relation(fields: [issueId], references: [id])
-
-  @@unique([issueId, traceId])
+  traceIds             String[]           @db.Text
 }
