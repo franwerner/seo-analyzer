@@ -1,3 +1,3 @@
-import { Issues } from "./issues.type";
+import { AnalysisIssue } from "@seo-analyzer/common";
 
-export type GroupIssuesByTag = Record<string, Issues[]>
+export type GroupIssuesByTag = Record<string, AnalysisIssue[]>

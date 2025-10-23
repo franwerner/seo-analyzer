@@ -9,6 +9,7 @@
   },
   "devDependencies": {
     "@crxjs/vite-plugin": "^2.0.3",
+    "@seo-analyzer/common": "latest",
     "@types/chrome": "^0.1.1",
     "@types/node": "^24.0.15",
     "typescript": "~5.8.3",
@@ -16,6 +17,7 @@
     "vite-plugin-zip-pack": "^1.2.4"
   },
   "dependencies": {
+    "@tailwindcss/vite": "^4.1.15",
     "crc-32": "^1.2.2"
   }
 }

@@ -1,9 +1,6 @@
-import { AnalyzeInterface } from "~/types/analyzeInterface.type"
+import { AnalysisIssue } from "@seo-analyzer/common"
 import { GroupIssuesByTag } from "~/types/groupIssuesByTag"
 
-export default function groupIssuesByTag(response: AnalyzeInterface) {
-    const lastElement = response
-    if (!lastElement) throw new Error("No se encontro el ultimo elemento")
-    if (!Array.isArray(lastElement.issues)) throw new Error("El  ultimo no tiene issues")
-    return Object.groupBy(lastElement.issues, ({ tag }) => tag.toLowerCase()) as GroupIssuesByTag
+export default function groupIssuesByTag(response: AnalysisIssue[]) {
+    return Object.groupBy(response, ({ tag }) => tag.toLowerCase()) as GroupIssuesByTag
 }

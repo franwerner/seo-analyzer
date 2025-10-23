@@ -1,9 +1,9 @@
-import { AnalyzeInterface } from "./analyzeInterface.type";
+import { AnalysisIssue } from "@seo-analyzer/common";
 
 export type MessageInterface = {
     action: string,
     res: {
-        data: AnalyzeInterface,
+        data: AnalysisIssue[],
         ok: boolean
     }
 }

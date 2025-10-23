@@ -48,6 +48,21 @@ body {
     font-size: 16px;
 }
 
+#analyze-button-more {
+    padding: 10px 16px;
+    border-radius: 8px;
+    border: none;
+    width: 100%;
+    margin: 16px 0;
+    background-color: black;
+    color: white;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    box-shadow: 0 2px 6px rgba(96, 98, 99, 0.4);
+    font-size: 16px;
+}
+
 #analyze-button:hover {
     background-color: #0284c7;
 }
