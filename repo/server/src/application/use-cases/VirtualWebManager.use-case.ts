@@ -7,7 +7,7 @@ import {
 } from "@seo-analyzer/common"
 import VirtualWebRepository from "../repositories/VirtualWeb.repository"
 import VirtualWebSummaryRepository from "../repositories/VirtualWebSummary.repository"
-import validateInputDTO from "../shared/utils/validateInputDTO.utils"
+import ValidateDTO from "../shared/utils/validateDTO.utils"
 
 export default class VirtualWebManagerUsecase {
 
@@ -35,7 +35,7 @@ export default class VirtualWebManagerUsecase {
     }
 
     async updateVirtualWeb(props: UpdateVirtualWebDTO["input"]) {
-        const validatedData = validateInputDTO(updateVirtualWebScheme, props)
+        const validatedData = ValidateDTO(updateVirtualWebScheme, props)
         const res = await this.repositories.virtualWebRepository.update(validatedData)
         const virtualWebLock = await this.virtualWebStore.get(validatedData.id)
         if (virtualWebLock) {

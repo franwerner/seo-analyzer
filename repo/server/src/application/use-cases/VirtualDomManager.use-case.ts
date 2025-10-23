@@ -2,7 +2,7 @@ import VirtualDomRepository from "@/application/repositories/VirtualDom.reposito
 import { VirtualDomNotFountError } from "@/domain/virtual-dom/errors"
 import { CreateVirtualDomAnalysisDTO, createVirtualDomAnalysisScheme } from "@seo-analyzer/common"
 import VirtualDomAnalysisRepository from "../repositories/VirtualDomAnalysis.repository"
-import ValidateDTO from "../shared/utils/validateInputDTO.utils"
+import ValidateDTO from "../shared/utils/validateDTO.utils"
 import VirtualWebManagerService from "./VirtualWebManager.use-case"
 
 export default class VirtualDomManagerUseCase {

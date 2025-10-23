@@ -2,7 +2,7 @@ import VirtualWebNotFound from "@/domain/virtual-web/errors/VirtualWebNotFount.e
 import { CreateVirtualWebDTO, createVirtualWebScheme } from "@seo-analyzer/common";
 import VirtualWebRepository from "../repositories/VirtualWeb.repository";
 import VirtualWebSummaryRepository from "../repositories/VirtualWebSummary.repository";
-import validateInputDTO from "../shared/utils/validateInputDTO.utils";
+import ValidateDTO from "../shared/utils/validateDTO.utils";
 
 export default class VirtualWebStoredUseCase {
 
@@ -18,7 +18,7 @@ export default class VirtualWebStoredUseCase {
     }
 
     createVirtualWeb(props: CreateVirtualWebDTO["input"]) {
-        const validatedData = validateInputDTO(createVirtualWebScheme, props)
+        const validatedData = ValidateDTO(createVirtualWebScheme, props)
         return this.repositories.virtualWebRepository.createVirtualWebAggregate(validatedData)
     }
 
