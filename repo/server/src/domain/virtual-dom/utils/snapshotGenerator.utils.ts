@@ -4,9 +4,7 @@ import TextComponent from "@/domain/virtual-dom/components/text.component"
 import VDomContext from "@/domain/virtual-dom/context/vDom.context"
 import ComponentFactory from "@/domain/virtual-dom/utils/componentFactory.util"
 import VirtualDom from "@/domain/virtual-dom/virtualDom.entity"
-import * as cheerio from "cheerio"
 import { Element } from "domhandler"
-import HTMLNotFountError from "../errors/HTMLNotFount.error"
 
 export default class SnapshotGeneratorUtility {
 
@@ -47,17 +45,6 @@ export default class SnapshotGeneratorUtility {
         return [meta, title, h1, ...h2s, ...h3s].filter(i => i != "")
     }
 
-    private static createJSDOM(htmlString: string) {
-        const dom = cheerio.load(htmlString)
-
-        const html = dom("html")[0]
-
-        if (!html || html.name != "html") {
-            throw new HTMLNotFountError()
-        }
-
-        return html
-    }
 
     private static generateChildren({
         parent,
@@ -122,14 +109,13 @@ export default class SnapshotGeneratorUtility {
     }
 
     static async generate({
-        htmlString,
+        htmlElement,
         document
     }: {
-        htmlString: string,
+        htmlElement: Element,
         document: VirtualDom
     }) {
 
-        const html = this.createJSDOM(htmlString)
 
         const vDomContext = new VDomContext()
 
@@ -138,8 +124,8 @@ export default class SnapshotGeneratorUtility {
         const htmlPathDom = "html"
 
         const htmlInstance = new HTMLComponent({
-            tag: html.name,
-            attributes: html.attribs,
+            tag: htmlElement.name,
+            attributes: htmlElement.attribs,
             vDomContext,
             pathDom: htmlPathDom,
             parent: null,
@@ -149,7 +135,7 @@ export default class SnapshotGeneratorUtility {
 
         htmlInstance.children = this.generateChildren({
             parent: htmlInstance,
-            elem: html,
+            elem: htmlElement,
             parentPathDom: htmlPathDom,
             document
         })

@@ -1,9 +1,10 @@
 import InputDTOError from "@/application/shared/errors/InputDTO.error"
 import OutputDTOError from "@/application/shared/errors/OutputDTO.error"
-import { HTMLNotFountError, VirtualDomAnalysisError, VirtualDomAnalysisInProgressError, VirtualDomGeneratedSnapshotError, VirtualDomNotFountError } from "@/domain/virtual-dom/errors"
+import { VirtualDomAnalysisError, VirtualDomAnalysisInProgressError, VirtualDomGeneratedSnapshotError, VirtualDomNotFountError } from "@/domain/virtual-dom/errors"
 import { VirtualWebAlreadyExistsError, VirtualWebNotFountError } from "@/domain/virtual-web/errors"
 import VirtualWebConfigNotFountError from "@/domain/virtual-web/errors/VirtualWebConfigNotFount.error"
 import EnvNotFountError from "@/infrastructure/errors/EnvNotFount.error"
+import HTMLNotFountError from "@/infrastructure/errors/HTMLNotFount.error"
 import MaxPageActiveError from "@/infrastructure/errors/MaxPageActive.error"
 
 const HTTPErrorMap = {

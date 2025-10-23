@@ -1,5 +1,7 @@
 import puppeteer, { Browser } from "puppeteer";
 import MaxPageActiveError from "../errors/MaxPageActive.error";
+import * as cheerio from "cheerio"
+import HTMLNotFountError from "../errors/HTMLNotFount.error";
 
 const MAX_ACTIVE_PAGES = 5
 
@@ -23,6 +25,19 @@ class PuppeterService {
             ],
         })
     }
+
+    private static createJSDOM(htmlString: string) {
+        const dom = cheerio.load(htmlString)
+
+        const html = dom("html")[0]
+
+        if (!html || html.name != "html") {
+            throw new HTMLNotFountError()
+        }
+
+        return html
+    }
+
 
     private async getOrCreateBrowser() {
         /**
@@ -76,8 +91,9 @@ class PuppeterService {
                         waitUntil: "networkidle2",
                     })
                     const content = await page.content()
+                    const html = PuppeterService.createJSDOM(content)
                     await page.close()
-                    return content
+                    return html
                 } catch (error) {
                     await page.close()
                     throw error

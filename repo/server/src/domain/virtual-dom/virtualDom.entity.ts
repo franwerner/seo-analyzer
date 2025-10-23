@@ -56,10 +56,10 @@ class VirtualDomEntity {
          */
         const to = await this.scrapperService.newPageIfAvailable()
         const url = this.url.href
-        const htmlString = await to(url)
+        const htmlElement = await to(url)
 
         const { root, vDomContext, htmlStructure, htmlSemantic } = await SnapshotGeneratorUtility.generate({
-            htmlString,
+            htmlElement,
             document: this
         })
 
