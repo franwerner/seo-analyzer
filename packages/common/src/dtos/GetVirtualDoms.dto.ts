@@ -1,20 +1,10 @@
-import { paginationScheme, virtualDomScheme } from "@/schemes"
-import { InferDTO } from "@/types/InferDTO.type"
-import { z } from "zod"
+import { VirtualDom } from "@/types/VirtualDom.interface"
+import { Pagination } from "@/types/Pagination.interface"
 
 
-const output = z.object({
-    virtualDoms: z.array(virtualDomScheme),
-    pagination: z.object({
-        next: paginationScheme,
-    })
-})
-
-const input = null
-
-export const getVirtualDomsScheme = {
-    input,
-    output
+export interface GetVirtualDomsDTO {
+    virtualDoms: VirtualDom[],
+    pagination: {
+        next: Pagination
+    }
 }
-
-export type GetVirtualDomsDTO = InferDTO<typeof getVirtualDomsScheme>

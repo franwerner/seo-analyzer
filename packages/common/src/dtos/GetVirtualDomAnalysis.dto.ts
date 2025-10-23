@@ -1,13 +1,9 @@
-import { virtualDomAnalysisScheme } from "@/schemes"
-import { InferDTO } from "@/types/InferDTO.type"
+import { AnalysisIssue } from "@/types/AnalysisIssue.interface";
+import { Usage } from "@/types/Usage.interface";
+import { VirtualDomAnalysis } from "@/types/VirtualDomAnalysis.interface";
 
-const input = null
-
-const output = virtualDomAnalysisScheme
-
-export const getVirtualDomAnalysisScheme = {
-    input,
-    output
+export interface GetVirtualDomAnalysisDTO extends VirtualDomAnalysis {
+    issuesCount: number,
+    analysisUsage: Usage,
+    analysisIssues: AnalysisIssue[]
 }
-
-export type GetVirtualDomAnalysisDTO = InferDTO<typeof getVirtualDomAnalysisScheme>

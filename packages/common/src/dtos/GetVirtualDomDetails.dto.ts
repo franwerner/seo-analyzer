@@ -1,23 +1,10 @@
-import { usageScheme, virtualDomScheme, virtualWebScheme } from "@/schemes"
-import { InferDTO } from "@/types/InferDTO.type"
+import { Usage } from "@/types/Usage.interface"
+import { VirtualDom } from "@/types/VirtualDom.interface"
+import { VirtualWeb } from "@/types/VirtualWeb.interface"
 
 
-const output = virtualDomScheme.omit({
-    virtualWebId: true,
-}).extend({
-    analysesUsage: usageScheme,
-    virtualWeb: virtualWebScheme.pick({
-        id: true,
-        host: true
-    })
-})
 
-const input = null
-
-export const getVirtualDomDetailsScheme = {
-    input,
-    output
+export interface GetVirtualDomDetailsDTO extends Omit<VirtualDom, 'virtualWebId'> {
+    analysesUsage: Usage,
+    virtualWeb: Pick<VirtualWeb, 'id' | 'host'>
 }
-
-
-export type GetVirtualDomDetailsDto = InferDTO<typeof getVirtualDomDetailsScheme>

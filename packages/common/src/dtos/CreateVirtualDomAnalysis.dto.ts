@@ -1,20 +1,15 @@
-import { virtualDomAnalysisScheme } from "@/schemes"
 import { validationsTypeScheme } from "@/schemes/validationsType.scheme"
-import { InferDTO } from "@/types/InferDTO.type"
 import { z } from "zod"
+import { GetVirtualDomAnalysisDTO } from "./GetVirtualDomAnalysis.dto"
 
 
-const input = z.object({
+export const createVirtualDomAnalysisScheme = z.object({
     id: z.number(),
     virtualWebId: z.number(),
     validationsSelected: validationsTypeScheme.strip()
 })
 
-const output = virtualDomAnalysisScheme
-
-export const createVirtualDomAnalysisScheme = {
-    input,
-    output
+export type CreateVirtualDomAnalysisDTO = {
+    input: z.infer<typeof createVirtualDomAnalysisScheme>,
+    output: GetVirtualDomAnalysisDTO
 }
-
-export type CreateVirtualDomAnalysisDTO = InferDTO<typeof createVirtualDomAnalysisScheme>

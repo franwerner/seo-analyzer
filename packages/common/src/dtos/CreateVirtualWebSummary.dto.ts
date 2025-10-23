@@ -1,15 +1,11 @@
-import { usageScheme, virtualWebSummaryScheme } from "@/schemes";
-import { InferDTO } from "@/types/InferDTO.type";
+import { Usage } from "@/types/Usage.interface";
+import { VirtualWebSummary } from "@/types/VirtualWebSummary.interface";
 
-const output = virtualWebSummaryScheme.extend({
-    summaryUsage: usageScheme
-})
 
-const input = null
-
-export const createVirtualWebSummaryScheme = {
-    input,
-    output
+export type CreateVirtualWebSummaryDTO = {
+    input: null,
+    output: {
+        virtualWebSummary: VirtualWebSummary,
+        summaryUsage: Usage
+    }
 }
-
-export type CreateVirtualWebSummaryDTO = InferDTO<typeof createVirtualWebSummaryScheme>
