@@ -4,6 +4,7 @@ import VirtualDomRepository from "../repositories/VirtualDom.repository";
 import VirtualDomAnalysisRepository from "../repositories/VirtualDomAnalysis.repository";
 import validateOutputDTO from "../shared/utils/validateOutputDTO.utils";
 import validateInputDTO from "../shared/utils/validateInputDTO.utils";
+import { pathnameScheme, hostScheme } from "@seo-analyzer/common";
 
 export default class VirtualDomStoredUseCase {
 
@@ -25,7 +26,10 @@ export default class VirtualDomStoredUseCase {
         )
     }
 
-    async getVirtualDomByHostPath({ host, pathname }: { host: string, pathname: string }) {
+    async getVirtualDomByHostPath(props: { host: string, pathname: string }) {
+        const pathname = pathnameScheme.parse(props.pathname)
+        const host = hostScheme.parse(props.host)
+
         const virtualDom = await this.repositories.virtualDomRepository.findUniqueByHostAndPath({ host, pathname })
         if (!virtualDom) throw new VirtualDomNotFountError()
         return validateOutputDTO(virtualDomScheme, virtualDom)
