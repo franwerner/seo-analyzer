@@ -5,7 +5,7 @@ export default function useGetVirtualWebDetails(virtualWebId: number) {
     return useQuery({
         queryFn: async () => {
             const response = await fetch(`/backend/virtual-web/${virtualWebId}/details`)
-            return getApiResponse<GetVirtualWebDetailsDTO["output"]>(response)
+            return getApiResponse<GetVirtualWebDetailsDTO>(response)
         },
         queryKey: ["virtual-web", virtualWebId]
     })

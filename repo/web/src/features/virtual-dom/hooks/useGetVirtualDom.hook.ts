@@ -1,4 +1,4 @@
-import { getApiResponse, GetVirtualDomDetailsDto } from "@seo-analyzer/common";
+import { getApiResponse, GetVirtualDomDetailsDTO } from "@seo-analyzer/common";
 import { useQuery } from "@tanstack/react-query";
 
 export default function useGetVirtualDom(virtualDomId: number) {
@@ -6,7 +6,7 @@ export default function useGetVirtualDom(virtualDomId: number) {
         queryKey: ["virtual-dom", virtualDomId],
         queryFn: async () => {
             const response = await fetch(`/backend/virtual-dom/${virtualDomId}/details`)
-            return getApiResponse<GetVirtualDomDetailsDto["output"]>(response)
+            return getApiResponse<GetVirtualDomDetailsDTO>(response)
         }
     })
 }

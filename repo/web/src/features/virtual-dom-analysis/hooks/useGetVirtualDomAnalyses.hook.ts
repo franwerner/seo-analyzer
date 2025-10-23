@@ -6,7 +6,7 @@ export default function useGetVirtualDomAnalyses(virtualDomId: number) {
         queryKey: ["virtual-dom-analyses", virtualDomId],
         queryFn: async ({ pageParam = 0 }) => {
             const response = await fetch(`/backend/virtual-dom/${virtualDomId}/analyses?skip=${pageParam}`)
-            return getApiResponse<GetVirtualDomAnalysesDTO["output"]>(response)
+            return getApiResponse<GetVirtualDomAnalysesDTO>(response)
         },
         getNextPageParam: (lastPage) => {
             const result = lastPage.result

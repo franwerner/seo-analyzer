@@ -31,7 +31,7 @@ const ModalForm = ({
 
     const handleSubmit = (form: NormalizedFormDataType) => {
 
-        const res = createVirtualWebScheme.input.safeParse(form)
+        const res = createVirtualWebScheme.safeParse(form)
         if (!res.success) {
             const fieldErrors = res.error.flatten().fieldErrors
             setErrors(fieldErrors)

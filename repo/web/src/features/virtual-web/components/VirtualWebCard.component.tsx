@@ -1,11 +1,11 @@
-import { VirtualWeb } from "@seo-analyzer/common"
+import { VirtualWeb, VirtualWebConfig } from "@seo-analyzer/common"
 import { memo } from "react"
 import Link from "next/link"
 import { Button } from "@heroui/button"
 import { Link as HLink } from "@heroui/link"
 import { Tooltip } from "@heroui/tooltip"
 
-const VirtualWebCard = memo(({ web }: { web: VirtualWeb }) => {
+const VirtualWebCard = memo(({ web }: { web: VirtualWeb & { virtualDomCount: number, virtualWebConfig: VirtualWebConfig } }) => {
     return (
         <li
             key={web.id}

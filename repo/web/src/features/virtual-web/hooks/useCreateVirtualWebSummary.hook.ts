@@ -17,7 +17,7 @@ export default function useCreateVirtualWebSummary(virtualWebId: number) {
         onSuccess(data) {
             queryClient.setQueryData(
                 ["virtual-web", virtualWebId],
-                (oldData: ApiResponse.Success<GetVirtualWebDetailsDTO["output"]>) => {
+                (oldData: ApiResponse.Success<GetVirtualWebDetailsDTO>) => {
                     const result = data.result
                     if (!result) return oldData
                     const { summaryUsage, ...virtualWebSummary } = result

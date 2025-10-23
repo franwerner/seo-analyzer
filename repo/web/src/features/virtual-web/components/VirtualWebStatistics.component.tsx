@@ -30,7 +30,7 @@ const AditionalInfo = ({ createdAt, virtualDomCount }: AditionalInfoProps) => {
 }
 
 
-const UsageInfo = ({ summaryUsage, analysisUsage }: Pick<GetVirtualWebDetailsDTO["output"], "summaryUsage" | "analysisUsage">) => {
+const UsageInfo = ({ summaryUsage, analysisUsage }: Pick<GetVirtualWebDetailsDTO, "summaryUsage" | "analysisUsage">) => {
 
     const usages = [
         {
@@ -60,7 +60,7 @@ export default function VirtualWebStatistics({
     createdAt,
     summaryUsage,
     virtualDomCount
-}: Pick<GetVirtualWebDetailsDTO["output"], "createdAt" | "virtualDomCount" | "summaryUsage" | "analysisUsage">) {
+}: Pick<GetVirtualWebDetailsDTO, "createdAt" | "virtualDomCount" | "summaryUsage" | "analysisUsage">) {
     const { virtualWebId } = useParams()
 
     return (

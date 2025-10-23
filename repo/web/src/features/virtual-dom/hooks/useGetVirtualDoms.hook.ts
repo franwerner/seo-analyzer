@@ -6,7 +6,7 @@ export default function useGetVirtualDoms(virtualWebId: number) {
         queryKey: ["virtual-doms", virtualWebId],
         queryFn: async ({ pageParam = 0 }) => {
             const response = await fetch(`/backend/virtual-web/${virtualWebId}/virtual-doms?skip=${pageParam}`)
-            return getApiResponse<GetVirtualDomsDTO["output"]>(response)
+            return getApiResponse<GetVirtualDomsDTO>(response)
         },
         getNextPageParam: ({ result }) => {
             if (!result) return

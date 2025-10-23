@@ -7,7 +7,7 @@ export default function useGetVirtualDomAnalysis(virtualDomAnalysisId: number) {
         queryKey: ['virtual-dom-analysis', virtualDomAnalysisId],
         queryFn: async () => {
             const response = await fetch(`/backend/virtual-dom/analyses/${virtualDomAnalysisId}`)
-            return getApiResponse<GetVirtualDomAnalysisDTO["output"]>(response)
+            return getApiResponse<GetVirtualDomAnalysisDTO>(response)
         }
     })
 }

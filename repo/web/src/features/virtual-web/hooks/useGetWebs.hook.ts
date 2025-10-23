@@ -7,7 +7,7 @@ export default function useGetVirtualWebs() {
         queryKey: ["virtual-webs"],
         queryFn: async ({ pageParam = 0 }) => {
             const response = await fetch(`/backend/virtual-web/all?skip=${pageParam}`)
-            return getApiResponse<GetVirtualWebsDTO["output"]>(response)
+            return getApiResponse<GetVirtualWebsDTO>(response)
         },
         getNextPageParam: ({ result }) => {
             if (!result) return
