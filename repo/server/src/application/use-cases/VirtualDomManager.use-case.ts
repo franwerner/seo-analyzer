@@ -37,7 +37,7 @@ export default class VirtualDomManagerUseCase {
 
     async createVirtualDomAnalysis(props: CreateVirtualDomAnalysisDTO["input"]) {
 
-        const validatedData = ValidateDTO(createVirtualDomAnalysisScheme.input, props)
+        const validatedData = ValidateDTO(createVirtualDomAnalysisScheme, props)
         const { id, virtualWebId, validationsSelected } = validatedData
 
         const {

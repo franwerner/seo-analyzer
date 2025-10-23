@@ -18,7 +18,7 @@ export default class VirtualWebStoredUseCase {
     }
 
     createVirtualWeb(props: CreateVirtualWebDTO["input"]) {
-        const validatedData = validateInputDTO(createVirtualWebScheme.input, props)
+        const validatedData = validateInputDTO(createVirtualWebScheme, props)
         return this.repositories.virtualWebRepository.createVirtualWebAggregate(validatedData)
     }
 

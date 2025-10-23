@@ -2,7 +2,6 @@ import { VirtualWebNotFountError } from "@/domain/virtual-web/errors"
 import VirtualWebConfigNotFountError from "@/domain/virtual-web/errors/VirtualWebConfigNotFount.error"
 import VirtualWebStore from "@/domain/virtual-web/store/virtualWeb.store"
 import {
-    createVirtualWebSummaryScheme,
     UpdateVirtualWebDTO,
     updateVirtualWebScheme
 } from "@seo-analyzer/common"
@@ -36,7 +35,7 @@ export default class VirtualWebManagerUsecase {
     }
 
     async updateVirtualWeb(props: UpdateVirtualWebDTO["input"]) {
-        const validatedData = validateInputDTO(updateVirtualWebScheme.input, props)
+        const validatedData = validateInputDTO(updateVirtualWebScheme, props)
         const res = await this.repositories.virtualWebRepository.update(validatedData)
         const virtualWebLock = await this.virtualWebStore.get(validatedData.id)
         if (virtualWebLock) {

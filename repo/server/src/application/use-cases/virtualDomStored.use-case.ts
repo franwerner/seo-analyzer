@@ -1,9 +1,8 @@
 import { VirtualDomNotFountError } from "@/domain/virtual-dom/errors";
-import { CreateVirtualDomDTO, createVirtualDomScheme, getVirtualDomAnalysesScheme, getVirtualDomAnalysisScheme, getVirtualDomDetailsScheme, getVirtualDomsScheme, virtualDomScheme } from "@seo-analyzer/common";
+import { CreateVirtualDomDTO, createVirtualDomScheme, hostScheme, pathnameScheme } from "@seo-analyzer/common";
 import VirtualDomRepository from "../repositories/VirtualDom.repository";
 import VirtualDomAnalysisRepository from "../repositories/VirtualDomAnalysis.repository";
 import validateInputDTO from "../shared/utils/validateInputDTO.utils";
-import { pathnameScheme, hostScheme } from "@seo-analyzer/common";
 
 export default class VirtualDomStoredUseCase {
 
@@ -15,7 +14,7 @@ export default class VirtualDomStoredUseCase {
     ) { }
 
     createVirtualDom(data: CreateVirtualDomDTO["input"]) {
-        const validatedData = validateInputDTO(createVirtualDomScheme.input, data)
+        const validatedData = validateInputDTO(createVirtualDomScheme, data)
         return this.repositories.virtualDomRepository.create({
             virtualWebId: validatedData.virtualWebId,
             pathname: validatedData.pathname,
