@@ -9,7 +9,6 @@ import {
 import VirtualWebRepository from "../repositories/VirtualWeb.repository"
 import VirtualWebSummaryRepository from "../repositories/VirtualWebSummary.repository"
 import validateInputDTO from "../shared/utils/validateInputDTO.utils"
-import validateOutputDTO from "../shared/utils/validateOutputDTO.utils"
 
 export default class VirtualWebManagerUsecase {
 
@@ -43,7 +42,7 @@ export default class VirtualWebManagerUsecase {
         if (virtualWebLock) {
             virtualWebLock.setHost(res.host)
         }
-        return validateOutputDTO(updateVirtualWebScheme.output, res)
+        return res
     }
 
     async createVirtualWebSummary(virtualWebId: number) {
@@ -63,10 +62,10 @@ export default class VirtualWebManagerUsecase {
             content
         }
         virtualWeb.setVirtualWebSummary(virtualWebSummary)
-        return validateOutputDTO(createVirtualWebSummaryScheme.output, {
+        return {
             ...virtualWebSummary,
             summaryUsage: usage
-        })
+        }
     }
 }
 

@@ -2,7 +2,6 @@ import { VirtualDomNotFountError } from "@/domain/virtual-dom/errors";
 import { CreateVirtualDomDTO, createVirtualDomScheme, getVirtualDomAnalysesScheme, getVirtualDomAnalysisScheme, getVirtualDomDetailsScheme, getVirtualDomsScheme, virtualDomScheme } from "@seo-analyzer/common";
 import VirtualDomRepository from "../repositories/VirtualDom.repository";
 import VirtualDomAnalysisRepository from "../repositories/VirtualDomAnalysis.repository";
-import validateOutputDTO from "../shared/utils/validateOutputDTO.utils";
 import validateInputDTO from "../shared/utils/validateInputDTO.utils";
 import { pathnameScheme, hostScheme } from "@seo-analyzer/common";
 
@@ -15,15 +14,12 @@ export default class VirtualDomStoredUseCase {
         }
     ) { }
 
-    async createVirtualDom(data: CreateVirtualDomDTO["input"]) {
+    createVirtualDom(data: CreateVirtualDomDTO["input"]) {
         const validatedData = validateInputDTO(createVirtualDomScheme.input, data)
-        return validateOutputDTO(
-            createVirtualDomScheme.output,
-            await this.repositories.virtualDomRepository.create({
-                virtualWebId: validatedData.virtualWebId,
-                pathname: validatedData.pathname,
-            })
-        )
+        return this.repositories.virtualDomRepository.create({
+            virtualWebId: validatedData.virtualWebId,
+            pathname: validatedData.pathname,
+        })
     }
 
     async getVirtualDomByHostPath(props: { host: string, pathname: string }) {
@@ -32,28 +28,19 @@ export default class VirtualDomStoredUseCase {
 
         const virtualDom = await this.repositories.virtualDomRepository.findUniqueByHostAndPath({ host, pathname })
         if (!virtualDom) throw new VirtualDomNotFountError()
-        return validateOutputDTO(virtualDomScheme, virtualDom)
+        return virtualDom
     }
 
-    async getVirtualDomsByVirtualWeb(props: { virtualWebId: number, skip: number }) {
-        return validateOutputDTO(
-            getVirtualDomsScheme.output,
-            await this.repositories.virtualDomRepository.findByVirtualWeb(props)
-        )
+    getVirtualDomsByVirtualWeb(props: { virtualWebId: number, skip: number }) {
+        return this.repositories.virtualDomRepository.findByVirtualWeb(props)
     }
 
-    async getVirtualDomAnalyses({ virtualDomId, skip }: { virtualDomId: number, skip: number }) {
-        return validateOutputDTO(
-            getVirtualDomAnalysesScheme.output,
-            await this.repositories.virtualDomAnalysisRepository.findByVirtualDom({ virtualDomId, skip })
-        )
+    getVirtualDomAnalyses({ virtualDomId, skip }: { virtualDomId: number, skip: number }) {
+        return this.repositories.virtualDomAnalysisRepository.findByVirtualDom({ virtualDomId, skip })
     }
 
-    async getVirtualDomAnalysis({ id }: { id: number }) {
-        return validateOutputDTO(
-            getVirtualDomAnalysisScheme.output,
-            await this.repositories.virtualDomAnalysisRepository.findUniqueWithIssues({ id })
-        )
+    getVirtualDomAnalysis({ id }: { id: number }) {
+        return this.repositories.virtualDomAnalysisRepository.findUniqueWithIssues({ id })
     }
 
     async getVirtualDomDetails(id: number) {
@@ -63,12 +50,9 @@ export default class VirtualDomStoredUseCase {
         ])
         if (!virtualDom) throw new VirtualDomNotFountError()
 
-        return validateOutputDTO(
-            getVirtualDomDetailsScheme.output,
-            {
-                ...virtualDom,
-                analysesUsage
-            }
-        )
+        return {
+            ...virtualDom,
+            analysesUsage
+        }
     }
 }

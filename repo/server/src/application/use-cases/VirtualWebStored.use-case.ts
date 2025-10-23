@@ -1,8 +1,7 @@
 import VirtualWebNotFound from "@/domain/virtual-web/errors/VirtualWebNotFount.error";
-import { CreateVirtualWebDTO, createVirtualWebScheme, getVirtualWebDetailsScheme, getVirtualWebsScheme } from "@seo-analyzer/common";
+import { CreateVirtualWebDTO, createVirtualWebScheme } from "@seo-analyzer/common";
 import VirtualWebRepository from "../repositories/VirtualWeb.repository";
 import VirtualWebSummaryRepository from "../repositories/VirtualWebSummary.repository";
-import validateOutputDTO from "../shared/utils/validateOutputDTO.utils";
 import validateInputDTO from "../shared/utils/validateInputDTO.utils";
 
 export default class VirtualWebStoredUseCase {
@@ -14,16 +13,13 @@ export default class VirtualWebStoredUseCase {
         }
     ) { }
 
-    async getVirtualWebs(skip: number) {
-        const res = await this.repositories.virtualWebRepository.findAll(skip)
-        return validateOutputDTO(getVirtualWebsScheme.output, res)
+    getVirtualWebs(skip: number) {
+        return this.repositories.virtualWebRepository.findAll(skip)
     }
 
-    async createVirtualWeb(props: CreateVirtualWebDTO["input"]) {
+    createVirtualWeb(props: CreateVirtualWebDTO["input"]) {
         const validatedData = validateInputDTO(createVirtualWebScheme.input, props)
-        return validateOutputDTO(createVirtualWebScheme.output,
-            await this.repositories.virtualWebRepository.createVirtualWebAggregate(validatedData)
-        )
+        return this.repositories.virtualWebRepository.createVirtualWebAggregate(validatedData)
     }
 
     async getVirtualWebDetails(id: number) {
@@ -40,11 +36,11 @@ export default class VirtualWebStoredUseCase {
         if (!virtualWeb) {
             throw new VirtualWebNotFound()
         }
-        return validateOutputDTO(getVirtualWebDetailsScheme.output, {
+        return {
             ...virtualWeb,
             analysisUsage,
             summaryUsage,
-        })
+        }
     }
 
 }

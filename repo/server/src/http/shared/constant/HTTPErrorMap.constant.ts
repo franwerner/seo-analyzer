@@ -1,5 +1,4 @@
-import InputDTOError from "@/application/shared/errors/InputDTO.error"
-import OutputDTOError from "@/application/shared/errors/OutputDTO.error"
+import DTOError from "@/application/shared/errors/DTO.error"
 import { VirtualDomAnalysisError, VirtualDomAnalysisInProgressError, VirtualDomGeneratedSnapshotError, VirtualDomNotFountError } from "@/domain/virtual-dom/errors"
 import { VirtualWebAlreadyExistsError, VirtualWebNotFountError } from "@/domain/virtual-web/errors"
 import VirtualWebConfigNotFountError from "@/domain/virtual-web/errors/VirtualWebConfigNotFount.error"
@@ -18,8 +17,7 @@ const HTTPErrorMap = {
     [VirtualWebConfigNotFountError.name]: 404,
     [EnvNotFountError.name]: 404,
     [MaxPageActiveError.name]: 409,
-    [OutputDTOError.name]: 500,
-    [InputDTOError.name]: 400,
+    [DTOError.name]: 400,
 }
 
 export default HTTPErrorMap

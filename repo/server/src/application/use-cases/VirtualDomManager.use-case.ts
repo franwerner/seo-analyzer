@@ -2,9 +2,8 @@ import VirtualDomRepository from "@/application/repositories/VirtualDom.reposito
 import { VirtualDomNotFountError } from "@/domain/virtual-dom/errors"
 import { CreateVirtualDomAnalysisDTO, createVirtualDomAnalysisScheme } from "@seo-analyzer/common"
 import VirtualDomAnalysisRepository from "../repositories/VirtualDomAnalysis.repository"
-import validateOutputDTO from "../shared/utils/validateOutputDTO.utils"
+import ValidateDTO from "../shared/utils/validateInputDTO.utils"
 import VirtualWebManagerService from "./VirtualWebManager.use-case"
-import validateInputDTO from "../shared/utils/validateInputDTO.utils"
 
 export default class VirtualDomManagerUseCase {
     constructor(
@@ -38,7 +37,7 @@ export default class VirtualDomManagerUseCase {
 
     async createVirtualDomAnalysis(props: CreateVirtualDomAnalysisDTO["input"]) {
 
-        const validatedData = validateInputDTO(createVirtualDomAnalysisScheme.input, props)
+        const validatedData = ValidateDTO(createVirtualDomAnalysisScheme.input, props)
         const { id, virtualWebId, validationsSelected } = validatedData
 
         const {
@@ -63,11 +62,11 @@ export default class VirtualDomManagerUseCase {
             }
         })
 
-        return validateOutputDTO(createVirtualDomAnalysisScheme.output, {
+        return {
             ...virtualDomAnalysis,
             analysisUsage: usage,
             issuesCount: virtualDomAnalysis.analysisIssues.length,
-        })
+        }
     }
 
 }
