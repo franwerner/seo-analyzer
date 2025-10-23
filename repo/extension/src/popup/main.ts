@@ -7,7 +7,7 @@ const moreButton = document.querySelector("#analyze-button-more") as HTMLButtonE
 moreButton.style.display = "none"
 let selectedIndex: number | null = null
 
-let analyses: GetVirtualDomAnalysesDTO["output"]["virtualDomAnalyses"] = []
+let analyses: GetVirtualDomAnalysesDTO["virtualDomAnalyses"] = []
 
 async function renderAnalysisList(tabsId: number, virtualDom: VirtualDom, skip: number = 0) {
   moreButton.style.display = "none"
@@ -15,7 +15,7 @@ async function renderAnalysisList(tabsId: number, virtualDom: VirtualDom, skip: 
   try {
     analysisContainer.innerHTML = ""
     const analysisData = await fetch(`${BACKEND_URL}/virtual-dom/${virtualDom.id}/analyses?skip=${skip}`, { credentials: "include" })
-    const { result } = await getApiResponse<GetVirtualDomAnalysesDTO["output"]>(analysisData)
+    const { result } = await getApiResponse<GetVirtualDomAnalysesDTO>(analysisData)
     const { virtualDomAnalyses, pagination } = result
     analyses.push(...virtualDomAnalyses)
     analyses.forEach((analysis, index) => {
@@ -27,7 +27,7 @@ async function renderAnalysisList(tabsId: number, virtualDom: VirtualDom, skip: 
 
       item.onclick = async () => {
         const analysisData = await fetch(`${BACKEND_URL}/virtual-dom/analyses/${analysis.id}?skip=0`, { credentials: "include" })
-        const { result } = await getApiResponse<GetVirtualDomAnalysisDTO["output"]>(analysisData)
+        const { result } = await getApiResponse<GetVirtualDomAnalysisDTO>(analysisData)
         chrome.tabs.sendMessage(tabsId, { action: "getIssues", res: { data: result.analysisIssues, ok: true } })
       }
       analysisContainer.appendChild(item)
