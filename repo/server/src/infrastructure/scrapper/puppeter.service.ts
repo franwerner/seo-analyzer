@@ -75,7 +75,9 @@ class PuppeterService {
                     await page.goto(path, {
                         waitUntil: "networkidle2",
                     })
-                    return await page.content()
+                    const content = await page.content()
+                    await page.close()
+                    return content
                 } catch (error) {
                     await page.close()
                     throw error
