@@ -20,21 +20,20 @@
   "description": "",
   "dependencies": {
     "@prisma/client": "^6.17.0",
+    "@rollup/plugin-typescript": "^12.1.4",
     "@seo-analyzer/common": "latest",
+    "cheerio": "^1.1.2",
     "cookie-parser": "^1.4.7",
     "crc-32": "^1.2.2",
     "dotenv": "^17.2.1",
     "express": "^5.1.0",
-    "jsdom": "^26.1.0",
     "jsonwebtoken": "^9.0.2",
     "openai": "^5.15.0",
-    "puppeteer": "^24.17.0",
-    "@rollup/plugin-typescript": "^12.1.4"
+    "puppeteer": "^24.17.0"
   },
   "devDependencies": {
     "@types/cookie-parser": "^1.4.9",
     "@types/express": "^5.0.3",
-    "@types/jsdom": "^21.1.7",
     "@types/jsonwebtoken": "^9.0.10",
     "@types/node": "^24.3.0",
     "concurrently": "^9.2.1",

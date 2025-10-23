@@ -17,8 +17,10 @@ class PuppeterService {
     private async launch() {
         return await puppeteer.launch({
             headless: true,
-            args: ['--no-sandbox', '--disable-setuid-sandbox'],
-            browser: "chrome"
+            args: [
+                '--no-sandbox',
+                '--disable-setuid-sandbox',
+            ],
         })
     }
 
@@ -70,10 +72,10 @@ class PuppeterService {
             })
             return async (path: string) => {
                 try {
-                    await page.goto(path)
-                    const content = await page.content()
-                    await page.close()
-                    return content
+                    await page.goto(path, {
+                        waitUntil: "networkidle2",
+                    })
+                    return await page.content()
                 } catch (error) {
                     await page.close()
                     throw error

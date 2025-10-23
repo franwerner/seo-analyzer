@@ -6,7 +6,7 @@ import TextComponent from "./text.component";
 interface BaseComponentProps {
     tag: string;
     children?: Childrens
-    attributes: NamedNodeMap
+    attributes: Attributes
     pathDom: string,
     vDomContext: VDomContext
     parent: Parent
@@ -58,6 +58,7 @@ class BaseComponent {
 
     tag: string;
     children?: Childrens
+    pathDom: string
     traceId: string
     attributes: Attributes
     needsClosingTag: boolean
@@ -78,6 +79,7 @@ class BaseComponent {
         this.tag = tagToLowerCase
         this.parent = parent
         this.children = children
+        this.pathDom = pathDom
         this.isInlineTextSeparator = inlineTextSeparatorTags.includes(tagToLowerCase)
         this.attributes = BaseComponent.extractAttributes(attributes)
         this.traceId = BaseComponent.generateTraceIdHash(pathDom)
@@ -120,16 +122,8 @@ class BaseComponent {
         return crc32.str(forHash).toString()
     }
 
-    private static extractAttributes(inputAttributes: NamedNodeMap) {
-        return Array.from(inputAttributes).reduce((acc, attr) => {
-            const currentName = attr.name
-            if (
-                !notPickableAttributesExp.test(currentName)
-            ) {
-                acc[currentName] = attr.value
-            }
-            return acc;
-        }, {} as Attributes)
+    private static extractAttributes(inputAttributes: Attributes) {
+        return Object.fromEntries(Object.entries(inputAttributes).filter(([key]) => !notPickableAttributesExp.test(key)))
     }
 
     generateInnerHTML(props: {
@@ -211,6 +205,7 @@ class BaseComponent {
             needsClosingTag: this.needsClosingTag,
             innerText: this.innerText,
             children: children,
+            pathDom: this.pathDom
         }
     }
 

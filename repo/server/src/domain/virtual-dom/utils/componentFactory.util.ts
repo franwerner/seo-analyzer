@@ -10,15 +10,15 @@ import MetaComponent from "@/domain/virtual-dom/components/meta.component";
 import TitleComponent from "@/domain/virtual-dom/components/title.component";
 
 const components = {
-    HTML: HTMLComponent,
-    A: AnchorComponent,
-    SCRIPT: ScriptComponent,
-    H2: H2Component,
-    IMG: ImgComponent,
-    H1: H1Component,
-    H3: H3Component,
-    META: MetaComponent,
-    TITLE: TitleComponent
+    html: HTMLComponent,
+    a: AnchorComponent,
+    script: ScriptComponent,
+    h2: H2Component,
+    img: ImgComponent,
+    h1: H1Component,
+    h3: H3Component,
+    meta: MetaComponent,
+    title: TitleComponent
 } as const
 
 class ComponentFactory {
