@@ -1,7 +1,7 @@
 import { z } from "zod"
-import hostScheme from "../schemes/host.scheme"
-import { virtualWebScheme } from "@/schemes"
-import { InferDTO } from "@/types/InferDTO.type"
+import { hostScheme } from "../schemes/host.scheme"
+import { virtualWebScheme } from "../schemes/virtualWeb.scheme"
+import { InferDTO } from "../types/InferDTO.type"
 
 const input = z.object({
     id: z.number(),

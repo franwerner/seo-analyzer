@@ -1,5 +1,5 @@
 import { z } from "zod"
-import pathnameScheme from "./pathname.scheme"
+import { pathnameScheme } from "./pathname.scheme"
 import { dateScheme } from "./date.scheme"
 
 export const virtualDomScheme = z.object({

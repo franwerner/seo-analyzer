@@ -18,4 +18,4 @@ const pathnameScheme = z
         (val) => /^\/[a-zA-Z0-9\-_\/]*$/.test(val),
         "Pathname must contain only letters, numbers, dashes, and slashes"
     )
-export default pathnameScheme
+export { pathnameScheme }

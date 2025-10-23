@@ -15,4 +15,4 @@ const hostScheme = z.string()
     .transform((val) => val.trim().replaceAll("/", ""))
     .refine((val) => hostRegex.test(val), "Invalid host example: google.com")
 
-export default hostScheme
+export { hostScheme }

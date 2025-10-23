@@ -1,8 +1,8 @@
-import hostScheme from "../schemes/host.scheme"
-import pathnameScheme from "../schemes/pathname.scheme"
+import { hostScheme } from "../schemes/host.scheme"
+import { pathnameScheme } from "../schemes/pathname.scheme"
 import { z } from "zod"
 import { virtualWebScheme } from "../schemes/virtualWeb.scheme"
-import { InferDTO } from "@/types/InferDTO.type"
+import { InferDTO } from "../types/InferDTO.type"
 
 
 const input = z.object({

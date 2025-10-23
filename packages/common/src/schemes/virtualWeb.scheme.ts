@@ -1,7 +1,7 @@
 import { z } from "zod"
 import { dateScheme } from "./date.scheme"
-import hostScheme from "./host.scheme"
-import pathnameScheme from "./pathname.scheme"
+import { hostScheme } from "./host.scheme"
+import { pathnameScheme } from "./pathname.scheme"
 
 export const virtualWebScheme = z.object({
     id: z.number(),

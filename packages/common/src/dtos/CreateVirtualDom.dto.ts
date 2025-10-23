@@ -1,7 +1,7 @@
 import { virtualDomScheme } from "@/schemes"
 import { z } from "zod"
-import pathnameScheme from "../schemes/pathname.scheme"
-import { InferDTO } from "@/types/InferDTO.type"
+import { pathnameScheme } from "../schemes/pathname.scheme"
+import { InferDTO } from "../types/InferDTO.type"
 
 
 const input = z.object({
