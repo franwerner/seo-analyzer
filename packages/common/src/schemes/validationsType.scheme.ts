@@ -1,12 +1,7 @@
+import { ValidationTypeEnum } from "@/types/ValidationType.enum"
 import z from "zod"
 
-export enum ValidationTypeEnum {
-    SCHEME = "scheme",
-    SEMANTIC = "semantic",
-    SPELLING = "spelling",
-    RESOURCE = "resource",
-    STRUCTURE = "structure"
-}
+
 
 export const validationTypeEnumScheme = z.enum(["scheme", "semantic", "spelling", "resource", "structure"])
 

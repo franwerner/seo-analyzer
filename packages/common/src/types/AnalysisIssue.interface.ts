@@ -1,4 +1,4 @@
-import { ValidationTypeEnum } from "@/schemes";
+import { ValidationTypeEnum } from "./ValidationType.enum";
 
 export type AnalysisIssue = {
     id: number;
