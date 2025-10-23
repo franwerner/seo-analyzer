@@ -4,13 +4,13 @@ import TextComponent from "@/domain/virtual-dom/components/text.component"
 import VDomContext from "@/domain/virtual-dom/context/vDom.context"
 import ComponentFactory from "@/domain/virtual-dom/utils/componentFactory.util"
 import VirtualDom from "@/domain/virtual-dom/virtualDom.entity"
-import { JSDOM, VirtualConsole } from "jsdom"
+import * as cheerio from "cheerio"
+import { Element } from "domhandler"
 import HTMLNotFountError from "../errors/HTMLNotFount.error"
 
 export default class SnapshotGeneratorUtility {
 
-    private static readonly virtualConsole = new VirtualConsole()
-    private static readonly ignoreTags = ["STYLE", "#comment", "svg", "NOSCRIPT"]
+    private static readonly ignoreTags = ["style", "svg", "noscript"]
     private static readonly ignoreTagsForHtmlStructure = ["script", "link", "meta"]
 
 
@@ -48,11 +48,11 @@ export default class SnapshotGeneratorUtility {
     }
 
     private static createJSDOM(htmlString: string) {
-        const dom = new JSDOM(htmlString, { virtualConsole: this.virtualConsole })
+        const dom = cheerio.load(htmlString)
 
-        const html = dom.window.document.children[0]
+        const html = dom("html")[0]
 
-        if (!html || html.nodeName != "HTML") {
+        if (!html || html.name != "html") {
             throw new HTMLNotFountError()
         }
 
@@ -73,22 +73,23 @@ export default class SnapshotGeneratorUtility {
 
         const childrens: Array<Children> = []
 
-        for (let i = 0; i < elem.childNodes.length; i++) {
-            const child = elem.childNodes[i] as Element
+        for (let i = 0; i < elem.children.length; i++) {
+            const child = elem.children[i]
 
-            if (child.nodeName == "#text") {
-                const text = child.nodeValue || ""
+            if (!child) continue
+
+            if (child.type == "text") {
                 childrens.push(new TextComponent({
-                    text,
+                    text: child.data,
                     parent
                 }))
             }
-            else if (!this.ignoreTags.includes(child.nodeName)) {
-                const nextPathDom = parentPathDom + "/" + child.nodeName + "/" + i
-                const Component = ComponentFactory.getComponent(child.nodeName)
+            else if (child.type == "tag" && !this.ignoreTags.includes(child.name) || child.type == "script") {
+                const nextPathDom = parentPathDom + "/" + child.name + "/" + i
+                const Component = ComponentFactory.getComponent(child.name)
                 const componentInstance = new Component({
-                    tag: child.nodeName,
-                    attributes: child.attributes,
+                    tag: child.name,
+                    attributes: child.attribs,
                     vDomContext: parent.vDomContext,
                     pathDom: nextPathDom,
                     parent,
@@ -134,11 +135,11 @@ export default class SnapshotGeneratorUtility {
 
         const HTMLComponent = ComponentFactory.getComponent("HTML")
 
-        const htmlPathDom = "HTML"
+        const htmlPathDom = "html"
 
         const htmlInstance = new HTMLComponent({
-            tag: "HTML",
-            attributes: html.attributes,
+            tag: html.name,
+            attributes: html.attribs,
             vDomContext,
             pathDom: htmlPathDom,
             parent: null,
