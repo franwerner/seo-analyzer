@@ -2,12 +2,14 @@
 import { Button } from "@heroui/button";
 import { Checkbox, CheckboxGroup } from "@heroui/checkbox";
 import { Modal, ModalBody, ModalContent, ModalFooter, ModalHeader } from "@heroui/modal";
-import { ValidationTypeEnum } from "@seo-analyzer/common";
 import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import useCreateVirtualDomAnalysis from "../hooks/useCreateVirtualDomAnalysis.hook";
+import { ValidationTypeEnum } from "@seo-analyzer/common";
 
-const validations = Object.values(ValidationTypeEnum)
+const validations = ["complete", "spelling"] as const
+
+const allValidationsKeys = Object.keys(ValidationTypeEnum)
 
 export default function CreateAnalysisModal({
     isOpen,
@@ -20,27 +22,30 @@ export default function CreateAnalysisModal({
 
     const { mutate, isPending } = useCreateVirtualDomAnalysis()
 
-    const [selected, setSelected] = useState<Array<ValidationTypeEnum>>([])
+    const [selected, setSelected] = useState<"complete" | "spelling" | undefined>()
 
     const onCloseModal = () => {
         if (isPending) return
         onClose()
     }
 
+
     const onSubmit = () => {
-        if (selected.length == 0) return
+        if (!selected) return
+        /**
+         * Complete abarca todo el las validaciones
+         */
         mutate({
             id: Number(virtualDomId),
             virtualWebId: Number(virtualWebId),
-            validationsSelected: Object.fromEntries(selected.map((validation) => [validation, true]))
+            validationsSelected: selected === "complete" ?
+                Object.fromEntries(allValidationsKeys.map((validation) => [validation, true])) :
+                { ["spelling"]: true }
         })
-    }
-    const onCheckboxChange = (value: Array<ValidationTypeEnum>) => {
-        setSelected(value)
     }
 
     useEffect(() => {
-        if (!isOpen && selected.length > 0) setSelected([])
+        if (!isOpen && selected) setSelected(undefined)
     }, [isOpen])
 
     return (
@@ -52,22 +57,21 @@ export default function CreateAnalysisModal({
                     Create a new analysis
                 </ModalHeader>
                 <ModalBody>
-                    <CheckboxGroup
-                        color="success"
-                        onChange={(value) => {
-                            onCheckboxChange(value as Array<ValidationTypeEnum>)
-                        }}
-                        label="Select validations">
-                        {validations.map((validation) => (
-                            <Checkbox
-                                isDisabled={isPending}
-                                key={validation}
-                                value={validation}
-                                className="capitalize">
-                                {validation}
-                            </Checkbox>
-                        ))}
-                    </CheckboxGroup>
+                    {validations.map((validation) => (
+                        <Checkbox
+                            isDisabled={isPending}
+                            isSelected={selected === validation}
+                            color="success"
+                            onValueChange={(selected) => {
+                                if (!selected) setSelected(undefined)
+                                else setSelected(validation)
+                            }}
+                            key={validation}
+                            value={validation}
+                            className="capitalize">
+                            {validation}
+                        </Checkbox>
+                    ))}
                 </ModalBody>
                 <ModalFooter className="w-full justify-between py-6">
                     <Button
