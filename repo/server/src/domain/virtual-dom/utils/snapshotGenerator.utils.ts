@@ -8,7 +8,15 @@ import { Element } from "domhandler"
 
 export default class SnapshotGeneratorUtility {
 
-    private static readonly ignoreTags = ["style", "svg", "noscript"]
+    /** 
+     * Se necesitan ignorar estas tags por:
+     *  - Se pueden llegar a inyectar dinámicamente en el DOM, por alguna extension o algun otro motivo.
+     *     Entonces se debera ignorar para evitar estos problemas, no lo soluciona al 100%, 
+     *     pero es una solucion que por el momento se puede dejar utilizable la herramienta
+     *  - Otro motivo es por que simplemente no son relevantes para el analaisis SEO y ahorra tokens.
+     * 
+    */
+    private static readonly ignoreTags = ["style", "svg", "noscript", "#comment", "link", "iframe"]
     private static readonly ignoreTagsForHtmlStructure = ["script", "link", "meta"]
 
 
@@ -60,8 +68,11 @@ export default class SnapshotGeneratorUtility {
 
         const childrens: Array<Children> = []
 
-        for (let i = 0; i < elem.children.length; i++) {
-            const child = elem.children[i]
+
+        const children = elem.childNodes.filter(child => (child.nodeType == 1 && !this.ignoreTags.includes(child.name)) || child.nodeType == 3)
+
+        for (let i = 0; i < children.length; i++) {
+            const child = children[i]
 
             if (!child) continue
 
@@ -71,14 +82,14 @@ export default class SnapshotGeneratorUtility {
                     parent
                 }))
             }
-            else if (child.type == "tag" && !this.ignoreTags.includes(child.name) || child.type == "script") {
+            else if (child.type == "tag" || child.type == "script") {
                 const nextPathDom = parentPathDom + "/" + child.name + "/" + i
                 const Component = ComponentFactory.getComponent(child.name)
                 const componentInstance = new Component({
                     tag: child.name,
                     attributes: child.attribs,
                     vDomContext: parent.vDomContext,
-                    pathDom: nextPathDom,
+                    traceId: BaseComponent.generateTraceIdHash(nextPathDom),
                     parent,
                     document
                 })
@@ -127,7 +138,7 @@ export default class SnapshotGeneratorUtility {
             tag: htmlElement.name,
             attributes: htmlElement.attribs,
             vDomContext,
-            pathDom: htmlPathDom,
+            traceId: BaseComponent.generateTraceIdHash(htmlPathDom),
             parent: null,
             document
         }) as HTMLComponent
