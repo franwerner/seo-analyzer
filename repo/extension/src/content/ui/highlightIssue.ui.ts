@@ -1,11 +1,13 @@
 import toolTip from "./toolTip.ui";
 import global from "./global.ui";
 
-function highlightIssue(issue: { ref: HTMLElement; messages: string[] }, btn: HTMLElement) {
+function highlightIssue(issue: { ref: HTMLElement; messages: string[] }, btn: HTMLElement, isFocused: boolean = true) {
     document.querySelectorAll("[data-issue='true']").forEach((el) => {
         (el as HTMLElement).style.outline = "2px dashed #1d4ed8"
             ; (el as HTMLElement).style.backgroundColor = ""
     })
+
+    console.log(issue.ref)
     global.navButtons.forEach((b) => {
         b.classList.remove("active")
         b.style.background = "#fff"
@@ -22,7 +24,7 @@ function highlightIssue(issue: { ref: HTMLElement; messages: string[] }, btn: HT
     btn.style.border = "1px solid #dc2626"
     btn.style.color = "#b91c1c"
 
-    issue.ref.scrollIntoView({ behavior: "smooth", block: "center" })
+    if (isFocused) issue.ref.scrollIntoView({ behavior: "smooth", block: "center" })
 
     global.activeTooltip = toolTip(issue)
     document.body.appendChild(global.activeTooltip)

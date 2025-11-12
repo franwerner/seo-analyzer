@@ -1,6 +1,6 @@
 import { ReferencesIssues } from "~/types/referencesIssues.type";
-import sideBar from "./sideBar.ui";
 import global from "./global.ui";
+import sideBar from "./sideBar.ui";
 
 
 export default function injectUi(issuesElements: ReferencesIssues) {
@@ -8,12 +8,6 @@ export default function injectUi(issuesElements: ReferencesIssues) {
 
     const nav = sideBar(issuesElements)
     document.body.appendChild(nav)
-
-    Object.values(issuesElements).forEach(({ ref }) => {
-        ref.style.outline = "2px dashed #1d4ed8"
-        ref.style.outlineOffset = "2px"
-        ref.setAttribute("data-issue", "true")
-    })
 
     global.cleanupFns.push(() => {
         nav.remove()
