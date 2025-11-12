@@ -1,12 +1,11 @@
 import { URLInterface } from "@/domain/shared/utils/URL.util";
 import VDomContext from "@/domain/virtual-dom/context/vDom.context";
 import PuppeterService from "@/infrastructure/scrapper/puppeter.service";
+import { ValidationsType } from "@seo-analyzer/common";
 import HTMLComponent from "./components/html.component";
 import VirtualDomGeneratedSnapshotError from "./errors/VirtualDomGeneratedSnapshot.error";
-import analysisMock from "./mock/analysis.mock";
 import DomAnalysis from "./services/dom-analysis";
 import SnapshotGeneratorUtility from "./utils/snapshotGenerator.utils";
-import { ValidationsType } from "@seo-analyzer/common";
 
 
 export interface VirtualDomEntityProps {
