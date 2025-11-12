@@ -1,11 +1,11 @@
 "use client"
 import { Button } from "@heroui/button";
-import { Checkbox, CheckboxGroup } from "@heroui/checkbox";
+import { Checkbox } from "@heroui/checkbox";
 import { Modal, ModalBody, ModalContent, ModalFooter, ModalHeader } from "@heroui/modal";
+import { ValidationTypeEnum } from "@seo-analyzer/common";
 import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import useCreateVirtualDomAnalysis from "../hooks/useCreateVirtualDomAnalysis.hook";
-import { ValidationTypeEnum } from "@seo-analyzer/common";
 
 const validations = ["complete", "spelling"] as const
 
@@ -39,7 +39,7 @@ export default function CreateAnalysisModal({
             id: Number(virtualDomId),
             virtualWebId: Number(virtualWebId),
             validationsSelected: selected === "complete" ?
-                Object.fromEntries(allValidationsKeys.map((validation) => [validation, true])) :
+                Object.fromEntries(allValidationsKeys.map((validation) => [validation.toLowerCase(), true])) :
                 { ["spelling"]: true }
         })
     }
