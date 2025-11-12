@@ -7,10 +7,10 @@ interface BaseComponentProps {
     tag: string;
     children?: Childrens
     attributes: Attributes
-    pathDom: string,
     vDomContext: VDomContext
     parent: Parent
     document: VirtualDom
+    traceId: string
 }
 
 export type Children = BaseComponent | TextComponent
@@ -58,7 +58,6 @@ class BaseComponent {
 
     tag: string;
     children?: Childrens
-    pathDom: string
     traceId: string
     attributes: Attributes
     needsClosingTag: boolean
@@ -74,15 +73,14 @@ class BaseComponent {
         }
     private isInlineTextSeparator: boolean = false
 
-    constructor({ tag, children, attributes, pathDom, vDomContext, parent, document }: BaseComponentProps) {
+    constructor({ tag, children, attributes, traceId, vDomContext, parent, document }: BaseComponentProps) {
         const tagToLowerCase = tag.toLowerCase()
         this.tag = tagToLowerCase
         this.parent = parent
         this.children = children
-        this.pathDom = pathDom
         this.isInlineTextSeparator = inlineTextSeparatorTags.includes(tagToLowerCase)
         this.attributes = BaseComponent.extractAttributes(attributes)
-        this.traceId = BaseComponent.generateTraceIdHash(pathDom)
+        this.traceId = traceId
         this.needsClosingTag = !selfClosingTags.includes(tagToLowerCase)
         this.vDomContext = vDomContext
         this.document = document
@@ -115,7 +113,7 @@ class BaseComponent {
         this.vDomContext.innerTextChunks.pushComponentText(this)
     }
 
-    private static generateTraceIdHash(forHash: string) {
+    static generateTraceIdHash(forHash: string) {
         /**
          * Este hash nos ayuda a rastrear posteriormente el elemento en el DOM.
          */
@@ -205,7 +203,6 @@ class BaseComponent {
             needsClosingTag: this.needsClosingTag,
             innerText: this.innerText,
             children: children,
-            pathDom: this.pathDom
         }
     }
 
