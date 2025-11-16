@@ -1,0 +1,40 @@
+services:
+  server:
+    build: .
+    container_name: seo-analyzer-server
+    image: seo-analyzer-server:1.0
+    ports:
+      - ${PORT}:${PORT}
+    env_file:
+      - ./.env
+    command: sh -c "npm run build:watch & npm run dev:watch"
+    depends_on:
+      - db
+    develop:
+      watch:
+        - action: sync
+          path: ./src
+          target: /app/src
+          ignore:
+            - node_modules
+    networks:
+      - seo-analyzer-network
+  db:
+    image: postgres:16-alpine
+    container_name: seo-analyzer-db
+    environment:
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - POSTGRES_DB=${POSTGRES_DB}
+    ports:
+      - ${POSTGRES_PORT}:${POSTGRES_PORT}
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    networks:
+      - seo-analyzer-network
+
+volumes:
+  postgres-data:
+networks:
+  seo-analyzer-network:
+    external: true

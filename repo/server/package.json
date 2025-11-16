@@ -6,7 +6,7 @@
   "scripts": {
     "dev:watch": "node --watch ./dist/index.js",
     "build": "rollup -c",
-    "dev": "concurrently --raw -n BUILD,DEV -c yellow,cyan \"npm run build:watch\" \"npm run dev:watch\"",
+    "dev": "node ./dist/index.js",
     "start": "npm run prisma:generate && node ./dist/index.js",
     "build:watch": "rollup -c --watch",
     "prisma:migrate": "npx prisma migrate dev",

@@ -1,0 +1,22 @@
+services:
+  web:
+    build: .
+    container_name: seo-analyzer-web
+    image: seo-analyzer-web:1.0
+    ports:
+      - ${PORT}:${PORT}
+    env_file:
+      - ./.env
+    command: npm run dev
+    networks:
+      - seo-analyzer-network
+    develop:
+      watch:
+        - action: sync
+          path: ./src
+          target: /app/src
+          ignore:
+            - node_modules
+networks:
+  seo-analyzer-network:
+    external: true
