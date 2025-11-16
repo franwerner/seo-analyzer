@@ -40,6 +40,7 @@ export default class DomAnalysis {
 
     private async validationInstances(instances: Array<ValidationUtility>) {
         /**
+         * @edge_case
          * Cosas a tener en cuenta en un futuro:
          * Los promise.all de cada validador si uno falla la promesa se rechaza por completo.
          * Hacer uso de promise.allSettled, para dar un informe de cual fallo y el motivo, esto evita que todo el conjunto se rechaze por completo.
