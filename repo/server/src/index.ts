@@ -9,6 +9,5 @@ const app = express()
 app.use(express.json())
 app.use(cookieParser())
 AppRoutes(app)
-
 app.use(errorGlobal)
 app.listen(getEnsureEnv("PORT"), () => console.log("ON"))

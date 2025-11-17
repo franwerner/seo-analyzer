@@ -12,9 +12,12 @@
     "prisma:migrate": "npx prisma migrate dev",
     "prisma:migrate-deploy": "npx prisma migrate deploy",
     "prisma:generate": "npx prisma generate",
-    "prisma:studio": "npx prisma studio"
+    "prisma:studio": "npx prisma studio",
+    "docker:watch": "docker compose up -w"
   },
-  "keywords": [],
+  "keywords": [
+    "asdasd"
+  ],
   "author": "",
   "license": "ISC",
   "description": "",

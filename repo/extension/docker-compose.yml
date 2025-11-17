@@ -13,8 +13,12 @@ services:
     develop:
       watch:
         - action: sync
-          path: ./src
-          target: /app/src
+          path: ./
+          target: /app
+          initial_sync: true
+          ignore:
+            - node_modules
+            - dist
 networks:
   seo-analyzer-network:
     external: true
