@@ -4,9 +4,11 @@ import { GetVirtualDomAnalysisDTO } from "./GetVirtualDomAnalysis.dto"
 
 
 export const createVirtualDomAnalysisScheme = z.object({
-    id: z.number(),
-    virtualWebId: z.number(),
-    validationsSelected: validationsTypeScheme.strip()
+    host: z.string(),
+    pathname: z.string(),
+    validationsSelected: validationsTypeScheme.strip(),
+    htmlString: z.string(),
+    snapshotId: z.string()
 })
 
 export type CreateVirtualDomAnalysisDTO = {
