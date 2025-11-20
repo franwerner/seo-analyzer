@@ -1,13 +1,11 @@
-FROM node:22-alpine
+FROM node:22-bullseye
 
 WORKDIR /app
 
 COPY package*.json ./
 
-RUN npm ci
+RUN npm i
 
 COPY . .
-
-RUN npm run build
 
 CMD ["npm", "run", "start"]
