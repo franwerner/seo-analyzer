@@ -22,15 +22,20 @@ class PuppeterService {
             args: [
                 '--no-sandbox',
                 '--disable-setuid-sandbox',
+                '--disable-dev-shm-usage',
+                '--disable-accelerated-2d-canvas',
+                '--disable-gpu',
+                '--window-size=1920,1080'
             ],
             defaultViewport: {
                 width: 1920,
                 height: 1080,
             },
+            executablePath: process.env.PUPPETEER_EXECUTABLE_PATH || puppeteer.executablePath(),
         })
     }
 
-    private static createJSDOM(htmlString: string) {
+    createJSDOM(htmlString: string) {
         const dom = cheerio.load(htmlString)
 
         const html = dom("html")[0]
@@ -95,7 +100,7 @@ class PuppeterService {
                         waitUntil: "networkidle2",
                     })
                     const content = await page.content()
-                    const html = PuppeterService.createJSDOM(content)
+                    const html = this.createJSDOM(content)
                     await page.close()
                     return html
                 } catch (error) {
