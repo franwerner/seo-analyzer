@@ -1,13 +1,12 @@
 import toolTip from "./toolTip.ui";
 import global from "./global.ui";
 
-function highlightIssue(issue: { ref: HTMLElement; messages: string[] }, btn: HTMLElement, isFocused: boolean = true) {
+function highlightIssue(issue: { ref: HTMLElement; issues: { type: string; message: string }[] }, btn: HTMLElement, isFocused: boolean = true) {
     document.querySelectorAll("[data-issue='true']").forEach((el) => {
         (el as HTMLElement).style.outline = "2px dashed #1d4ed8"
             ; (el as HTMLElement).style.backgroundColor = ""
     })
 
-    console.log(issue.ref)
     global.navButtons.forEach((b) => {
         b.classList.remove("active")
         b.style.background = "#fff"

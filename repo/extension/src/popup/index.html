@@ -8,12 +8,37 @@
 
 <body>
   <div id="app">
-    <button id="analyze-button">Search analyses</button>
-    <div>
-      <div id="analysis-container"></div>
-      <button id="analyze-button-more">More</button>
+    <!-- Login Form -->
+    <div id="login-container" style="display: none;">
+      <h3 id="login-title">Iniciar Sesión</h3>
+      <form id="login-form">
+        <input type="password" id="login-password" placeholder="Contraseña" required>
+        <button type="submit" id="login-button">Entrar</button>
+      </form>
+      <span id="login-error"></span>
     </div>
-    <span id="error-message"></span>
+
+    <!-- Main Content -->
+    <div id="main-container" style="display: none;">
+      <div id="validation-options">
+        <label>
+          <input type="radio" name="validation-type" value="complete" checked>
+          Complete
+        </label>
+        <label>
+          <input type="radio" name="validation-type" value="spelling">
+          Spelling
+        </label>
+      </div>
+      <button id="analyze-button">Analyze</button>
+      <span id="error-message"></span>
+
+      <!-- Analysis History -->
+      <div id="analysis-history">
+        <h4 id="history-title">Analysis History</h4>
+        <div id="history-list"></div>
+      </div>
+    </div>
   </div>
   <script type="module" src="./main.ts"></script>
 </body>

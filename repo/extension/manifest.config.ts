@@ -14,18 +14,24 @@ export default defineManifest({
     },
     default_popup: 'src/popup/index.html',
   },
+  background: {
+    service_worker: 'src/background/main.ts',
+    type: 'module'
+  },
   content_scripts: [{
     js: ['src/content/main.ts'],
     matches: ['https://*/*'],
   }],
   host_permissions: [
     "https://*/*",
-    "http://localhost:3000/*"
+    "http://localhost:3005/*"
   ],
   permissions: [
     'contentSettings',
     "tabs",
     "activeTab",
-    "scripting"
+    "scripting",
+    "alarms",
+    "storage"
   ],
 })
