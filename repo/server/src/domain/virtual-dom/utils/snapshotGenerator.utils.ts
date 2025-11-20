@@ -89,7 +89,6 @@ export default class SnapshotGeneratorUtility {
                     tag: child.name,
                     attributes: child.attribs,
                     vDomContext: parent.vDomContext,
-                    traceId: BaseComponent.generateTraceIdHash(nextPathDom),
                     parent,
                     document
                 })
@@ -119,7 +118,7 @@ export default class SnapshotGeneratorUtility {
 
     }
 
-    static async generate({
+    static generate({
         htmlElement,
         document
     }: {
@@ -138,7 +137,6 @@ export default class SnapshotGeneratorUtility {
             tag: htmlElement.name,
             attributes: htmlElement.attribs,
             vDomContext,
-            traceId: BaseComponent.generateTraceIdHash(htmlPathDom),
             parent: null,
             document
         }) as HTMLComponent

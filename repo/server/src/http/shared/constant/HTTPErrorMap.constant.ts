@@ -1,5 +1,5 @@
 import DTOError from "@/application/shared/errors/DTO.error"
-import { VirtualDomAnalysisError, VirtualDomAnalysisInProgressError, VirtualDomGeneratedSnapshotError, VirtualDomNotFountError } from "@/domain/virtual-dom/errors"
+import { VirtualDomAnalysisError, VirtualDomGeneratedSnapshotError, VirtualDomNotFountError } from "@/domain/virtual-dom/errors"
 import { VirtualWebAlreadyExistsError, VirtualWebNotFountError } from "@/domain/virtual-web/errors"
 import VirtualWebConfigNotFountError from "@/domain/virtual-web/errors/VirtualWebConfigNotFount.error"
 import EnvNotFountError from "@/infrastructure/errors/EnvNotFount.error"
@@ -9,7 +9,6 @@ import MaxPageActiveError from "@/infrastructure/errors/MaxPageActive.error"
 const HTTPErrorMap = {
     [HTMLNotFountError.name]: 404,
     [VirtualDomAnalysisError.name]: 400,
-    [VirtualDomAnalysisInProgressError.name]: 409,
     [VirtualDomGeneratedSnapshotError.name]: 409,
     [VirtualDomNotFountError.name]: 404,
     [VirtualWebAlreadyExistsError.name]: 409,

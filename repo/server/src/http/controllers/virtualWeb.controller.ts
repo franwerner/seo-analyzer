@@ -6,7 +6,9 @@ export default class VirtualWebController {
 
     static async createVirtualWebSummary(req: Request, res: Response) {
         const { id } = req.params
-        const result = await virtualWebManagerUseCase.createVirtualWebSummary(Number(id))
+        const result = await virtualWebManagerUseCase.createVirtualWebSummary({
+            virtualWebId: Number(id),
+        })
         res.status(201).json({
             result
         })

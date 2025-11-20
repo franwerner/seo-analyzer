@@ -1,12 +1,11 @@
 import { URLInterface } from "@/domain/shared/utils/URL.util";
 import VDomContext from "@/domain/virtual-dom/context/vDom.context";
-import PuppeterService from "@/infrastructure/scrapper/puppeter.service";
 import { ValidationsType } from "@seo-analyzer/common";
 import HTMLComponent from "./components/html.component";
 import VirtualDomGeneratedSnapshotError from "./errors/VirtualDomGeneratedSnapshot.error";
 import DomAnalysis from "./services/dom-analysis";
 import SnapshotGeneratorUtility from "./utils/snapshotGenerator.utils";
-
+import { Element } from "domhandler"
 
 export interface VirtualDomEntityProps {
     url: URLInterface
@@ -23,9 +22,8 @@ export interface VirtualDomSnapshot {
 class VirtualDomEntity {
     url: URLInterface
     id: number
-    snapshot: Promise<VirtualDomSnapshot> | null = null
+    private snapshotStore: Map<string, VirtualDomSnapshot> = new Map()
     constructor(
-        private scrapperService: PuppeterService,
         private domAnalysis: DomAnalysis,
         { url, id }: VirtualDomEntityProps
     ) {
@@ -33,9 +31,19 @@ class VirtualDomEntity {
         this.url = url
     }
 
-    async analyze(domSummary: string, validationsSelected: ValidationsType) {
+    async analyze({
+        domSummary,
+        validationsSelected,
+        htmlElement,
+        snapshotId
+    }: {
+        domSummary: string,
+        validationsSelected: ValidationsType,
+        htmlElement: Element,
+        snapshotId: string
+    }) {
 
-        const snapshot = await this.getOrGenerateSnapshot()
+        const snapshot = await this.getOrGenerateSnapshot(htmlElement, snapshotId)
 
         return await this.domAnalysis.runAnalysis({
             snapshot,
@@ -44,46 +52,53 @@ class VirtualDomEntity {
         })
     }
 
-    clearSnapshot() {
-        console.log(`CLEAR SNAPSHOT => ${this.url.href}`)
-        this.snapshot = null
+    clearSnapshot(snapshotId: string) {
+        console.log(`CLEAR SNAPSHOT => ${this.url.href} [${snapshotId}]`)
+        this.snapshotStore.delete(snapshotId)
     }
 
-    private async createSnapshot(): Promise<VirtualDomSnapshot> {
+    clearAllSnapshots() {
+        console.log(`CLEAR ALL SNAPSHOTS => ${this.url.href}`)
+        this.snapshotStore.clear()
+    }
+
+    private createSnapshot(htmlElement: Element, snapshotId: string): VirtualDomSnapshot {
         /**
          * Solo se debe utilizar para la primera generación del snapshot internamente en `getOrGenerateSnapshot`
          */
-        const to = await this.scrapperService.newPageIfAvailable()
-        const url = this.url.href
-        const htmlElement = await to(url)
 
-        const { root, vDomContext, htmlStructure, htmlSemantic } = await SnapshotGeneratorUtility.generate({
+        const { root, vDomContext, htmlStructure, htmlSemantic } = SnapshotGeneratorUtility.generate({
             htmlElement,
             document: this
         })
 
-        return {
+        const snapshot = {
             root,
             vDomContext,
             htmlStructure,
             htmlSemantic
         }
+
+        this.snapshotStore.set(snapshotId, snapshot)
+        return snapshot
     }
-    async getOrGenerateSnapshot() {
+
+    getOrGenerateSnapshot(htmlElement: Element, snapshotId: string) {
         try {
             /**
-            * Este enfoque garantiza que solo exista una generación de snapshot a la vez.
-            * Al solicitar una snapshot, se almacena la promesa correspondiente a la generación.
-            * Si se vuelve a solicitar mientras la generación está en curso, se devuelve la misma promesa.
-            * De esta forma, todos los consumidores esperan y reciben el mismo resultado al mismo tiempo,
-            * y se evita que se creen múltiples snapshots en paralelo.
+            * Este enfoque utiliza un Map con IDs únicos para identificar cada snapshot.
+            * Cada análisis puede venir de una instancia diferente de la página (trace-ids diferentes),
+            * por lo que se requiere un ID único (snapshotId) generado desde la página.
+            * Si el snapshot con ese ID ya existe en el Map, se devuelve.
+            * Si no existe, se genera uno nuevo y se almacena en el Map con ese ID.
             */
-            if (!this.snapshot) {
-                this.snapshot = this.createSnapshot()
+            const existingSnapshot = this.snapshotStore.get(snapshotId)
+            if (existingSnapshot) {
+                return existingSnapshot
             }
-            return await this.snapshot
+            return this.createSnapshot(htmlElement, snapshotId)
         } catch (error) {
-            this.snapshot = null
+            this.snapshotStore.delete(snapshotId)
             throw new VirtualDomGeneratedSnapshotError(error)
         }
     }

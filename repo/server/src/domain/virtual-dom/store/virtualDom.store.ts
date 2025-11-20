@@ -1,6 +1,5 @@
 import URLUtility from "@/domain/shared/utils/URL.util";
 import OpenAi from "@/infrastructure/AI/openAi.service";
-import PuppeterService from "@/infrastructure/scrapper/puppeter.service";
 import VirtualDomNotFountError from "../errors/VirtualDomNotFount.error";
 import VirtualDom from "../virtualDom.entity";
 import DomAnalysis from "../services/dom-analysis";
@@ -21,7 +20,6 @@ export default class VirtualDomStore {
     host: string
     constructor(
         private openAi: OpenAi,
-        private scrapperService: PuppeterService,
         { host }: VirtualDomStoreProps
     ) {
         this.host = host
@@ -30,7 +28,7 @@ export default class VirtualDomStore {
     private create({ pathname, id }: CreateVirtualDomProps) {
         const url = URLUtility.createURL({ host: this.host, pathname })
         const domAnalysis = new DomAnalysis(this.openAi)
-        const virtualDom = new VirtualDom(this.scrapperService, domAnalysis, { url, id })
+        const virtualDom = new VirtualDom(domAnalysis, { url, id })
         this.store.set(id, virtualDom)
         return virtualDom
     }

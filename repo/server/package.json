@@ -15,19 +15,16 @@
     "prisma:studio": "npx prisma studio",
     "docker:watch": "docker compose up -w"
   },
-  "keywords": [
-    "asdasd"
-  ],
+  "keywords": [],
   "author": "",
   "license": "ISC",
   "description": "",
   "dependencies": {
     "@prisma/client": "^6.17.0",
     "@rollup/plugin-typescript": "^12.1.4",
-    "@seo-analyzer/common": "^1.2.0",
+    "@seo-analyzer/common": "^1.2.2",
     "cheerio": "^1.1.2",
     "cookie-parser": "^1.4.7",
-    "crc-32": "^1.2.2",
     "dotenv": "^17.2.1",
     "express": "^5.1.0",
     "jsonwebtoken": "^9.0.2",

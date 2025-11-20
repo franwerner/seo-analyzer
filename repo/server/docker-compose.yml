@@ -10,6 +10,9 @@ services:
     command: sh -c "npm run build:watch & npm run dev:watch"
     depends_on:
       - db
+    shm_size: '2gb'
+    cap_add:
+      - SYS_ADMIN
     develop:
       watch:
         - action: sync
@@ -17,8 +20,8 @@ services:
           target: /app
           initial_sync: true
           ignore:
-            - node_modules
             - dist
+            - node_modules
     networks:
       - seo-analyzer-network
   db:

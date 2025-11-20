@@ -44,7 +44,7 @@ export default class VirtualWebManagerUsecase {
         return res
     }
 
-    async createVirtualWebSummary(virtualWebId: number) {
+    async createVirtualWebSummary({ virtualWebId }: { virtualWebId: number }) {
         const virtualWeb = await this.getVirtualWebOrThrow(virtualWebId)
         const { content, usage, model } = await virtualWeb.generateWebSummary()
         const res = await this.repositories.virtualWebSummaryRepository.createSummaryAggregate({

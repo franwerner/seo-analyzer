@@ -4,10 +4,13 @@ import { CreateVirtualDomAnalysisDTO, createVirtualDomAnalysisScheme } from "@se
 import VirtualDomAnalysisRepository from "../repositories/VirtualDomAnalysis.repository"
 import ValidateDTO from "../shared/utils/validateDTO.utils"
 import VirtualWebManagerService from "./VirtualWebManager.use-case"
+import PuppeterService from "@/infrastructure/scrapper/puppeter.service"
+import URLUtility from "@/domain/shared/utils/URL.util"
 
 export default class VirtualDomManagerUseCase {
     constructor(
         private virtualWebManagerService: VirtualWebManagerService,
+        private puppeterService: PuppeterService,
         private repositories: {
             virtualDomRepository: VirtualDomRepository,
             virtualDomAnalysisRepository: VirtualDomAnalysisRepository
@@ -38,22 +41,39 @@ export default class VirtualDomManagerUseCase {
     async createVirtualDomAnalysis(props: CreateVirtualDomAnalysisDTO["input"]) {
 
         const validatedData = ValidateDTO(createVirtualDomAnalysisScheme, props)
-        const { id, virtualWebId, validationsSelected } = validatedData
+        const { host, pathname, validationsSelected, snapshotId, htmlString } = validatedData
+
+        const normalized = URLUtility.createURL({ host, pathname })
+        const res = await this.repositories.virtualDomRepository.findUniqueByHostAndPath({
+            host: normalized.host,
+            pathname: normalized.pathname
+        })
+
+        if (!res) {
+            throw new VirtualDomNotFountError()
+        }
+
+        const { virtualWebId, id: virtualDomId } = res
 
         const {
             virtualDomEntity,
             virtualWebEntity
         } = await this.getVirtualDomOrThrow({
             virtualWebId,
-            id
+            id: virtualDomId
         })
 
         const summary = virtualWebEntity.getOrThrowVirtualWebSummary()
 
-        const { issues, usage, model } = await virtualDomEntity.analyze(summary.content, validationsSelected)
+        const { issues, usage, model } = await virtualDomEntity.analyze({
+            domSummary: summary.content,
+            validationsSelected,
+            htmlElement: this.puppeterService.createJSDOM(htmlString),
+            snapshotId
+        })
 
         const virtualDomAnalysis = await this.repositories.virtualDomAnalysisRepository.createAnalysisAggreate({
-            virtualDomId: id,
+            virtualDomId: virtualDomId,
             analysisIssues: issues,
             AIUsage: {
                 input: usage.input,

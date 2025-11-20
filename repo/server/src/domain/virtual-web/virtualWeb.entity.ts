@@ -46,7 +46,7 @@ export default class VirtualWebEntity {
 
         this.virtualWebSummary = virtualWebSummary
 
-        this.vdomStore = new VirtualDomStore(this.AiService, this.puppeteer, { host })
+        this.vdomStore = new VirtualDomStore(this.AiService, { host })
     }
 
     setHost(host: string) {
@@ -70,8 +70,12 @@ export default class VirtualWebEntity {
             })
         })
 
-        const generatedSnapshot = await snapshot.getOrGenerateSnapshot()
+        console.log(`Generating summary for ${snapshot.url.href}`)
+        const to = await this.puppeteer.newPageIfAvailable()
+        const page = await to(snapshot.url.href)
+        const generatedSnapshot = await snapshot.getOrGenerateSnapshot(page, "temp-summary")
 
+        snapshot.clearSnapshot("temp-summary")
 
         const texts = generatedSnapshot.vDomContext.innerTextChunks.getChunksPartsTexts()
 

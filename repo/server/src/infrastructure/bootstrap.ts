@@ -25,15 +25,18 @@ const virtualDomAnalysisRepository = new VirtualDomAnalysisRepository(prisma)
 
 //#UseCases
 const virtualWebManagerUseCase = new VirtualWebManagerUseCase(
-    virtualWebStore, {
-    virtualWebRepository,
-    virtualWebSummaryRepository,
-})
+    virtualWebStore,
+    {
+        virtualWebRepository,
+        virtualWebSummaryRepository,
+    })
 const virtualDomManagerUseCase = new VirtualDomManagerUseCase(
-    virtualWebManagerUseCase, {
-    virtualDomRepository,
-    virtualDomAnalysisRepository
-});
+    virtualWebManagerUseCase,
+    puppeterService,
+    {
+        virtualDomRepository,
+        virtualDomAnalysisRepository
+    });
 const virtualWebStoredUseCase = new VirtualWebStoredUseCase(
     {
         virtualWebRepository,

@@ -1,5 +1,4 @@
 import VDomContext from "@/domain/virtual-dom/context/vDom.context";
-import crc32 from "crc-32";
 import VirtualDom from "../virtualDom.entity";
 import TextComponent from "./text.component";
 
@@ -10,7 +9,6 @@ interface BaseComponentProps {
     vDomContext: VDomContext
     parent: Parent
     document: VirtualDom
-    traceId: string
 }
 
 export type Children = BaseComponent | TextComponent
@@ -73,14 +71,15 @@ class BaseComponent {
         }
     private isInlineTextSeparator: boolean = false
 
-    constructor({ tag, children, attributes, traceId, vDomContext, parent, document }: BaseComponentProps) {
+    constructor({ tag, children, attributes, vDomContext, parent, document }: BaseComponentProps) {
+        const attributesExtracted = BaseComponent.extractAttributes(attributes)
         const tagToLowerCase = tag.toLowerCase()
         this.tag = tagToLowerCase
         this.parent = parent
         this.children = children
         this.isInlineTextSeparator = inlineTextSeparatorTags.includes(tagToLowerCase)
-        this.attributes = BaseComponent.extractAttributes(attributes)
-        this.traceId = traceId
+        this.attributes = attributesExtracted
+        this.traceId = attributesExtracted["trace-id"] || ""
         this.needsClosingTag = !selfClosingTags.includes(tagToLowerCase)
         this.vDomContext = vDomContext
         this.document = document
@@ -111,13 +110,6 @@ class BaseComponent {
         */
         if (this.innerText.claimedByParent || !this.innerText.value.trim() || this.tag === "script") return
         this.vDomContext.innerTextChunks.pushComponentText(this)
-    }
-
-    static generateTraceIdHash(forHash: string) {
-        /**
-         * Este hash nos ayuda a rastrear posteriormente el elemento en el DOM.
-         */
-        return crc32.str(forHash).toString()
     }
 
     private static extractAttributes(inputAttributes: Attributes) {

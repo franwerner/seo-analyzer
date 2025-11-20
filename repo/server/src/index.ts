@@ -5,8 +5,7 @@ import errorGlobal from "./http/middlewares/errorGlobal.middleware";
 import AppRoutes from "./http/routes";
 import getEnsureEnv from "./infrastructure/utils/getEnsureEnv.utils";
 const app = express()
-
-app.use(express.json())
+app.use(express.json({ limit: "1mb" }))
 app.use(cookieParser())
 AppRoutes(app)
 app.use(errorGlobal)

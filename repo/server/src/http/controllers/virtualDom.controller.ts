@@ -1,3 +1,4 @@
+import { VirtualDomNotFountError } from "@/domain/virtual-dom/errors"
 import { virtualDomStoredUseCase, virtualDomManagerUseCase } from "@/infrastructure/bootstrap"
 import { Request, Response } from "express"
 
@@ -21,13 +22,14 @@ export default class VirtualDomController {
     }
 
     static async createVirtualDomAnalysis(req: Request, res: Response) {
-        const { virtualDomId, virtualWebId } = req.params
-        const { validationsSelected } = req.body
+        const { host, pathname, validationsSelected, htmlString, snapshotId } = req.body
         const result = await virtualDomManagerUseCase
             .createVirtualDomAnalysis({
-                id: Number(virtualDomId),
-                virtualWebId: Number(virtualWebId),
-                validationsSelected
+                host,
+                pathname,
+                validationsSelected,
+                htmlString,
+                snapshotId
             })
         res.status(200).json({
             result
