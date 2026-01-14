@@ -64,6 +64,7 @@ export default class VirtualDomController {
 
     static async createVirtualDom(req: Request, res: Response) {
         const { virtualWebId, pathname } = req.body
+        console.log(req.body, virtualWebId)
         const result = await virtualDomStoredUseCase.createVirtualDom({ virtualWebId, pathname })
         res.status(201).json({
             result

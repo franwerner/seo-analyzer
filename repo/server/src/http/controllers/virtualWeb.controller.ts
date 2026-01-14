@@ -50,5 +50,11 @@ export default class VirtualWebController {
         return res.status(200).json({ result: virtualWeb })
     }
 
+    static async getVirtualWebByHost(req: Request, res: Response) {
+        const { host } = req.query
+        const virtualWeb = await virtualWebStoredUseCase.getVirtualWebByHost(String(host))
+        return res.status(200).json({ result: virtualWeb })
+    }
+
 
 }

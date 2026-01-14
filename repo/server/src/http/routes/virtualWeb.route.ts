@@ -9,6 +9,7 @@ virtualWebRouter.get("/:id/details/", VirtualWebController.getVirtualWebDetails)
 virtualWebRouter.post("/:id/create-summary/", VirtualWebController.createVirtualWebSummary)
 virtualWebRouter.get("/all", VirtualWebController.getVirtualWebs)
 virtualWebRouter.put("/update", VirtualWebController.updateVirtualWeb)
+virtualWebRouter.get("/by-host", VirtualWebController.getVirtualWebByHost)
 virtualWebRouter.post("/create", VirtualWebController.createVirtualWeb)
 
 export default virtualWebRouter

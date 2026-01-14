@@ -33,6 +33,44 @@ chrome.tabs.onUpdated.addListener((tabId, changeInfo) => {
     }
 })
 
+// Interfaz para el historial de análisis
+interface AnalysisHistoryItem {
+    id: string
+    timestamp: number
+    type: string
+    issuesCount: number
+    result: any
+}
+
+// Función para guardar en el historial desde el background
+function saveToHistory(tabId: number, result: any, success: boolean) {
+    if (!success) return
+
+    const storageKey = `analysisHistory_${tabId}`
+
+    chrome.storage.session.get([storageKey, 'validationType'], (data) => {
+        const history: AnalysisHistoryItem[] = data[storageKey] || []
+        const validationType = data.validationType || 'complete'
+
+        const newItem: AnalysisHistoryItem = {
+            id: Date.now().toString(),
+            timestamp: Date.now(),
+            type: validationType,
+            issuesCount: result?.result?.issuesCount || 0,
+            result: result
+        }
+
+        // Agregar al inicio y limitar a 10 items
+        history.unshift(newItem)
+        if (history.length > 10) history.pop()
+
+        chrome.storage.session.set({
+            [storageKey]: history,
+            activeAnalysisId: newItem.id
+        })
+    })
+}
+
 chrome.runtime.onMessage.addListener((message) => {
     if (message.action === "startAnalysis") {
         const { tabId, url, htmlString, snapshotId, validationsSelected } = message
@@ -44,65 +82,68 @@ chrome.runtime.onMessage.addListener((message) => {
         // Guardar estado de análisis en progreso
         chrome.storage.session.set({ isAnalyzing: true, analyzingTabId: tabId })
 
-        // Ejecutar el fetch de forma asíncrona
-        ; (async () => {
-            try {
-                const response = await fetch(`${BACKEND_URL}/virtual-dom/analyze`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    credentials: "include",
-                    body: JSON.stringify({
-                        htmlString,
-                        host: url.host,
-                        pathname: url.pathname,
-                        snapshotId,
-                        validationsSelected
-                    }),
-                    signal: controller.signal
-                })
+            // Ejecutar el fetch de forma asíncrona
+            ; (async () => {
+                try {
+                    const response = await fetch(`${BACKEND_URL}/virtual-dom/analyze`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        credentials: "include",
+                        body: JSON.stringify({
+                            htmlString,
+                            host: url.host,
+                            pathname: url.pathname,
+                            snapshotId,
+                            validationsSelected
+                        }),
+                        signal: controller.signal
+                    })
 
-                const result = await getApiResponse(response)
+                    const result = await getApiResponse(response)
 
-                // Limpiar AbortController y estado de análisis
-                abortControllers.delete(tabId)
-                chrome.storage.session.set({ isAnalyzing: false, analyzingTabId: null })
+                    // Limpiar AbortController y estado de análisis
+                    abortControllers.delete(tabId)
+                    chrome.storage.session.set({ isAnalyzing: false, analyzingTabId: null })
 
-                // Enviar respuesta al content script
-                chrome.tabs.sendMessage(tabId, {
-                    action: "response",
-                    response: result
-                })
+                    // Guardar en historial desde el background (siempre funciona)
+                    saveToHistory(tabId, result, response.ok)
 
-                // Notificar al popup si está abierto
-                chrome.runtime.sendMessage({
-                    action: "analysisComplete",
-                    success: response.ok,
-                    result
-                }).catch(() => {
-                    // Popup cerrado, ignorar error
-                })
+                    // Enviar respuesta al content script
+                    chrome.tabs.sendMessage(tabId, {
+                        action: "response",
+                        response: result
+                    })
 
-            } catch (err) {
-                // Limpiar AbortController y estado de análisis en caso de error
-                abortControllers.delete(tabId)
-                chrome.storage.session.set({ isAnalyzing: false, analyzingTabId: null })
+                    // Notificar al popup si está abierto (para actualizar UI)
+                    chrome.runtime.sendMessage({
+                        action: "analysisComplete",
+                        success: response.ok,
+                        result
+                    }).catch(() => {
+                        // Popup cerrado, ignorar error
+                    })
 
-                // No notificar si fue abortado (refresh de página)
-                if (err instanceof Error && err.name === 'AbortError') {
-                    return
+                } catch (err) {
+                    // Limpiar AbortController y estado de análisis en caso de error
+                    abortControllers.delete(tabId)
+                    chrome.storage.session.set({ isAnalyzing: false, analyzingTabId: null })
+
+                    // No notificar si fue abortado (refresh de página)
+                    if (err instanceof Error && err.name === 'AbortError') {
+                        return
+                    }
+
+                    // Notificar error al popup si está abierto
+                    chrome.runtime.sendMessage({
+                        action: "analysisError",
+                        error: err instanceof Error ? err.message : String(err)
+                    }).catch(() => {
+                        // Popup cerrado, ignorar error
+                    })
                 }
-
-                // Notificar error al popup si está abierto
-                chrome.runtime.sendMessage({
-                    action: "analysisError",
-                    error: err instanceof Error ? err.message : String(err)
-                }).catch(() => {
-                    // Popup cerrado, ignorar error
-                })
-            }
-        })()
+            })()
 
         // Retornar true para indicar que la respuesta será asíncrona
         return true

@@ -10,16 +10,22 @@
   <div id="app">
     <!-- Login Form -->
     <div id="login-container" style="display: none;">
-      <h3 id="login-title">Iniciar Sesión</h3>
+      <h3 id="login-title">Sign in</h3>
       <form id="login-form">
-        <input type="password" id="login-password" placeholder="Contraseña" required>
-        <button type="submit" id="login-button">Entrar</button>
+        <input type="password" id="login-password" placeholder="Password" required>
+        <button type="submit" id="login-button">Login</button>
       </form>
       <span id="login-error"></span>
     </div>
 
-    <!-- Main Content -->
     <div id="main-container" style="display: none;">
+      <!-- Web Registration Status -->
+      <div id="registration-container">
+        <span id="registration-tooltip" style="display: none;"></span>
+        <span id="registration-icon" style="display: none;"></span>
+        <button id="register-button" style="display: none;">Register</button>
+      </div>
+
       <div id="validation-options">
         <label>
           <input type="radio" name="validation-type" value="complete" checked>
@@ -30,6 +36,7 @@
           Spelling
         </label>
       </div>
+
       <button id="analyze-button">Analyze</button>
       <span id="error-message"></span>
 

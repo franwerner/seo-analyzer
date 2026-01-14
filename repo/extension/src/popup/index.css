@@ -2,8 +2,6 @@ body {
     width: 300px;
     height: 400px;
     display: flex;
-    justify-content: center;
-    align-items: center;
 }
 
 #error-message {
@@ -21,6 +19,10 @@ body {
     display: none;
 }
 
+#main-container {
+    position: relative;
+    height: 100%;
+}
 
 /* Contenedor principal */
 #app {
@@ -181,7 +183,7 @@ body {
 #validation-options {
     display: flex;
     gap: 16px;
-    margin-bottom: 12px;
+    padding: 16px 0;
 }
 
 #validation-options label {
@@ -269,4 +271,89 @@ body {
     color: #9ca3af;
     font-size: 12px;
     padding: 12px;
+}
+
+/* Web Registration */
+#registration-container {
+    display: flex;
+    align-items: center;
+    justify-content: end;
+    gap: 8px;
+}
+
+#registration-tooltip {
+    padding: 4px 10px;
+    border-radius: 4px;
+    font-size: 12px;
+    font-weight: 500;
+    white-space: nowrap;
+}
+
+#registration-tooltip.registered {
+    background-color: #dcfce7;
+    color: #16a34a;
+}
+
+#registration-tooltip.not-registered {
+    background-color: #fee2e2;
+    color: #dc2626;
+}
+
+#registration-tooltip.warning {
+    background-color: #fef3c7;
+    color: #d97706;
+}
+
+#registration-icon {
+    min-width: 28px;
+    min-height: 28px;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    font-weight: bold;
+    box-sizing: border-box;
+    line-height: 1;
+}
+
+#registration-icon.registered {
+    background-color: #dcfce7;
+    color: #16a34a;
+    border: 2px solid #86efac;
+}
+
+#registration-icon.not-registered {
+    background-color: #fee2e2;
+    color: #dc2626;
+    border: 2px solid #fca5a5;
+}
+
+#registration-icon.warning {
+    background-color: #fef3c7;
+    color: #d97706;
+    border: 2px solid #fcd34d;
+}
+
+#register-button {
+    padding: 6px 12px;
+    border-radius: 6px;
+    border: none;
+    background-color: #0ea5e9;
+    color: white;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-size: 12px;
+}
+
+#register-button:hover {
+    background-color: #0284c7;
+}
+
+#register-button:disabled {
+    background-color: #94a3b8;
+    cursor: not-allowed;
 }

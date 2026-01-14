@@ -1,5 +1,5 @@
 import VirtualWebNotFound from "@/domain/virtual-web/errors/VirtualWebNotFount.error";
-import { CreateVirtualWebDTO, createVirtualWebScheme } from "@seo-analyzer/common";
+import { CreateVirtualWebDTO, createVirtualWebScheme, hostScheme } from "@seo-analyzer/common";
 import VirtualWebRepository from "../repositories/VirtualWeb.repository";
 import VirtualWebSummaryRepository from "../repositories/VirtualWebSummary.repository";
 import ValidateDTO from "../shared/utils/validateDTO.utils";
@@ -41,6 +41,11 @@ export default class VirtualWebStoredUseCase {
             analysisUsage,
             summaryUsage,
         }
+    }
+
+    getVirtualWebByHost(host: string) {
+        const normalized = hostScheme.parse(host)
+        return this.repositories.virtualWebRepository.findByHost(normalized)
     }
 
 }

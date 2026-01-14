@@ -237,4 +237,17 @@ export default class VirtualWebRepository {
         }
     }
 
+    async findByHost(host: string) {
+        return this.client.virtualWeb.findFirst({
+            where: {
+                host
+            },
+            select: {
+                id: true,
+                host: true,
+                createdAt: true
+            }
+        })
+    }
+
 }

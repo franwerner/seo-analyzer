@@ -14,6 +14,11 @@ const errorMessage = document.querySelector("#error-message") as HTMLSpanElement
 const validationRadios = document.querySelectorAll('input[name="validation-type"]') as NodeListOf<HTMLInputElement>
 const historyList = document.querySelector("#history-list") as HTMLDivElement
 
+// Registration elements
+const registrationTooltip = document.querySelector("#registration-tooltip") as HTMLSpanElement
+const registrationIcon = document.querySelector("#registration-icon") as HTMLSpanElement
+const registerButton = document.querySelector("#register-button") as HTMLButtonElement
+
 // Analysis history type
 interface AnalysisHistoryItem {
   id: string
@@ -118,6 +123,148 @@ function setAnalyzingState(isAnalyzing: boolean) {
   })
 }
 
+// Verificar si la web actual está registrada
+async function checkRegistration() {
+  chrome.tabs.query({ active: true, currentWindow: true }, async (tabs) => {
+    const url = new URL(tabs[0].url!)
+    const host = url.host
+    const pathname = url.pathname
+
+    try {
+      // Primero verificar si el host está registrado
+      const hostResponse = await fetch(`${BACKEND_URL}/virtual-web/by-host?host=${encodeURIComponent(host)}`, {
+        method: 'GET',
+        credentials: 'include'
+      })
+
+      if (!hostResponse.ok) {
+        // Error, no mostrar nada
+        registrationIcon.style.display = "none"
+        registerButton.style.display = "none"
+        return
+      }
+
+      const hostData = await hostResponse.json()
+
+      if (!hostData.result) {
+        // Host no registrado - mostrar ✗
+        registrationTooltip.textContent = "Web not registered"
+        registrationTooltip.className = "not-registered"
+        registrationTooltip.style.display = "block"
+        registrationIcon.textContent = "✗"
+        registrationIcon.className = "not-registered"
+        registrationIcon.style.display = "flex"
+        registerButton.style.display = "none"
+        return
+      }
+
+      // Host registrado, ahora verificar el pathname
+      const domResponse = await fetch(`${BACKEND_URL}/virtual-dom/by-host-path?host=${encodeURIComponent(host)}&pathname=${encodeURIComponent(pathname)}`, {
+        method: 'GET',
+        credentials: 'include'
+      })
+
+      if (domResponse.ok) {
+        const domData = await domResponse.json()
+        if (domData.result) {
+          // Pathname registrado - mostrar ✓
+          registrationTooltip.textContent = "Path registered"
+          registrationTooltip.className = "registered"
+          registrationTooltip.style.display = "block"
+          registrationIcon.textContent = "✓"
+          registrationIcon.className = "registered"
+          registrationIcon.style.display = "flex"
+          registerButton.style.display = "none"
+        } else {
+          // Pathname no registrado - mostrar ⚠ y botón
+          registrationTooltip.textContent = "Path not registered"
+          registrationTooltip.className = "warning"
+          registrationTooltip.style.display = "block"
+          registrationIcon.textContent = "⚠"
+          registrationIcon.className = "warning"
+          registrationIcon.style.display = "flex"
+          registerButton.style.display = "block"
+        }
+      } else {
+        // Error al verificar pathname - mostrar ⚠ y botón
+        registrationTooltip.textContent = "Path not registered"
+        registrationTooltip.className = "warning"
+        registrationTooltip.style.display = "block"
+        registrationIcon.textContent = "⚠"
+        registrationIcon.className = "warning"
+        registrationIcon.style.display = "flex"
+        registerButton.style.display = "block"
+      }
+    } catch {
+      // Error de conexión, no mostrar nada
+      registrationTooltip.style.display = "none"
+      registrationIcon.style.display = "none"
+      registerButton.style.display = "none"
+    }
+  })
+}
+
+// Registrar la web actual
+async function registerWeb() {
+  chrome.tabs.query({ active: true, currentWindow: true }, async (tabs) => {
+    const url = new URL(tabs[0].url!)
+    const host = url.host
+    const pathname = url.pathname
+
+    registerButton.textContent = "Registrando..."
+    registerButton.disabled = true
+
+    try {
+      // Obtener el VirtualWeb existente (ya sabemos que existe porque el botón solo aparece si está registrado)
+      const webResponse = await fetch(`${BACKEND_URL}/virtual-web/by-host?host=${encodeURIComponent(host)}`, {
+        method: 'GET',
+        credentials: 'include'
+      })
+
+      if (!webResponse.ok) {
+        throw new Error('Error obteniendo VirtualWeb')
+      }
+
+      const webData = await webResponse.json()
+
+      if (!webData.result) {
+        throw new Error('VirtualWeb no encontrado')
+      }
+
+      const virtualWebId = webData.result.id
+
+      // Crear el VirtualDom para el pathname
+      const domResponse = await fetch(`${BACKEND_URL}/virtual-dom/create`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({ virtualWebId, pathname })
+      })
+
+      if (!domResponse.ok) {
+        throw new Error('Error creando VirtualDom')
+      }
+
+      // Registro exitoso - mostrar ✓
+      registrationTooltip.textContent = "Web registered"
+      registrationTooltip.className = "registered"
+      registrationTooltip.style.display = "block"
+      registrationIcon.textContent = "✓"
+      registrationIcon.className = "registered"
+      registrationIcon.style.display = "flex"
+      registerButton.style.display = "none"
+    } catch (err) {
+      errorMessage.textContent = err instanceof Error ? err.message : 'Error registrando web'
+      errorMessage.style.display = "block"
+      registerButton.textContent = "Register Web"
+      registerButton.disabled = false
+    }
+  })
+}
+
+// Event listener para el botón de registro
+registerButton.addEventListener("click", registerWeb)
+
 // Verificar autenticación al abrir el popup
 async function checkAuth() {
   try {
@@ -130,6 +277,9 @@ async function checkAuth() {
       // Usuario autenticado, mostrar contenido principal
       loginContainer.style.display = "none"
       mainContainer.style.display = "block"
+
+      // Verificar registro de la web actual
+      checkRegistration()
 
       // Cargar historial de análisis
       loadHistory()
@@ -182,6 +332,9 @@ loginForm.addEventListener("submit", async (e) => {
       loginContainer.style.display = "none"
       mainContainer.style.display = "block"
       loginPassword.value = ""
+
+      // Verificar registro de la web actual
+      checkRegistration()
     } else {
       const result = await response.json()
       loginError.textContent = result.error || "Contraseña incorrecta"
@@ -203,36 +356,8 @@ checkAuth()
 chrome.runtime.onMessage.addListener((message) => {
   if (message.action === "analysisComplete") {
     if (message.success) {
-      // Save to history
-      chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
-        const tabId = tabs[0].id!
-        const storageKey = `analysisHistory_${tabId}`
-
-        // Get validationType and history from session
-        chrome.storage.session.get([storageKey, 'validationType'], (result) => {
-          const history: AnalysisHistoryItem[] = result[storageKey] || []
-          const validationType = result.validationType || 'complete'
-
-          const newItem: AnalysisHistoryItem = {
-            id: Date.now().toString(),
-            timestamp: Date.now(),
-            type: validationType,
-            issuesCount: message.result?.result?.issuesCount || 0,
-            result: message.result
-          }
-
-          // Add to beginning and limit to 10 items
-          history.unshift(newItem)
-          if (history.length > 10) history.pop()
-
-          chrome.storage.session.set({
-            [storageKey]: history,
-            activeAnalysisId: newItem.id
-          }, () => {
-            renderHistory(history, newItem.id)
-          })
-        })
-      })
+      // El historial ya fue guardado por el background, solo recargar para actualizar la UI
+      loadHistory()
     } else {
       errorMessage.style.display = "block"
       errorMessage.textContent = message.result?.error || "Error analyzing page"

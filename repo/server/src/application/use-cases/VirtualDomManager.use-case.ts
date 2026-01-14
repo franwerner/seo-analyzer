@@ -1,11 +1,11 @@
 import VirtualDomRepository from "@/application/repositories/VirtualDom.repository"
 import { VirtualDomNotFountError } from "@/domain/virtual-dom/errors"
-import { CreateVirtualDomAnalysisDTO, createVirtualDomAnalysisScheme } from "@seo-analyzer/common"
+import { CreateVirtualDomAnalysisDTO, createVirtualDomAnalysisScheme, hostScheme, pathnameScheme } from "@seo-analyzer/common"
 import VirtualDomAnalysisRepository from "../repositories/VirtualDomAnalysis.repository"
 import ValidateDTO from "../shared/utils/validateDTO.utils"
 import VirtualWebManagerService from "./VirtualWebManager.use-case"
 import PuppeterService from "@/infrastructure/scrapper/puppeter.service"
-import URLUtility from "@/domain/shared/utils/URL.util"
+
 
 export default class VirtualDomManagerUseCase {
     constructor(
@@ -43,7 +43,11 @@ export default class VirtualDomManagerUseCase {
         const validatedData = ValidateDTO(createVirtualDomAnalysisScheme, props)
         const { host, pathname, validationsSelected, snapshotId, htmlString } = validatedData
 
-        const normalized = URLUtility.createURL({ host, pathname })
+        const normalized = {
+            host: hostScheme.parse(host),
+            pathname: pathnameScheme.parse(pathname)
+        }
+
         const res = await this.repositories.virtualDomRepository.findUniqueByHostAndPath({
             host: normalized.host,
             pathname: normalized.pathname
